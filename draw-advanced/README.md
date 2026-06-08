@@ -1,8 +1,8 @@
 # Advanced Draw Widget for ArcGIS Experience Builder
 
-An advanced drawing widget for ArcGIS Experience Builder. It builds on the work of Robert Scheitlin, Jeffrey Thompson, Adrien Hoff, and others to add a full measurement system, live tooltips, snapping, buffers, line arrows, rich text styling, a My Drawings manager with local-storage save, and import/export across GeoJSON, KML, zipped shapefile, and legacy JSON.
+An advanced drawing widget for ArcGIS Experience Builder. It builds on the work of Robert Scheitlin, Adrien Hoff, and others to add a full measurement system, live tooltips, snapping, buffers, line arrows, rich text styling, a My Drawings manager with local-storage save, and import/export across GeoJSON, KML, zipped shapefile, and legacy JSON.
 
-- **Author:** Brian McLeer, GIS Administrator/Developer, City of Grand Junction, CO
+- **Authors:** Brian McLeer, GIS Administrator/Developer, City of Grand Junction, CO; and Jeffrey Thompson, City of Arlington, TX
 - **License:** Apache-2.0
 - **Discussion, downloads, and feedback:** [Advanced Draw Widget on Esri Community](https://community.esri.com/t5/experience-builder-custom-widgets/advanced-draw-widget-improvements-import-export/ba-p/1618579)
 
@@ -119,4 +119,4 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 
 ## Credits
 
-Created by **Brian McLeer**, City of Grand Junction, CO, building on contributions from Robert Scheitlin, Jeffrey Thompson, Adrien Hoff, Mattias Ekström, and Jérôme Ray. Thanks to the Esri Experience Builder community for feedback and testing.
+Created by **Brian McLeer** (City of Grand Junction, CO) and **Jeffrey Thompson** (City of Arlington, TX), building on contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekström, and Jérôme Ray. Thanks to the Esri Experience Builder community for feedback and testing.

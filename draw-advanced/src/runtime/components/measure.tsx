@@ -7,11 +7,11 @@ import Graphic from "esri/Graphic";
 import Point from 'esri/geometry/Point';
 import Polyline from 'esri/geometry/Polyline';
 import SpatialReference from 'esri/geometry/SpatialReference';
-import projectOperator from 'esri/geometry/operators/projectOperator';
-import geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
-import geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
-import areaOperator from 'esri/geometry/operators/areaOperator'
-import lengthOperator from 'esri/geometry/operators/lengthOperator'
+import * as projectOperator from 'esri/geometry/operators/projectOperator';
+import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
+import * as geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
+import * as areaOperator from 'esri/geometry/operators/areaOperator'
+import * as lengthOperator from 'esri/geometry/operators/lengthOperator'
 import Color from 'esri/Color';
 import TextSymbol from 'esri/symbols/TextSymbol';
 import SimpleMarkerSymbol from 'esri/symbols/SimpleMarkerSymbol';
@@ -80,7 +80,7 @@ import SimpleMarkerSymbol from 'esri/symbols/SimpleMarkerSymbol';
 // Import React hooks properly
 const { useState, useEffect, useRef, useImperativeHandle, forwardRef } = React
 
-interface ExtendedGraphic {
+interface ExtendedGraphic extends Graphic {
 	measure?: {
 		graphic: ExtendedGraphic;
 		areaUnit?: string;
@@ -94,7 +94,7 @@ interface ExtendedGraphic {
 	_lastClickTime?: number;
 }
 
-interface MeasuredGraphic extends any {
+interface MeasuredGraphic {
 	measure?: {
 		graphic: any;
 	};
@@ -194,7 +194,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		};
 	};
 
-	const isTextSymbol = (symbol: any): symbol is any => {
+	const isTextSymbol = (symbol: any): symbol is TextSymbol => {
 		return symbol &&
 			typeof symbol === 'object' &&
 			symbol.type === 'text' &&

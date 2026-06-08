@@ -4,7 +4,7 @@ An advanced drawing widget for ArcGIS Experience Builder with a full measurement
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-- **Author:** Brian McLeer, GIS Administrator/Developer, City of Grand Junction, CO
+- **Authors:** Brian McLeer (City of Grand Junction, CO) and Jeffrey Thompson (City of Arlington, TX)
 - **Built and tested on:** ArcGIS Experience Builder Developer Edition 1.19 and 1.20
 - **Minimum supported:** Developer Edition 1.17 (Enterprise 11.5)
 - **Discussion, feedback, and original post:** [Advanced Draw Widget on Esri Community](https://community.esri.com/t5/experience-builder-custom-widgets/advanced-draw-widget-improvements-import-export/ba-p/1618579)
@@ -82,4 +82,4 @@ Licensed under the [Apache License 2.0](LICENSE). Copyright City of Grand Juncti
 
 ## Credits
 
-Created by Brian McLeer, City of Grand Junction, CO, building on contributions from Robert Scheitlin, Jeffrey Thompson, Adrien Hoff, Mattias Ekström, and Jérôme Ray. Thanks to the Esri Experience Builder community for feedback and testing.
+Created by Brian McLeer (City of Grand Junction, CO) and Jeffrey Thompson (City of Arlington, TX), building on contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekström, and Jérôme Ray. Thanks to the Esri Experience Builder community for feedback and testing.
