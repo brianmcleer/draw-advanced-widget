@@ -1,0 +1,20 @@
+# Never ship installed dependencies (consumers run the EB client install)
+node_modules/
+
+# Visual Studio cache / user state
+.vs/
+*.user
+*.suo
+
+# Version control
+.git/
+.gitignore
+
+# OS / editor cruft
+.DS_Store
+__MACOSX/
+Thumbs.db
+*.log
+
+# NOTE: src/, manifest.json, config.json, icon.svg, icon.png, package.json,
+# package-lock.json, README.md and LICENSE are intentionally shipped.

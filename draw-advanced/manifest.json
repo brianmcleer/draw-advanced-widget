@@ -1,0 +1,21 @@
+{
+  "name": "draw-advanced",
+  "type": "widget",
+  "version": "4.0.0",
+  "exbVersion": "1.17.0",
+  "author": "Robert Scheitlin, Jeffrey Thompson, Brian McLeer, Adrien Hoff, Mattias Ekström, Jérôme Ray",
+  "description": "Widget used for drawing on the map",
+  "copyright": "2021-2026",
+  "license": "http://www.apache.org/licenses/LICENSE-2.0",
+  "properties": {},
+  "translatedLocales": [
+    "en"
+  ],
+  "dependency": [
+    "jimu-arcgis"
+  ],
+  "defaultSize": {
+    "width": 400,
+    "height": 400
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "draw-advanced",
+  "version": "4.0.0",
+  "description": "An advanced drawing widget for ArcGIS Experience Builder with measurement, tooltips, snapping, buffers, line arrows, text styling, local-storage save, a My Drawings manager, and GeoJSON/KML/shapefile/legacy-JSON import and export.",
+  "keywords": [
+    "exb-widget",
+    "experience-builder",
+    "exb",
+    "arcgis",
+    "esri",
+    "draw",
+    "measurement",
+    "sketch"
+  ],
+  "license": "Apache-2.0",
+  "author": "Brian McLeer",
+  "contributors": [
+    "City of Grand Junction, CO",
+    "Robert Scheitlin",
+    "Jeffrey Thompson",
+    "Adrien Hoff",
+    "Mattias Ekström",
+    "Jérôme Ray"
+  ],
+  "homepage": "https://community.esri.com/t5/experience-builder-custom-widgets/advanced-draw-widget-improvements-import-export/ba-p/1618579",
+  "dependencies": {
+    "@mapbox/shp-write": "^0.4.3",
+    "jszip": "^3.10.1",
+    "shpjs": "^6.2.0"
+  }
+}

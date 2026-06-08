@@ -1,0 +1,17 @@
+# Installed dependencies (Experience Builder installs these from package.json)
+node_modules/
+
+# Visual Studio cache / user state
+.vs/
+*.user
+*.suo
+
+# Build output
+dist/
+build/
+
+# OS / editor cruft
+.DS_Store
+__MACOSX/
+Thumbs.db
+*.log

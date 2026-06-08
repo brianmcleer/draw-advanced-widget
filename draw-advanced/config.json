@@ -1,0 +1,13 @@
+{
+  "creationMode": "continuous",
+  "turnOffOnClose": false,
+  "changeTitle": true,
+  "title": "Drawn Graphics",
+  "listMode": true,
+  "changeListMode": false,
+  "userDistances": [],
+  "defaultDistance": 0,
+  "userAreas": [],
+  "defaultArea": 0,
+  "storageScope": "app-specific"
+}
