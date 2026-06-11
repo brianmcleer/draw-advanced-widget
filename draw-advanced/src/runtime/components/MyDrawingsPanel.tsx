@@ -3089,20 +3089,6 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             })
         });
     };
-    private sanitizeKmlText = (input: string): string => {
-        return input
-            // Remove DOCTYPE declarations
-            .replace(/<!DOCTYPE[\s\S]*?>/gi, '')
-            // Remove ENTITY declarations
-            .replace(/<!ENTITY[\s\S]*?>/gi, '')
-            // Remove XML processing instructions
-            .replace(/<\?[\s\S]*?\?>/gi, '')
-            // Remove script tags (defense in depth)
-            .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-            // Remove inline event handlers (onclick, onload, etc.)
-            .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, '');
-    };
-
     private processKMLImport = async (content: string, replace: boolean) => {
         try {
             // 🚨 COMPLEXITY CHECK DISABLED FOR IMPROVED UX
@@ -10155,9 +10141,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
         // If description contains HTML, strip it
         if (description.includes('<') && description.includes('>')) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = description;
-            return tempDiv.textContent || tempDiv.innerText || '';
+            const parsed = new DOMParser().parseFromString(description, 'text/html');
+            return parsed.body.textContent || '';
         }
 
         return description;
@@ -10569,8 +10554,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         try {
             // Parse KML using browser's DOMParser
             const parser = new DOMParser();
-            const sanitizedKmlText = this.sanitizeKmlText(kmlText);
-            const kmlDoc = parser.parseFromString(sanitizedKmlText, 'text/xml');
+            const kmlDoc = parser.parseFromString(kmlText, 'text/xml');
 
             // Check for parser errors
             const parserError = kmlDoc.querySelector('parsererror');
