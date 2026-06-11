@@ -1,9 +1,9 @@
 {
   "name": "draw-advanced",
   "type": "widget",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "exbVersion": "1.17.0",
-  "author": "Brian McLeer (City of Grand Junction, CO) and Jeffrey Thompson (City of Arlington, TX); with contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekström, and Jérôme Ray",
+  "author": "Brian McLeer (City of Grand Junction, CO) and Jeffrey Thompson (City of Arlington, TX); with contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekstr\u00f6m, and J\u00e9r\u00f4me Ray",
   "description": "Widget used for drawing on the map",
   "copyright": "2021-2026",
   "license": "http://www.apache.org/licenses/LICENSE-2.0",
