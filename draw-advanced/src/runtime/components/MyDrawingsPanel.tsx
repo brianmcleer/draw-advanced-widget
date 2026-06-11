@@ -3089,6 +3089,20 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             })
         });
     };
+    private sanitizeKmlText = (input: string): string => {
+        return input
+            // Remove DOCTYPE declarations
+            .replace(/<!DOCTYPE[\s\S]*?>/gi, '')
+            // Remove ENTITY declarations
+            .replace(/<!ENTITY[\s\S]*?>/gi, '')
+            // Remove XML processing instructions
+            .replace(/<\?[\s\S]*?\?>/gi, '')
+            // Remove script tags (defense in depth)
+            .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+            // Remove inline event handlers (onclick, onload, etc.)
+            .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, '');
+    };
+
     private processKMLImport = async (content: string, replace: boolean) => {
         try {
             // 🚨 COMPLEXITY CHECK DISABLED FOR IMPROVED UX
@@ -10555,7 +10569,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         try {
             // Parse KML using browser's DOMParser
             const parser = new DOMParser();
-            const kmlDoc = parser.parseFromString(kmlText, 'text/xml');
+            const sanitizedKmlText = this.sanitizeKmlText(kmlText);
+            const kmlDoc = parser.parseFromString(sanitizedKmlText, 'text/xml');
 
             // Check for parser errors
             const parserError = kmlDoc.querySelector('parsererror');
