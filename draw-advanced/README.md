@@ -107,6 +107,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 
 ## Changelog
 
+- 2026-06-11 v4.0.2: Security fixes for CodeQL code scanning alerts
+
 - 2026-06-11 v4.0.1: Security fixes for CodeQL code scanning alerts
 
 - **2026-05-05** Minor bug fix to version 4.0 resolving an issue when merging multiple buffered features.
