@@ -10141,9 +10141,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
         // If description contains HTML, strip it
         if (description.includes('<') && description.includes('>')) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = description;
-            return tempDiv.textContent || tempDiv.innerText || '';
+            const parsed = new DOMParser().parseFromString(description, 'text/html');
+            return parsed.body.textContent || '';
         }
 
         return description;

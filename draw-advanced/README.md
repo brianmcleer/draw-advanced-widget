@@ -107,6 +107,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 
 ## Changelog
 
+- 2026-06-11 v4.0.1: Security fixes for CodeQL code scanning alerts
+
 - **2026-05-05** Minor bug fix to version 4.0 resolving an issue when merging multiple buffered features.
 - **2026-05-01** Version 4: integration with the Identify By Query widget; multi-line numbers supported for text.
 - **2026-04-01** Developer Edition 1.20 build available (3.2 = DE 1.20, 3.1 = DE 1.19).
