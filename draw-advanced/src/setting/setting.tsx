@@ -96,8 +96,8 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
             areaSidePopper: false,
             defaultDistanceUnit: this.props.config.defaultDistance,
             defaultAreaUnit: this.props.config.defaultArea,
-            availableDistanceUnits: [...defaultDistanceUnits, ...(this.props.config.userDistances?.asMutable?.() || this.props.config.userDistances || [])],
-            availableAreaUnits: [...defaultAreaUnits, ...(this.props.config.userAreas?.asMutable?.() || this.props.config.userAreas || [])],
+            availableDistanceUnits: [...defaultDistanceUnits, ...((this.props.config.userDistances?.asMutable?.() || this.props.config.userDistances || []) as unknown as Unit[])],
+            availableAreaUnits: [...defaultAreaUnits, ...((this.props.config.userAreas?.asMutable?.() || this.props.config.userAreas || []) as unknown as Unit[])],
             detectedWidgets: [],
             scanning: false
         }
@@ -834,4 +834,4 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
             </div>
         )
     }
-} 
+}

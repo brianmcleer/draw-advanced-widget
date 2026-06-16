@@ -12,7 +12,7 @@ import TextSymbol from 'esri/symbols/TextSymbol';
 import Color from 'esri/Color';
 import * as geometryEngine from 'esri/geometry/geometryEngine';
 
-interface ExtendedGraphic extends any {
+interface ExtendedGraphic extends Graphic {
     isBufferDrawing?: boolean;
     sourceGraphicId?: string;
     bufferGraphic?: ExtendedGraphic | null;
@@ -272,7 +272,7 @@ const manualBuffer = (geometry: any, distMeters: number, sr: any): any => {
     // restored polygons, which previously routed to the extent fallback below
     // and produced a circle around the centroid instead of a polygon outline.
     const hasRings = Array.isArray(geometry.rings) && geometry.rings.length > 0 &&
-                     Array.isArray(geometry.rings[0]) && geometry.rings[0].length >= 3;
+        Array.isArray(geometry.rings[0]) && geometry.rings[0].length >= 3;
     const hasPaths = Array.isArray(geometry.paths) && geometry.paths.length > 0;
     const hasXY = typeof geometry.x === 'number' && typeof geometry.y === 'number';
 

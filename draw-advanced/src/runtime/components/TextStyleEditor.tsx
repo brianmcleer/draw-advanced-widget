@@ -16,16 +16,16 @@ import TextSymbol from 'esri/symbols/TextSymbol';
 import Font from 'esri/symbols/Font';
 import Color from 'esri/Color';
 
-import fsBoldIcon from '../assets/bold.svg';
-import fItalicIcon from '../assets/italic.svg';
-import fUnderlineIcon from '../assets/underline.svg';
-import hAlignLeft from 'jimu-icons/svg/outlined/editor/text-left.svg';
-import hAlignCenter from 'jimu-icons/svg/outlined/editor/text-center.svg';
-import hAlignRight from 'jimu-icons/svg/outlined/editor/text-right.svg';
-import vAlignTop from '../assets/text-align-v-t.svg';
-import vAlignMid from '../assets/text-align-v-m.svg';
-import vAlignBot from '../assets/text-align-v-b.svg';
-import vAlignBase from '../assets/text-align-v-base.svg';
+const fsBoldIcon = require('../assets/bold.svg');
+const fItalicIcon = require('../assets/italic.svg');
+const fUnderlineIcon = require('../assets/underline.svg');
+const hAlignLeft = require('jimu-icons/svg/outlined/editor/text-left.svg');
+const hAlignCenter = require('jimu-icons/svg/outlined/editor/text-center.svg');
+const hAlignRight = require('jimu-icons/svg/outlined/editor/text-right.svg');
+const vAlignTop = require('../assets/text-align-v-t.svg');
+const vAlignMid = require('../assets/text-align-v-m.svg');
+const vAlignBot = require('../assets/text-align-v-b.svg');
+const vAlignBase = require('../assets/text-align-v-base.svg');
 
 interface Props {
     currentTextSymbol: TextSymbol;

@@ -11,7 +11,7 @@ import { WrongOutlined } from 'jimu-icons/outlined/suggested/wrong';
 import { CloseOutlined } from 'jimu-icons/outlined/editor/close';
 import { CopyOutlined } from 'jimu-icons/outlined/editor/copy';
 // PasteIcon removed - copy+paste is now a single action (no separate Paste button state)
-import SettingOutlined from 'jimu-icons/svg/outlined/application/setting.svg'
+const SettingOutlined = require('jimu-icons/svg/outlined/application/setting.svg');
 import { JimuMapView, JimuMapViewComponent } from 'jimu-arcgis';
 import { getStyle } from './lib/style';
 import defMessages from './translations/default';
@@ -23,9 +23,9 @@ import Color from 'esri/Color';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import Graphic from 'esri/Graphic';
 import TextSymbol from 'esri/symbols/TextSymbol';
-import hAlignLeft from 'jimu-icons/svg/outlined/editor/text-left.svg';
-import hAlignCenter from 'jimu-icons/svg/outlined/editor/text-center.svg';
-import hAlignRight from 'jimu-icons/svg/outlined/editor/text-right.svg';
+const hAlignLeft = require('jimu-icons/svg/outlined/editor/text-left.svg');
+const hAlignCenter = require('jimu-icons/svg/outlined/editor/text-center.svg');
+const hAlignRight = require('jimu-icons/svg/outlined/editor/text-right.svg');
 import esriColor from 'esri/Color';
 import './widget.css';
 import Measure from './components/measure';
@@ -212,6 +212,8 @@ interface States {
 	graphics?: any[];
 	pointBtnActive: boolean;
 	lineBtnActive: boolean;
+	curveToolActive?: boolean; // a true-curve line tool (arc/endpointArc/bezier) is active
+	showCurveMenu?: boolean;    // line-tool curve dropdown open
 	flineBtnActive: boolean;
 	rectBtnActive: boolean;
 	polygonBtnActive: boolean;
@@ -227,7 +229,7 @@ interface States {
 	currentSymbolType: JimuSymbolType;
 	currentTextSymbol: TextSymbol;
 	drawGLLengthcheck: boolean;
-	currentTool: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | '';
+	currentTool: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | 'arc' | 'endpointArc' | 'bezier' | '';
 	clearBtnTitle: string;
 	canUndo: boolean;
 	canRedo: boolean;
@@ -323,7 +325,7 @@ interface ScrollIndicatorProps {
 	className?: string;
 }
 
-interface ExtendedGraphic extends any {
+interface ExtendedGraphic extends Graphic {
 	measure?: {
 		graphic: ExtendedGraphic;
 		areaUnit?: string;
@@ -461,7 +463,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	_widgetRoot: HTMLElement | null = null;
 	_jimuDrawReadyResolve: ((el: any) => void) | null = null;
 	private _bufferUpdateInProgress: Set<string> = new Set();
-	Graphic: typeof any = null;
+	Graphic: any = null;
 	creationMode: DrawMode;
 	currentSymbol: any | any | any | any | any | any | any;
 	measureRef: React.RefObject<any> = React.createRef();
@@ -593,6 +595,12 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	// were registered without storing return handles, causing them to accumulate on
 	// every map-view change and every widget close/reopen cycle.
 	private _viewHandles: Array<{ remove: () => void }> = [];
+	// Custom true-curve line tool state (arc / endpointArc / bezier)
+	private _curveType: 'arc' | 'endpointArc' | 'bezier' | null = null;
+	private _curveHandles: Array<{ remove: () => void }> = [];
+	private _curvePoints: number[][] = [];
+	private _curvePreview: any = null;
+	private _curvePrevPopup: boolean | null = null;
 
 	// 🔧 MEMORY FIX: Track DOM elements wired up by onSymbolPopper, so the same
 	// element doesn't get a fresh click handler stacked on top each time the
@@ -1421,16 +1429,18 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 				let baseSymbol: any;
 
 				if (gra.symbol?.type === 'simple-line') {
-					baseSymbol = (gra.symbol as any).clone();
-					delete (baseSymbol as any).marker; // Remove existing marker
+					// Build a fresh marker-free base. delete on an Esri Accessor's
+					// 'marker' is unreliable, so reconstruct explicitly.
+					const src = gra.symbol as any;
+					baseSymbol = new SimpleLineSymbol({ color: src.color, width: src.width, style: src.style });
 				} else {
 					// Fall back to SketchViewModel's default - with validation
 					if (!this.sketchViewModel.polylineSymbol) {
 						console.warn('SketchViewModel polylineSymbol not available');
 						return;
 					}
-					baseSymbol = (this.sketchViewModel.polylineSymbol as any).clone();
-					delete (baseSymbol as any).marker;
+					const src = this.sketchViewModel.polylineSymbol as any;
+					baseSymbol = new SimpleLineSymbol({ color: src.color, width: src.width, style: src.style });
 				}
 
 				if (!baseSymbol || baseSymbol.type !== 'simple-line') {
@@ -2983,7 +2993,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 							: runtimeInfo;
 						const openIds = Object.keys(ri).filter(id => {
 							const info = ri[id];
-							return info?.state === 'OPENED' || info?.isOpened;
+							return (info as any)?.state === 'OPENED' || (info as any)?.isOpened;
 						});
 						if (openIds.length > 0) {
 							getAppStore().dispatch(appActions.closeWidgets(openIds));
@@ -3490,6 +3500,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		// Create a temporary SketchViewModel
 		this._spatialSelectSketchVM = new SketchViewModel({
 			view: view,
+			useLegacyCreateTools: true, // selection geometry only: keep the classic single-tool create, no curve segment toolbar
 			layer: this._spatialSelectLayer,
 			defaultUpdateOptions: { enableRotation: false, enableScaling: false },
 			polygonSymbol: new SimpleFillSymbol({
@@ -4418,6 +4429,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			this.originalPopupEnabled = null;
 		}
 
+		// Clean up custom curve tool handles
+		this._deactivateCurveTool();
+
 		// Clean up SketchViewModel
 		if (this.sketchViewModel) {
 			try {
@@ -4554,6 +4568,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			try {
 				this.sketchViewModel = new SketchViewModel({
 					view,
+					useLegacyCreateTools: false, // JSAPI 5.0 next-gen create: true curve tools via shift-drag-to-curve inside the existing line/polygon tools (no OOTB component)
 					updateOnGraphicClick: false, // CRITICAL: prevents SVM from intercepting measurement label clicks
 					layer: this.drawLayer,
 					defaultUpdateOptions: {
@@ -5045,6 +5060,14 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 
 	private clearSelectionOverlaysInDrawLayer = () => {
 		if (!this.drawLayer) return;
+		// End any active vertex edit (reshape/update) so manipulators don't linger
+		// on the graphic(s) after the selection is cleared. Preserve their labels.
+		try {
+			const updating = this.sketchViewModel?.updateGraphics?.toArray?.() || [];
+			if (updating.length) this.cancelSketchVMWithLabelPreservation(updating);
+		} catch (e) {
+			console.warn('Error canceling SketchVM during clear selection:', e);
+		}
 		try {
 			this.drawLayer.graphics.toArray().forEach(g => {
 				const ext: any = g;
@@ -5667,6 +5690,162 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		alert(message);
 	}
 
+	// ── True-curve line tool: arc / endpoint arc / bezier ────────────────
+	// Builds real hasCurves geometry via ArcGIS curve segments ("c" = circular
+	// arc by interior point, "b" = cubic bezier) and routes through svmGraCreate
+	// so it inherits naming, measurement labels and save. No OOTB Esri component.
+	startCurveTool = (type: 'arc' | 'endpointArc' | 'bezier') => {
+		try { this.setDrawToolBtnState('' as any); } catch { }
+		try { this.sketchViewModel?.cancel(); } catch { }
+		this._deactivateCurveHandles();
+		this._clearCurvePreview();
+		const view = this.state.currentJimuMapView?.view;
+		if (!view) { console.warn('Curve tool: no map view'); return; }
+		this._curveType = type;
+		this._curvePoints = [];
+		this.setState({ curveToolActive: true, showCurveMenu: false, currentTool: type as any });
+		this._activateCurveCapture(view);
+	};
+
+	private _curveClicksNeeded = (): number => (this._curveType === 'bezier' ? 4 : 3);
+
+	private _activateCurveCapture = (view: any) => {
+		this._deactivateCurveHandles();
+		this._curvePoints = [];
+		if (this._curvePrevPopup === null) this._curvePrevPopup = view.popupEnabled;
+		try { view.popupEnabled = false; } catch { }
+		if (view.container) view.container.style.cursor = 'crosshair';
+
+		const clickH = view.on('click', (evt: any) => {
+			evt.stopPropagation();
+			const mp = evt.mapPoint;
+			if (!mp) return;
+			this._curvePoints.push([mp.x, mp.y]);
+			if (this._curvePoints.length >= this._curveClicksNeeded()) this._finishCurve(view);
+		});
+		const moveH = view.on('pointer-move', (evt: any) => {
+			if (this._curvePoints.length === 0) return;
+			const mp = view.toMap({ x: evt.x, y: evt.y });
+			if (mp) this._updateCurvePreview(view, [mp.x, mp.y]);
+		});
+		const keyH = view.on('key-down', (evt: any) => {
+			if (evt.key === 'Escape') { evt.stopPropagation(); this._deactivateCurveTool(); }
+		});
+		this._curveHandles.push(clickH, moveH, keyH);
+	};
+
+	private _curveLineSymbol = (): any => {
+		try { const base = (this.sketchViewModel?.polylineSymbol as any); if (base?.clone) return base.clone(); } catch { }
+		return new SimpleLineSymbol({ color: [0, 0, 0, 1], width: 2, style: 'solid' });
+	};
+
+	private _curveSR = (view: any): any => (view.spatialReference?.toJSON ? view.spatialReference.toJSON() : view.spatialReference);
+
+	// Endpoint arc: derive the symmetric apex (midpoint of the arc) from the
+	// perpendicular offset of the 3rd click off the start->end chord. That offset
+	// is the sagitta, so moving the cursor perpendicular dials the radius. Returns
+	// null when the chord is degenerate or the offset is ~0 (caller draws straight).
+	private _endpointArcInterior = (sPt: number[], ePt: number[], cPt: number[]): number[] | null => {
+		const dx = ePt[0] - sPt[0], dy = ePt[1] - sPt[1];
+		const Ld = Math.hypot(dx, dy);
+		if (Ld < 1e-6) return null;
+		const nx = -dy / Ld, ny = dx / Ld;                 // unit perpendicular to chord
+		const mx = (sPt[0] + ePt[0]) / 2, my = (sPt[1] + ePt[1]) / 2;
+		const h = (cPt[0] - mx) * nx + (cPt[1] - my) * ny; // signed sagitta
+		if (Math.abs(h) < Ld * 1e-3) return null;          // basically flat
+		return [mx + nx * h, my + ny * h];
+	};
+
+	// Map collected points (+ optional live cursor) to a curvePaths geometry.
+	private _buildCurveGeometry = (view: any, pts: number[][]): any => {
+		const sr = this._curveSR(view);
+		const t = this._curveType;
+		try {
+			if (t === 'bezier') {
+				// click order: start, end, control1, control2
+				if (pts.length < 4) return Polyline.fromJSON({ paths: [pts], spatialReference: sr });
+				const start = pts[0], end = pts[1], c1 = pts[2], c2 = pts[3];
+				return Polyline.fromJSON({ curvePaths: [[start, { b: [end, c1, c2] }]], spatialReference: sr });
+			}
+			if (pts.length < 3) return Polyline.fromJSON({ paths: [pts], spatialReference: sr });
+			if (t === 'endpointArc') {
+				// start, end fixed; 3rd point sets the radius/bulge -> symmetric arc.
+				const start = pts[0], end = pts[1];
+				const apex = this._endpointArcInterior(start, end, pts[2]);
+				if (!apex) return Polyline.fromJSON({ paths: [[start, end]], spatialReference: sr }); // ~straight
+				return Polyline.fromJSON({ curvePaths: [[start, { c: [end, apex] }]], spatialReference: sr });
+			}
+			// 'arc': 3-point arc through start, the middle click, then end.
+			const start = pts[0], interior = pts[1], end = pts[2];
+			return Polyline.fromJSON({ curvePaths: [[start, { c: [end, interior] }]], spatialReference: sr });
+		} catch (e) {
+			console.warn('curve geometry build warning:', e);
+			return Polyline.fromJSON({ paths: [pts], spatialReference: sr });
+		}
+	};
+
+	private _updateCurvePreview = (view: any, cursor: number[]) => {
+		try {
+			const geom = this._buildCurveGeometry(view, [...this._curvePoints, cursor]);
+			const sym = this._curveLineSymbol();
+			if (!this._curvePreview) {
+				this._curvePreview = new Graphic({ geometry: geom, symbol: sym, attributes: { hideFromList: true, isPreviewBuffer: true } });
+				this.drawLayer.add(this._curvePreview);
+			} else {
+				this._curvePreview.geometry = geom; this._curvePreview.symbol = sym;
+			}
+		} catch { /* preview best-effort */ }
+	};
+
+	private _finishCurve = async (view: any) => {
+		const pts = this._curvePoints.slice();
+		this._clearCurvePreview();
+		this._deactivateCurveHandles();
+		if (view.container) view.container.style.cursor = 'default';
+
+		let graphic: any = null;
+		try {
+			const geom = this._buildCurveGeometry(view, pts);
+			graphic = new Graphic({ geometry: geom, symbol: this._curveLineSymbol() });
+			this.drawLayer.add(graphic);
+		} catch (e) { console.error('Curve build failed:', e); this._curvePoints = []; return; }
+
+		try {
+			this.setState({ currentTool: (this._curveType || 'arc') as any });
+			await this.svmGraCreate({ state: 'complete', graphic });
+		} catch (e) { console.warn('Curve finalize warning:', e); }
+
+		this._curvePoints = [];
+		if (this.creationMode === 'continuous' && this.state.curveToolActive) {
+			this._activateCurveCapture(view); // re-arm for the next curve
+		} else {
+			this._deactivateCurveTool();
+		}
+	};
+
+	private _clearCurvePreview = () => {
+		if (this._curvePreview) { try { this.drawLayer.remove(this._curvePreview); } catch { } this._curvePreview = null; }
+	};
+
+	private _deactivateCurveHandles = () => {
+		for (const h of this._curveHandles) { try { h.remove(); } catch { } }
+		this._curveHandles = [];
+	};
+
+	private _deactivateCurveTool = () => {
+		this._deactivateCurveHandles();
+		this._clearCurvePreview();
+		this._curvePoints = [];
+		this._curveType = null;
+		const view = this.state.currentJimuMapView?.view;
+		if (view) {
+			if (view.container) view.container.style.cursor = 'default';
+			if (this._curvePrevPopup !== null) { try { view.popupEnabled = this._curvePrevPopup; } catch { } }
+		}
+		this._curvePrevPopup = null;
+		if (this.state.curveToolActive) this.setState({ curveToolActive: false });
+	};
+
 	svmGraCreate = async (evt) => {
 		try {
 			// Basic validation
@@ -6016,20 +6195,16 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 								}
 								this.setState(cState);
 							} else {
-								if (gra.geometry.type === 'polyline' && gra.symbol?.type === 'simple-line') {
-									const lineSymbol = gra.symbol as any;
-									const hasArrows = !!(lineSymbol as any).marker;
-									if (!hasArrows && this.state.arrowEnabled) {
-										try {
-											const arrowSymbol = this.createLineSymbolWithBuiltInArrows(
-												lineSymbol,
-												this.state.arrowPosition,
-												this.state.arrowSize
-											);
-											gra.symbol = arrowSymbol;
-										} catch (error) {
-											console.warn('Error applying arrow settings:', error);
-										}
+								// Sync the arrow controls to reflect the selected line's OWN state
+								// (so the toggle/position match the line, and can be turned off).
+								let selArrowEnabled = this.state.arrowEnabled;
+								let selArrowPosition = this.state.arrowPosition;
+								if (selectableGraphics[0]?.geometry?.type === 'polyline') {
+									const mk = (selectableGraphics[0].symbol as any)?.marker;
+									selArrowEnabled = !!mk;
+									if (mk) {
+										selArrowPosition = mk.placement === 'begin' ? 'start'
+											: mk.placement === 'begin-end' ? 'both' : 'end';
 									}
 								}
 								if (gra.geometry.type === 'point') {
@@ -6039,7 +6214,13 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 									showSymPreview: true,
 									showTextPreview: false,
 									currentSymbol: selectableGraphics[0].symbol,
+									currentSymbolType: selectableGraphics[0].geometry?.type === 'polyline' ? JimuSymbolType.Polyline
+										: selectableGraphics[0].geometry?.type === 'point' ? JimuSymbolType.Point
+											: selectableGraphics[0].geometry?.type === 'polygon' ? JimuSymbolType.Polygon
+												: this.state.currentSymbolType,
 									graphics: selectableGraphics,
+									arrowEnabled: selArrowEnabled,
+									arrowPosition: selArrowPosition,
 									clearBtnTitle: this.nls('drawClearSelected')
 								});
 							}
@@ -6198,9 +6379,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			return;
 		}
 
-		// Clone and clean the symbol
-		const cleanSymbol = evt.clone();
-		delete (cleanSymbol as any).marker; // Remove any existing marker
+		// Build a fresh marker-free symbol (delete on an Esri Accessor's 'marker'
+		// is unreliable, which left arrows on the line when toggled off).
+		const cleanSymbol = new SimpleLineSymbol({ color: (evt as any).color, width: (evt as any).width, style: (evt as any).style });
 
 		let finalSymbol = cleanSymbol;
 
@@ -6721,6 +6902,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	}
 
 	setDrawToolBtnState = (toolBtn: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | '') => {
+		// Exit the custom curve line tool whenever any draw tool is (re)selected,
+		// so the line button and another tool never show active simultaneously.
+		this._deactivateCurveTool();
 		// ENHANCED: Clean measurement editing coordination before drawing tool activation
 		if (toolBtn !== '' && this.measureRef?.current?.isEditingMeasurements?.()) {
 			//console.log('Drawing tool activating - cleaning up measurement editing');
@@ -7249,19 +7433,34 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 									</Button>
 								)}
 								{config.enablePolylineTool !== false && (
-									<Button
-										size="sm"
-										type="default"
-										color={lineBtnActive ? 'primary' : 'default'}
-										active={lineBtnActive}
-										onClick={() => this.setDrawToolBtnState('polyline')}
-										title={this.nls('drawLine')}
-										aria-label={`Draw polyline${lineBtnActive ? ' - currently active' : ''}`}
-										aria-pressed={lineBtnActive}
+									<div
+										style={{ position: 'relative', display: 'inline-flex', verticalAlign: 'middle' }}
+										onMouseEnter={() => this.setState({ showCurveMenu: true })}
+										onMouseLeave={() => this.setState({ showCurveMenu: false })}
 									>
-										<Icon icon={lineIcon} aria-hidden="true" />
-										<span className="sr-only">Polyline tool</span>
-									</Button>
+										<Button
+											size="sm"
+											type="default"
+											color={(lineBtnActive || this.state.curveToolActive) ? 'primary' : 'default'}
+											active={lineBtnActive || !!this.state.curveToolActive}
+											onClick={() => { this._deactivateCurveTool(); this.setState({ showCurveMenu: false }); this.setDrawToolBtnState('polyline'); }}
+											aria-label={`Draw line${lineBtnActive ? ' - currently active' : ''}`}
+											aria-pressed={lineBtnActive}
+											aria-haspopup="true"
+											aria-expanded={!!this.state.showCurveMenu}
+										>
+											<Icon icon={lineIcon} aria-hidden="true" />
+											<span className="sr-only">Line tool</span>
+										</Button>
+										{this.state.showCurveMenu && (
+											<div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: 'var(--white, #fff)', border: '1px solid var(--light-300, #ccc)', borderRadius: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.25)', minWidth: 150, overflow: 'hidden' }}>
+												<Button size="sm" type="default" color={this.state.currentTool === 'polyline' ? 'primary' : 'default'} active={this.state.currentTool === 'polyline'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => { this._deactivateCurveTool(); this.setState({ showCurveMenu: false }); this.setDrawToolBtnState('polyline'); }}>Straight line</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'arc' ? 'primary' : 'default'} active={this.state.currentTool === 'arc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('arc')} title="Click: start, a point on the curve, end">Arc segment</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'endpointArc' ? 'primary' : 'default'} active={this.state.currentTool === 'endpointArc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('endpointArc')} title="Click: start, end, then move out to set the radius">Endpoint arc</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'bezier' ? 'primary' : 'default'} active={this.state.currentTool === 'bezier'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('bezier')} title="Click: start, end, control 1, control 2">Bézier curve</Button>
+											</div>
+										)}
+									</div>
 								)}
 								{config.enableFreePolylineTool !== false && (
 									<Button
