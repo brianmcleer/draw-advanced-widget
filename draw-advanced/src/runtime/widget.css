@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+.inner-popper {
+    z-index: 2002 !important;
+}
+
+.color-picker-popper {
+    z-index: 2002 !important;
+}
+
+.drawToolbarDiv {
+    width: 90% !important;
+    margin: 0 auto !important;
+}
+
+.buttonRow {
+   width: fit-content;
+   margin: 0 auto;
+}
+
+.decimalInput {
+    width: 50px;
+}
+
+.text-style-editor {
+    padding: 0 !important;
+}
+
+/* BM Added */
+
+.my-drawings-panel-container {
+    background-color: var(--light-100);
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.drawing-item {
+    background-color: var(--light-200);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    padding: 8px;
+    transition: background-color 0.2s;
+}
+
+    .drawing-item:hover {
+        background-color: var(--light-300);
+        cursor: pointer;
+    }
+
+    .drawing-item strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .drawing-item .text-sm {
+        font-size: 0.875rem;
+        margin-bottom: 8px;
+        color: var(--dark-600);
+    }
+
+.drawToolbarBottomDiv {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+    .drawToolbarBottomDiv button {
+        margin-right: 5px;
+    }
+
+.tab-header {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 1rem;
+}
+
+.tab-button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #003a55;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+    .tab-button:hover {
+        background-color: #f0f0f0;
+    }
+
+    .tab-button.active {
+        border-bottom: 2px solid #003a55;
+        font-weight: 600;
+        color: #003a55;
+        background-color: #e6f0f7;
+    }
