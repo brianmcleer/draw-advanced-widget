@@ -56,7 +56,7 @@ npm install --save shpjs jszip
 ## Features
 
 ### Draw tab
-- **Drawing tools:** point, line, freehand line, text, rectangle, polygon, freehand polygon, and circle, in a two-row layout with clear Drawing Mode, Edit Mode, and No Drawings indicators.
+- **Drawing tools:** point, line, freehand line, text, rectangle, polygon, freehand polygon, circle, and an optional triangle tool, in a two-row layout with clear Drawing Mode, Edit Mode, and No Drawings indicators. Optional curve drawing tools can be enabled in the widget settings.
 - **Measurement system:** real-time area, perimeter, length, radius, and coordinate calculations; geodetic or planar based on spatial reference; distance and area units including user-defined custom units; per-segment line measurements; configurable decimal precision and per-metric toggles.
 - **Tooltips:** live length, area, perimeter, radius, and coordinate readouts while drawing, with smart placement and styling.
 - **Snapping:** detects all visible snappable layers (feature, graphics, CSV, GeoJSON, WFS, sublayers) with a 15 pixel tolerance, self-snapping, and temporary disable via Ctrl/Cmd. Optional alignment grid.
@@ -86,6 +86,7 @@ For the complete narrative of capabilities and known issues, see the [Esri Commu
 - **Freehand line segments** generate too many segment labels to be useful; avoid segment labels on freehand lines.
 - **Custom units in the Builder** clear the selected default unit on save. Pick a temporary unit, save, then switch back and save again.
 - **Background color picker** needs a Standard Color chosen first before the other color options behave.
+- **Curve segment toolbar** (Bezier and arc) is not available. That floating editor is owned by the ArcGIS Sketch widget's internal lifecycle and cannot be triggered from external create calls; it will return if Esri exposes a public plugin API.
 
 ---
 
@@ -106,6 +107,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ---
 
 ## Changelog
+
+- 2026-06-23 v4.1.0: Triangle tool and optional curve tools (enabled in settings); on-map tooltip overhaul with native Esri styling and Calcite Design System tokens; UI tokenization pass across the widget chrome; text style editor overflow fix; triangle-tool jitter fix.
 
 - 2026-06-11 v4.0.2: Security fixes for CodeQL code scanning alerts
 
