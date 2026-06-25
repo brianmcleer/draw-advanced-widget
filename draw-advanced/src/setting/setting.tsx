@@ -193,26 +193,47 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
     }
 
     /** Parse the XML document into a flat key→value map, coercing by declared type. */
+    private unescapeXml = (str: string): string =>
+        String(str)
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'")
+            .replace(/&amp;/g, '&')
+
     parseSettingsXml = (xmlString: string): Record<string, any> | null => {
         try {
-            const doc = new DOMParser().parseFromString(xmlString, 'text/xml')
-            if (doc.querySelector('parsererror')) return null
-            const root = doc.querySelector('DrawAdvancedSettings')
-            if (!root) return null
+            if (typeof xmlString !== 'string' || xmlString.indexOf('<DrawAdvancedSettings') === -1) return null
+
+            // Only import keys that already exist in the current config. This
+            // both hardens the import (no arbitrary keys) and keeps the parse a
+            // plain text scan rather than routing untrusted text through a DOM
+            // parser, which is reported as a DOM-based XSS sink.
+            const cfg: any = (this.props.config as any)?.asMutable
+                ? (this.props.config as any).asMutable({ deep: true })
+                : { ...(this.props.config as any) }
+            const allowed = new Set(Object.keys(cfg || {}))
+
             const out: Record<string, any> = {}
-            const nodes = doc.querySelectorAll('setting')
-            nodes.forEach((node) => {
-                const key = node.getAttribute('key')
-                if (!key) return
-                const type = node.getAttribute('type') || 'string'
-                const raw = node.textContent ?? ''
+            const settingRe = /<setting\b([^>]*)>([\s\S]*?)<\/setting>/g
+            const keyRe = /\bkey\s*=\s*"([^"]*)"/
+            const typeRe = /\btype\s*=\s*"([^"]*)"/
+            let m: RegExpExecArray | null
+            while ((m = settingRe.exec(xmlString)) !== null) {
+                const attrs = m[1] || ''
+                const keyMatch = keyRe.exec(attrs)
+                if (!keyMatch) continue
+                const key = this.unescapeXml(keyMatch[1])
+                if (!allowed.has(key)) continue
+                const type = (typeRe.exec(attrs)?.[1]) || 'string'
+                const raw = this.unescapeXml(m[2] ?? '')
                 try {
                     if (type === 'boolean') out[key] = raw.trim() === 'true'
                     else if (type === 'number') { const n = Number(raw); if (!isNaN(n)) out[key] = n }
                     else if (type === 'json') out[key] = JSON.parse(raw)
                     else out[key] = raw
                 } catch { /* skip malformed entry */ }
-            })
+            }
             return Object.keys(out).length > 0 ? out : null
         } catch {
             return null
