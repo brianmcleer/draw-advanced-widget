@@ -16,16 +16,16 @@ import TextSymbol from 'esri/symbols/TextSymbol';
 import Font from 'esri/symbols/Font';
 import Color from 'esri/Color';
 
-import fsBoldIcon from '../assets/bold.svg';
-import fItalicIcon from '../assets/italic.svg';
-import fUnderlineIcon from '../assets/underline.svg';
-import hAlignLeft from 'jimu-icons/svg/outlined/editor/text-left.svg';
-import hAlignCenter from 'jimu-icons/svg/outlined/editor/text-center.svg';
-import hAlignRight from 'jimu-icons/svg/outlined/editor/text-right.svg';
-import vAlignTop from '../assets/text-align-v-t.svg';
-import vAlignMid from '../assets/text-align-v-m.svg';
-import vAlignBot from '../assets/text-align-v-b.svg';
-import vAlignBase from '../assets/text-align-v-base.svg';
+const fsBoldIcon = require('../assets/bold.svg');
+const fItalicIcon = require('../assets/italic.svg');
+const fUnderlineIcon = require('../assets/underline.svg');
+const hAlignLeft = require('jimu-icons/svg/outlined/editor/text-left.svg');
+const hAlignCenter = require('jimu-icons/svg/outlined/editor/text-center.svg');
+const hAlignRight = require('jimu-icons/svg/outlined/editor/text-right.svg');
+const vAlignTop = require('../assets/text-align-v-t.svg');
+const vAlignMid = require('../assets/text-align-v-m.svg');
+const vAlignBot = require('../assets/text-align-v-b.svg');
+const vAlignBase = require('../assets/text-align-v-base.svg');
 
 interface Props {
     currentTextSymbol: TextSymbol;
@@ -679,7 +679,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
     }
 
     // Shared label style
-    const labelStyle: React.CSSProperties = { fontSize: '11px', color: '#374151', fontWeight: 500 };
+    const labelStyle: React.CSSProperties = { fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 };
 
     return (
         <div
@@ -712,7 +712,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                 style={{
                     marginBottom: '12px',
                     padding: '0',
-                    background: '#fff',
+                    background: 'var(--calcite-color-foreground-1, #fff)',
                     position: 'relative',
                     zIndex: 5
                 }}
@@ -732,8 +732,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         fontSize: '13px',
                         fontWeight: 600,
                         color: '#fff',
-                        backgroundColor: '#0066cc',
-                        border: '2px solid #0055aa',
+                        backgroundColor: 'var(--calcite-color-brand, #0066cc)',
+                        border: '2px solid var(--calcite-color-brand-hover, #0055aa)',
                         borderRadius: '5px',
                         cursor: 'pointer',
                         textAlign: 'center' as const,
@@ -742,8 +742,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         userSelect: 'none' as const,
                         WebkitUserSelect: 'none' as const
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = '#0055aa'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = '#0066cc'; }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-brand-hover, #0055aa)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-brand, #0066cc)'; }}
                 >
                     ✓ Apply &amp; Close
                 </div>
@@ -758,7 +758,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     <label
                         htmlFor={ids.labelTextInput}
                         className="d-block"
-                        style={{ marginBottom: '4px', fontSize: '12px', fontWeight: 600, color: '#1f2937' }}
+                        style={{ marginBottom: '4px', fontSize: '12px', fontWeight: 600, color: 'var(--calcite-color-text-1, #1f2937)' }}
                     >
                         Label Text
                         <span className="sr-only"> - Enter the text content for your map label</span>
@@ -800,17 +800,17 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         style={{
                             width: '100%',
                             padding: '6px 8px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid var(--calcite-color-border-2, #d1d5db)',
                             borderRadius: '4px',
                             fontSize: '13px',
                             whiteSpace: 'pre',
                             fontFamily: 'monospace',
-                            backgroundColor: '#fff'
+                            backgroundColor: 'var(--calcite-color-foreground-1, #fff)'
                         }}
                     />
                     <small
                         id={ids.labelTextHint}
-                        style={{ fontSize: '10px', marginTop: '3px', lineHeight: '1.2', color: '#9ca3af', display: 'block' }}
+                        style={{ fontSize: '10px', marginTop: '3px', lineHeight: '1.2', color: 'var(--calcite-color-text-3, #9ca3af)', display: 'block' }}
                         aria-live="polite"
                     >
                         Length: {text.length} | Spaces: {text.split(' ').length - 1}
@@ -915,7 +915,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
 
                     {/* Visual separator */}
                     <div
-                        style={{ borderRight: '1px solid #ccc', height: '24px' }}
+                        style={{ borderRight: '1px solid var(--calcite-color-border-2, #ccc)', height: '24px' }}
                         role="separator"
                         aria-orientation="vertical"
                         aria-hidden="true"
@@ -941,9 +941,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Bold text, currently ${fontWeight === 'bold' ? 'enabled' : 'disabled'}. Press to toggle.`}
                                 title={`Bold (${fontWeight === 'bold' ? 'On' : 'Off'}). Click to ${fontWeight === 'bold' ? 'disable' : 'enable'} bold formatting.`}
                                 onClick={() => updateFontWeight(fontWeight === 'bold' ? 'normal' : 'bold')}
-                                style={fontWeight === 'bold' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(fontWeight === 'bold' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={fsBoldIcon} size="s" aria-hidden="true" color={fontWeight === 'bold' ? '#4338ca' : undefined} />
+                                <Icon icon={fsBoldIcon} size="s" aria-hidden="true" color={fontWeight === 'bold' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -953,9 +953,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Italic text, currently ${fontStyle === 'italic' ? 'enabled' : 'disabled'}. Press to toggle.`}
                                 title={`Italic (${fontStyle === 'italic' ? 'On' : 'Off'}). Click to ${fontStyle === 'italic' ? 'disable' : 'enable'} italic formatting.`}
                                 onClick={() => updateFontStyle(fontStyle === 'italic' ? 'normal' : 'italic')}
-                                style={fontStyle === 'italic' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(fontStyle === 'italic' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={fItalicIcon} size="s" aria-hidden="true" color={fontStyle === 'italic' ? '#4338ca' : undefined} />
+                                <Icon icon={fItalicIcon} size="s" aria-hidden="true" color={fontStyle === 'italic' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -965,9 +965,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Underline text, currently ${fontDecoration === 'underline' ? 'enabled' : 'disabled'}. Press to toggle.`}
                                 title={`Underline (${fontDecoration === 'underline' ? 'On' : 'Off'}). Click to ${fontDecoration === 'underline' ? 'disable' : 'enable'} underline formatting.`}
                                 onClick={() => updateFontDecoration(fontDecoration === 'underline' ? 'none' : 'underline')}
-                                style={fontDecoration === 'underline' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(fontDecoration === 'underline' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={fUnderlineIcon} width={11} aria-hidden="true" color={fontDecoration === 'underline' ? '#4338ca' : undefined} />
+                                <Icon icon={fUnderlineIcon} width={11} aria-hidden="true" color={fontDecoration === 'underline' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                         </AdvancedButtonGroup>
                     </div>
@@ -1070,9 +1070,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align left${horizontalAlignment === 'left' ? ', selected' : ''}`}
                                 title={`Align Left${horizontalAlignment === 'left' ? ' (Current)' : ''}. Position text to the left.`}
                                 onClick={() => updateHorizontalAlignment('left')}
-                                style={horizontalAlignment === 'left' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(horizontalAlignment === 'left' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={hAlignLeft} size="s" aria-hidden="true" color={horizontalAlignment === 'left' ? '#4338ca' : undefined} />
+                                <Icon icon={hAlignLeft} size="s" aria-hidden="true" color={horizontalAlignment === 'left' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -1083,9 +1083,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align center${horizontalAlignment === 'center' ? ', selected' : ''}`}
                                 title={`Align Center${horizontalAlignment === 'center' ? ' (Current)' : ''}. Position text in the center.`}
                                 onClick={() => updateHorizontalAlignment('center')}
-                                style={horizontalAlignment === 'center' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(horizontalAlignment === 'center' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={hAlignCenter} size="s" aria-hidden="true" color={horizontalAlignment === 'center' ? '#4338ca' : undefined} />
+                                <Icon icon={hAlignCenter} size="s" aria-hidden="true" color={horizontalAlignment === 'center' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -1096,16 +1096,16 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align right${horizontalAlignment === 'right' ? ', selected' : ''}`}
                                 title={`Align Right${horizontalAlignment === 'right' ? ' (Current)' : ''}. Position text to the right.`}
                                 onClick={() => updateHorizontalAlignment('right')}
-                                style={horizontalAlignment === 'right' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(horizontalAlignment === 'right' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={hAlignRight} size="s" aria-hidden="true" color={horizontalAlignment === 'right' ? '#4338ca' : undefined} />
+                                <Icon icon={hAlignRight} size="s" aria-hidden="true" color={horizontalAlignment === 'right' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                         </AdvancedButtonGroup>
                     </div>
 
                     {/* Visual separator */}
                     <div
-                        style={{ borderRight: '1px solid #ccc', height: '24px' }}
+                        style={{ borderRight: '1px solid var(--calcite-color-border-2, #ccc)', height: '24px' }}
                         role="separator"
                         aria-orientation="vertical"
                         aria-hidden="true"
@@ -1131,9 +1131,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align to baseline${verticalAlignment === 'baseline' ? ', selected' : ''}`}
                                 title={`Baseline Alignment${verticalAlignment === 'baseline' ? ' (Current)' : ''}. Align text to the font baseline.`}
                                 onClick={() => updateVerticalAlignment('baseline')}
-                                style={verticalAlignment === 'baseline' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'baseline' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={vAlignBase} size="s" aria-hidden="true" color={verticalAlignment === 'baseline' ? '#4338ca' : undefined} />
+                                <Icon icon={vAlignBase} size="s" aria-hidden="true" color={verticalAlignment === 'baseline' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -1144,9 +1144,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align to top${verticalAlignment === 'top' ? ', selected' : ''}`}
                                 title={`Top Alignment${verticalAlignment === 'top' ? ' (Current)' : ''}. Position text at the top.`}
                                 onClick={() => updateVerticalAlignment('top')}
-                                style={verticalAlignment === 'top' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'top' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={vAlignTop} size="s" aria-hidden="true" color={verticalAlignment === 'top' ? '#4338ca' : undefined} />
+                                <Icon icon={vAlignTop} size="s" aria-hidden="true" color={verticalAlignment === 'top' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -1157,9 +1157,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align to middle${verticalAlignment === 'middle' ? ', selected' : ''}`}
                                 title={`Middle Alignment${verticalAlignment === 'middle' ? ' (Current)' : ''}. Center text vertically.`}
                                 onClick={() => updateVerticalAlignment('middle')}
-                                style={verticalAlignment === 'middle' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'middle' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={vAlignMid} size="s" aria-hidden="true" color={verticalAlignment === 'middle' ? '#4338ca' : undefined} />
+                                <Icon icon={vAlignMid} size="s" aria-hidden="true" color={verticalAlignment === 'middle' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                             <Button
                                 icon
@@ -1170,9 +1170,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 aria-label={`Align to bottom${verticalAlignment === 'bottom' ? ', selected' : ''}`}
                                 title={`Bottom Alignment${verticalAlignment === 'bottom' ? ' (Current)' : ''}. Position text at the bottom.`}
                                 onClick={() => updateVerticalAlignment('bottom')}
-                                style={verticalAlignment === 'bottom' ? { backgroundColor: '#e0e7ff', borderColor: '#6366f1' } : undefined}
+                                style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'bottom' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
-                                <Icon icon={vAlignBot} size="s" aria-hidden="true" color={verticalAlignment === 'bottom' ? '#4338ca' : undefined} />
+                                <Icon icon={vAlignBot} size="s" aria-hidden="true" color={verticalAlignment === 'bottom' ? 'var(--calcite-color-brand, #4338ca)' : undefined} />
                             </Button>
                         </AdvancedButtonGroup>
                     </div>
@@ -1197,9 +1197,9 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             marginBottom: '4px',
                             gap: '12px',
                             padding: '8px 10px',
-                            backgroundColor: '#f3f4f6',
+                            backgroundColor: 'var(--calcite-color-foreground-2, #f3f4f6)',
                             borderRadius: '5px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid var(--calcite-color-border-2, #d1d5db)',
                             boxShadow: '0 -2px 8px rgba(0,0,0,0.08)',
                             zIndex: 10
                         }}
@@ -1210,8 +1210,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             Halo color. Current: {fontHaloColor}.
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '6px' }}>
-                            <label style={{ fontSize: '11px', color: '#374151', fontWeight: 500 }}>Color:</label>
-                            <div style={{ border: '1px solid #9ca3af', borderRadius: '3px', padding: '1px', lineHeight: 0 }}>
+                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>Color:</label>
+                            <div style={{ border: '1px solid var(--calcite-color-text-3, #9ca3af)', borderRadius: '3px', padding: '1px', lineHeight: 0 }}>
                                 <ColorPicker
                                     id={ids.haloColorPicker}
                                     style={{ padding: '0' }}
@@ -1231,7 +1231,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             Halo size: {fontHaloSize}px.
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '4px' }}>
-                            <label style={{ fontSize: '11px', color: '#374151', fontWeight: 500 }}>Size:</label>
+                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>Size:</label>
                             <NumericInput
                                 id={ids.haloSizeInput}
                                 size="sm"
@@ -1254,7 +1254,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             Halo opacity: {Math.round(fontHaloOpacity * 100)}%.
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '4px' }}>
-                            <label style={{ fontSize: '11px', color: '#374151', fontWeight: 500 }}>Opacity:</label>
+                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>Opacity:</label>
                             <NumericInput
                                 id={ids.haloOpacityInput}
                                 size="sm"
@@ -1286,16 +1286,16 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 padding: '3px 12px',
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: '#374151',
-                                backgroundColor: '#fff',
-                                border: '1px solid #d1d5db',
+                                color: 'var(--calcite-color-text-2, #374151)',
+                                backgroundColor: 'var(--calcite-color-foreground-1, #fff)',
+                                border: '1px solid var(--calcite-color-border-2, #d1d5db)',
                                 borderRadius: '3px',
                                 cursor: 'pointer',
                                 userSelect: 'none' as const,
                                 lineHeight: '1.4'
                             }}
-                            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = '#e5e7eb'; }}
-                            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = '#fff'; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-foreground-3, #e5e7eb)'; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-foreground-1, #fff)'; }}
                         >
                             Done
                         </div>
@@ -1361,7 +1361,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                     padding: '1px 6px',
                                     fontSize: '10px',
                                     fontWeight: 500,
-                                    color: '#0066cc',
+                                    color: 'var(--calcite-color-brand, #0066cc)',
                                     cursor: 'pointer',
                                     userSelect: 'none' as const,
                                     textDecoration: 'underline'

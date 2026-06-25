@@ -203,6 +203,23 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         }
 
         try {
+            // Enable snapping on the SketchViewModel up front, before the layer scan
+            // below (which can be slow or throw). Custom tools (triangle, curve) read
+            // snappingOptions.enabled directly, so it must be set even if the scan
+            // fails. featureSources are attached afterward once gathered.
+            const options = {
+                enabled: true,
+                featureEnabled: true,
+                selfEnabled: true,
+                distance: 15,
+                featureSources: new Collection()
+            };
+            sketchVM.snappingOptions = options;
+            (view as any).snappingOptions = options;
+            if (gridControlsRef.current?.viewModel) {
+                gridControlsRef.current.snappingOptions = options;
+            }
+
             const snapSources: any[] = [];
             const allLayers = view.map.allLayers.toArray();
 
@@ -213,23 +230,17 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
             );
 
             for (const layer of allLayers) {
-                await recurseLayers(layer, snapSources);
+                try { await recurseLayers(layer, snapSources); }
+                catch (e) { console.warn('Snap layer enumerate failed:', e); }
             }
 
-            const options = {
-                enabled: true,
-                featureEnabled: true,
-                selfEnabled: true,
-                distance: 15,
-                featureSources: new Collection(snapSources)
-            };
-
-            sketchVM.snappingOptions = options;
-            (view as any).snappingOptions = options;
-
-            // If grid controls exist and grid snapping is enabled, connect them
-            if (gridControlsRef.current?.viewModel) {
-                gridControlsRef.current.snappingOptions = options;
+            // Attach discovered sources to the already-enabled options.
+            try {
+                const fs = (sketchVM.snappingOptions as any).featureSources;
+                if (fs?.removeAll) { fs.removeAll(); fs.addMany(snapSources); }
+                else (sketchVM.snappingOptions as any).featureSources = new Collection(snapSources);
+            } catch {
+                (sketchVM.snappingOptions as any).featureSources = new Collection(snapSources);
             }
 
             setSnapSourcesCount(snapSources.length);

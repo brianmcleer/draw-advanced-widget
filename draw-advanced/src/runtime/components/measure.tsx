@@ -12,6 +12,7 @@ import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOpera
 import * as geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
 import * as areaOperator from 'esri/geometry/operators/areaOperator'
 import * as lengthOperator from 'esri/geometry/operators/lengthOperator'
+import * as densifyOperator from 'esri/geometry/operators/densifyOperator'
 import Color from 'esri/Color';
 import TextSymbol from 'esri/symbols/TextSymbol';
 import SimpleMarkerSymbol from 'esri/symbols/SimpleMarkerSymbol';
@@ -490,6 +491,11 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		// For polylines: only create segments if there are multiple segments (more than 2 points)
 		if (geometry.type === 'polyline') {
 			const polyline = geometry as any;
+			// True curves keep their pieces in curvePaths (paths is empty). A curve
+			// path is [startVertex, seg, seg, ...]; more than one seg = multi-segment.
+			if (Array.isArray(polyline.curvePaths) && polyline.curvePaths.length) {
+				return polyline.curvePaths.some((p: any[]) => Array.isArray(p) && p.length > 2);
+			}
 			if (!polyline.paths || polyline.paths.length === 0) return false;
 
 			// Check if any path has more than 2 points (meaning multiple segments)
@@ -1904,6 +1910,8 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 	//finds where to place a label
 	const _getLabelPoint = (geometry) => {
 		if (!geometry) return null;
+		// Curves have an empty paths array -> densify so extent/center is valid.
+		geometry = _asMeasurableLine(geometry);
 
 		// If already a point, return it directly
 		if (geometry.type === 'point') {
@@ -2149,7 +2157,23 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 	};
 
 	//find length of line
+	// True-curve polylines (curvePaths) carry an EMPTY paths array, which breaks
+	// measurement: the geodetic length operator can't consume curvePaths and the
+	// label point falls back to a null extent. Densify curves into a plain polyline
+	// for measurement ONLY — the stored graphic keeps its true-curve geometry, and
+	// segment labels stay off (the original curve has no straight paths).
+	const _asMeasurableLine = (geom: any): any => {
+		try {
+			if (!geom || geom.type !== 'polyline' || !(geom as any).curvePaths) return geom;
+			let maxSeg = 10;
+			try { const L = lengthOperator.execute(geom, { unit: 'meters' }); if (L && isFinite(L)) maxSeg = Math.max(1, Math.abs(L) / 120); } catch { }
+			const dense = densifyOperator.execute(geom, maxSeg, { unit: 'meters' });
+			return (dense && (dense as any).paths && (dense as any).paths.length) ? dense : geom;
+		} catch (e) { console.warn('curve densify for measurement failed:', e); return geom; }
+	};
+
 	const _calculatePolylineLength = (polyline) => {
+		polyline = _asMeasurableLine(polyline);
 		let totalLength = 0;
 		try {
 			if (polyline.spatialReference.isWGS84 || polyline.spatialReference.isWebMercator) {
@@ -2162,6 +2186,69 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 			console.error('Error calculating polyline length:', error);
 			return 0;
 		}
+	};
+
+	// Per-segment labels for true curves. curvePaths carries no straight paths, so
+	// the normal segment loop yields nothing. Build a one-segment sub-curve for each
+	// piece, measure its arc length, and place a label at the arc midpoint.
+	const _createCurveSegmentLabels = (graphic: any, geometry: any) => {
+		try {
+			const cps = (geometry as any).curvePaths;
+			if (!Array.isArray(cps) || cps.length === 0) return;
+			const sr = geometry.spatialReference;
+			const lengthUnitInfo = availableDistanceUnits.find((u) => u.unit === distanceUnit.unit);
+			const lengthUnitLabel = lengthUnitInfo ? lengthUnitInfo.abbreviation : distanceUnit.unit;
+			const segEnd = (seg: any): number[] => Array.isArray(seg) ? seg : (seg?.c ? seg.c[0] : seg?.b ? seg.b[0] : null);
+			if (!graphic.attributes) graphic.attributes = {};
+			if (!Array.isArray(graphic.attributes.relatedSegmentLabels)) graphic.attributes.relatedSegmentLabels = [];
+
+			for (const path of cps) {
+				if (!Array.isArray(path) || path.length < 2) continue;
+				let prev = path[0];
+				for (let s = 1; s < path.length; s++) {
+					const seg = path[s];
+					const end = segEnd(seg);
+					if (!prev || !end) { prev = end; continue; }
+					const sub = Polyline.fromJSON({ curvePaths: [[prev, seg]], spatialReference: sr });
+					const segLen = _calculatePolylineLength(sub);
+					// arc midpoint = middle vertex of the densified sub-curve
+					const dense: any = _asMeasurableLine(sub);
+					const pts = dense?.paths?.[0] || [];
+					const midPt = pts.length ? pts[Math.floor(pts.length / 2)] : [(prev[0] + end[0]) / 2, (prev[1] + end[1]) / 2];
+					const segMid = new Point({ x: midPt[0], y: midPt[1], spatialReference: sr });
+					prev = end;
+					if (!(segLen > 0)) continue;
+
+					const segText = `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}`;
+					const segSym: any = currentTextSymbol.clone();
+					segSym.text = segText;
+					if (!segSym.haloSize) { segSym.haloSize = 2; segSym.haloColor = 'white'; }
+					if (segSym.backgroundColor?.a > 0) segSym.backgroundColor.a = 0;
+
+					const segLabel = new Graphic({
+						geometry: segMid,
+						symbol: segSym,
+						visible: measureEnabledRef.current || graphic.attributes?.hadMeasurements || !!graphic.measure,
+						attributes: {
+							name: segText,
+							description: 'Segment Label',
+							isMeasurementLabel: true,
+							hideFromList: true,
+							drawMode: 'text',
+							measurementType: 'segment',
+							parentGraphicId: graphic.attributes?.uniqueId,
+							lengthUnit: distanceUnit.unit,
+							isSegmentLabel: true,
+							segmentIndex: s - 1
+						}
+					}) as ExtendedGraphic;
+					drawLayer.add(segLabel);
+					segLabel.measureParent = graphic;
+					segLabel.measure = { graphic };
+					graphic.attributes.relatedSegmentLabels.push(segLabel);
+				}
+			}
+		} catch (e) { console.warn('curve segment labels warning:', e); }
 	};
 
 	//find perimeter
@@ -3162,6 +3249,10 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				mappedType = 'polygon';
 			} else if (currentTool === 'freepolyline') {
 				mappedType = 'polyline';
+			} else if (currentTool === 'arc' || currentTool === 'endpointArc' || currentTool === 'bezier') {
+				mappedType = 'polyline';
+			} else if (currentTool === 'triangle') {
+				mappedType = 'polygon';
 			} else if (currentTool === 'freepolygon') {
 				mappedType = 'polygon';
 			}
@@ -4103,6 +4194,12 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				} catch (segErr) {
 					console.error('Error adding segment measurements:', segErr);
 				}
+			}
+
+			// Per-arc segment labels for true curves (straight loop above no-ops on
+			// curves since their paths array is empty).
+			if (!parent && shouldCreateSegments(geometry) && (geometry as any).curvePaths) {
+				_createCurveSegmentLabels(graphic, geometry);
 			}
 
 			// CRITICAL: Final sanity check to ensure the main graphic remains visible and on the layer

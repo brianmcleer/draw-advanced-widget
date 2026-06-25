@@ -11,7 +11,7 @@ import { WrongOutlined } from 'jimu-icons/outlined/suggested/wrong';
 import { CloseOutlined } from 'jimu-icons/outlined/editor/close';
 import { CopyOutlined } from 'jimu-icons/outlined/editor/copy';
 // PasteIcon removed - copy+paste is now a single action (no separate Paste button state)
-import SettingOutlined from 'jimu-icons/svg/outlined/application/setting.svg'
+const SettingOutlined = require('jimu-icons/svg/outlined/application/setting.svg');
 import { JimuMapView, JimuMapViewComponent } from 'jimu-arcgis';
 import { getStyle } from './lib/style';
 import defMessages from './translations/default';
@@ -23,9 +23,9 @@ import Color from 'esri/Color';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import Graphic from 'esri/Graphic';
 import TextSymbol from 'esri/symbols/TextSymbol';
-import hAlignLeft from 'jimu-icons/svg/outlined/editor/text-left.svg';
-import hAlignCenter from 'jimu-icons/svg/outlined/editor/text-center.svg';
-import hAlignRight from 'jimu-icons/svg/outlined/editor/text-right.svg';
+const hAlignLeft = require('jimu-icons/svg/outlined/editor/text-left.svg');
+const hAlignCenter = require('jimu-icons/svg/outlined/editor/text-center.svg');
+const hAlignRight = require('jimu-icons/svg/outlined/editor/text-right.svg');
 import esriColor from 'esri/Color';
 import './widget.css';
 import Measure from './components/measure';
@@ -40,7 +40,13 @@ import Extent from 'esri/geometry/Extent';
 import Polygon from 'esri/geometry/Polygon';
 import Polyline from 'esri/geometry/Polyline';
 import Multipoint from 'esri/geometry/Multipoint';
+import Point from 'esri/geometry/Point';
 import * as geometryEngine from 'esri/geometry/geometryEngine';
+import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
+import * as lengthOperator from 'esri/geometry/operators/lengthOperator';
+import * as geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
+import * as areaOperator from 'esri/geometry/operators/areaOperator';
+import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
 
 // geometryEngine is sync, pure-JS in JSAPI 4.x — no WASM required.
 // Buffer operations still use manualBufferGeometry as a fallback.
@@ -212,6 +218,11 @@ interface States {
 	graphics?: any[];
 	pointBtnActive: boolean;
 	lineBtnActive: boolean;
+	curveToolActive?: boolean; // a true-curve line tool (arc/endpointArc/bezier) is active
+	showCurveMenu?: boolean;   // dedicated curve-tools flyout open
+	curveHint?: string;        // help text shown while a curve tool is active
+	triangleActive?: boolean;  // custom equilateral-triangle tool active
+	triangleHint?: string;     // help text shown while the triangle tool is active
 	flineBtnActive: boolean;
 	rectBtnActive: boolean;
 	polygonBtnActive: boolean;
@@ -227,7 +238,7 @@ interface States {
 	currentSymbolType: JimuSymbolType;
 	currentTextSymbol: TextSymbol;
 	drawGLLengthcheck: boolean;
-	currentTool: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | '';
+	currentTool: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | 'arc' | 'endpointArc' | 'bezier' | 'triangle' | '';
 	clearBtnTitle: string;
 	canUndo: boolean;
 	canRedo: boolean;
@@ -323,7 +334,7 @@ interface ScrollIndicatorProps {
 	className?: string;
 }
 
-interface ExtendedGraphic extends any {
+interface ExtendedGraphic extends Graphic {
 	measure?: {
 		graphic: ExtendedGraphic;
 		areaUnit?: string;
@@ -341,6 +352,9 @@ interface ExtendedGraphic extends any {
 		unit: string;
 		enabled: boolean;
 		opacity?: number;
+		outlineOnly?: boolean;
+		customColor?: string | null;
+		customOutlineColor?: string | null;
 	};
 }
 
@@ -461,7 +475,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	_widgetRoot: HTMLElement | null = null;
 	_jimuDrawReadyResolve: ((el: any) => void) | null = null;
 	private _bufferUpdateInProgress: Set<string> = new Set();
-	Graphic: typeof any = null;
+	Graphic: any = null;
 	creationMode: DrawMode;
 	currentSymbol: any | any | any | any | any | any | any;
 	measureRef: React.RefObject<any> = React.createRef();
@@ -593,6 +607,32 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	// were registered without storing return handles, causing them to accumulate on
 	// every map-view change and every widget close/reopen cycle.
 	private _viewHandles: Array<{ remove: () => void }> = [];
+	// Custom true-curve line tool state (arc / endpointArc / bezier) — multi-segment
+	private _curveType: 'arc' | 'endpointArc' | 'bezier' | null = null;
+	private _curveHandles: Array<{ remove: () => void }> = [];
+	private _curvePathStart: number[] | null = null; // first vertex of the whole path
+	private _curveStart: number[] | null = null;     // start vertex of the in-progress segment
+	private _curveSegs: any[] = [];                   // committed curvePaths segments
+	private _curvePending: number[][] = [];           // clicks collected for the in-progress segment
+	private _curvePreview: any = null;
+	private _curvePrevPopup: boolean | null = null;
+	// Custom equilateral-triangle tool state
+	private _triHandles: Array<{ remove: () => void }> = [];
+	private _triCenter: number[] | null = null;
+	private _triPreview: any = null;
+	private _triPrevPopup: boolean | null = null;
+	private _triClickTimer: any = null;
+	private _curveUpdateBackup: Map<string, { json: any; cx: number; cy: number }> = new Map();
+	// Live snap feedback: marker shown at the snapped point + throttle guards so
+	// the async feature query doesn't run on every pointer-move.
+	private _snapIndicator: any = null;
+	private _previewSnapInFlight = false;
+	private _previewSnapLastTs = 0;
+	private _snapFeatSegs: number[][] = []; // cached nearby feature segments [ax,ay,bx,by] (view SR)
+	private _snapFeatPts: number[][] = [];  // cached nearby feature points (view SR)
+	private _snapCacheAt: number[] | null = null; // cursor point the feature cache was built for
+	private _snapLast: number[] | null = null;    // last snapped point (for hysteresis)
+	private _cursorTip: HTMLDivElement | null = null; // on-map drawing tooltip for custom tools
 
 	// 🔧 MEMORY FIX: Track DOM elements wired up by onSymbolPopper, so the same
 	// element doesn't get a fresh click handler stacked on top each time the
@@ -1171,6 +1211,31 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		let outlineColor = new Color([0, 0, 0, 0.6 * opacityMultiplier]);
 		let outlineWidth = 1.5;
 
+		// Custom color override: drive fill and outline from chosen colors
+		// instead of inheriting from the parent symbol. Outline color falls back
+		// to the fill color for buffers saved before outline color was separate.
+		const customColor = parentGraphic.bufferSettings?.customColor || null;
+		const customOutlineColor = parentGraphic.bufferSettings?.customOutlineColor || customColor || null;
+		if (customColor || customOutlineColor) {
+			try {
+				const fc = new Color(customColor || customOutlineColor);
+				const oc = new Color(customOutlineColor || customColor);
+				fillColor = new Color([fc.r, fc.g, fc.b, 0.3 * opacityMultiplier]);
+				outlineColor = new Color([oc.r, oc.g, oc.b, 1.0 * opacityMultiplier]);
+				outlineWidth = 2.5;
+				if (parentGraphic.bufferSettings?.outlineOnly) {
+					return new SimpleFillSymbol({
+						color: new Color([0, 0, 0, 0]),
+						outline: new SimpleLineSymbol({ color: outlineColor, width: Math.max(outlineWidth, 2.5), style: 'solid' })
+					});
+				}
+				return new SimpleFillSymbol({
+					color: fillColor,
+					outline: new SimpleLineSymbol({ color: outlineColor, width: outlineWidth, style: 'dash' })
+				});
+			} catch { /* fall through to inherited color */ }
+		}
+
 		try {
 			if (geomType === 'polygon' && parentSymbol) {
 				const fillSym = parentSymbol as any;
@@ -1213,6 +1278,19 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 
 		//console.log(`🎨 Widget: Creating buffer symbol with ${opacity}% opacity`);
 
+		// Outline-only: transparent fill, solid stroke. Keeps the buffer outline
+		// visible without a fill when the parent geometry is edited/moved.
+		if (parentGraphic.bufferSettings?.outlineOnly) {
+			return new SimpleFillSymbol({
+				color: new Color([0, 0, 0, 0]),
+				outline: new SimpleLineSymbol({
+					color: outlineColor,
+					width: Math.max(outlineWidth, 2.5),
+					style: 'solid'
+				})
+			});
+		}
+
 		return new SimpleFillSymbol({
 			color: fillColor,
 			outline: new SimpleLineSymbol({
@@ -1226,6 +1304,18 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		try {
 			const view = this.state.currentJimuMapView?.view;
 			if (!view) return null;
+			// True curves carry empty paths, which geometryEngine.buffer and the manual
+			// fallback can't consume (the buffer collapses to a bounding circle).
+			// Densify the curve into a plain polyline first so the buffer follows it.
+			if (geometry?.type === 'polyline' && (geometry as any).curvePaths) {
+				try {
+					const ext = geometry.extent;
+					const span = ext ? Math.max(ext.width || 0, ext.height || 0) : 0;
+					const maxSeg = Math.max(span ? span / 200 : 1, 1e-6);
+					const dense: any = densifyOperator.execute(geometry, maxSeg);
+					if (dense && dense.paths && dense.paths.length) geometry = dense;
+				} catch (e) { console.warn('curve densify for buffer failed:', e); }
+			}
 			// Try the geometry engine first — produces a true geometric buffer (no even/odd
 			// ring artifacts, multi-ring inputs collapse to a single merged buffer).
 			try {
@@ -1421,16 +1511,18 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 				let baseSymbol: any;
 
 				if (gra.symbol?.type === 'simple-line') {
-					baseSymbol = (gra.symbol as any).clone();
-					delete (baseSymbol as any).marker; // Remove existing marker
+					// Build a fresh marker-free base. delete on an Esri Accessor's
+					// 'marker' is unreliable, so reconstruct explicitly.
+					const src = gra.symbol as any;
+					baseSymbol = new SimpleLineSymbol({ color: src.color, width: src.width, style: src.style });
 				} else {
 					// Fall back to SketchViewModel's default - with validation
 					if (!this.sketchViewModel.polylineSymbol) {
 						console.warn('SketchViewModel polylineSymbol not available');
 						return;
 					}
-					baseSymbol = (this.sketchViewModel.polylineSymbol as any).clone();
-					delete (baseSymbol as any).marker;
+					const src = this.sketchViewModel.polylineSymbol as any;
+					baseSymbol = new SimpleLineSymbol({ color: src.color, width: src.width, style: src.style });
 				}
 
 				if (!baseSymbol || baseSymbol.type !== 'simple-line') {
@@ -2983,7 +3075,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 							: runtimeInfo;
 						const openIds = Object.keys(ri).filter(id => {
 							const info = ri[id];
-							return info?.state === 'OPENED' || info?.isOpened;
+							return (info as any)?.state === 'OPENED' || (info as any)?.isOpened;
 						});
 						if (openIds.length > 0) {
 							getAppStore().dispatch(appActions.closeWidgets(openIds));
@@ -3490,6 +3582,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		// Create a temporary SketchViewModel
 		this._spatialSelectSketchVM = new SketchViewModel({
 			view: view,
+			useLegacyCreateTools: true, // selection geometry only: keep the classic single-tool create, no curve segment toolbar
 			layer: this._spatialSelectLayer,
 			defaultUpdateOptions: { enableRotation: false, enableScaling: false },
 			polygonSymbol: new SimpleFillSymbol({
@@ -4418,6 +4511,10 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			this.originalPopupEnabled = null;
 		}
 
+		// Clean up custom curve tool handles
+		this._deactivateCurveTool();
+		this._deactivateTriangleTool();
+
 		// Clean up SketchViewModel
 		if (this.sketchViewModel) {
 			try {
@@ -4554,6 +4651,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			try {
 				this.sketchViewModel = new SketchViewModel({
 					view,
+					useLegacyCreateTools: false, // JSAPI 5.0 next-gen create: true curve tools via shift-drag-to-curve inside the existing line/polygon tools (no OOTB component)
 					updateOnGraphicClick: false, // CRITICAL: prevents SVM from intercepting measurement label clicks
 					layer: this.drawLayer,
 					defaultUpdateOptions: {
@@ -4970,14 +5068,28 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 							// Ignore cancel errors
 						}
 
-						// Start update in reshape (vertex editing) mode
-						this.sketchViewModel.update([clickedGraphic], {
-							tool: 'reshape',
-							enableRotation: true,
-							enableScaling: true,
-							preserveAspectRatio: false,
-							toggleToolOnClick: true
-						});
+						// Start update. Curves can't be vertex-reshaped without losing
+						// their curvePaths, so use transform (move/rotate/scale) for them
+						// instead of exposing vertex handles.
+						const isCurveGraphic = !!(clickedGraphic?.geometry && (clickedGraphic.geometry as any).curvePaths);
+						if (isCurveGraphic) {
+							this.sketchViewModel.update([clickedGraphic], {
+								tool: 'transform',
+								enableRotation: true,
+								enableScaling: true,
+								preserveAspectRatio: false,
+								toggleToolOnClick: false
+							});
+							try { this.showCopyPasteToast('Curves can be moved, rotated, or scaled, but not vertex-edited.', 'info'); } catch { }
+						} else {
+							this.sketchViewModel.update([clickedGraphic], {
+								tool: 'reshape',
+								enableRotation: true,
+								enableScaling: true,
+								preserveAspectRatio: false,
+								toggleToolOnClick: true
+							});
+						}
 
 						// Update UI state
 						const uid = (clickedGraphic as any).attributes?.uniqueId;
@@ -5045,6 +5157,14 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 
 	private clearSelectionOverlaysInDrawLayer = () => {
 		if (!this.drawLayer) return;
+		// End any active vertex edit (reshape/update) so manipulators don't linger
+		// on the graphic(s) after the selection is cleared. Preserve their labels.
+		try {
+			const updating = this.sketchViewModel?.updateGraphics?.toArray?.() || [];
+			if (updating.length) this.cancelSketchVMWithLabelPreservation(updating);
+		} catch (e) {
+			console.warn('Error canceling SketchVM during clear selection:', e);
+		}
 		try {
 			this.drawLayer.graphics.toArray().forEach(g => {
 				const ext: any = g;
@@ -5449,6 +5569,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 						unit: extendedGraphic.bufferSettings.unit,
 						enabled: extendedGraphic.bufferSettings.enabled,
 						opacity: extendedGraphic.bufferSettings.opacity ?? 50,
+						outlineOnly: extendedGraphic.bufferSettings.outlineOnly ?? false,
+						customColor: extendedGraphic.bufferSettings.customColor ?? null,
+						customOutlineColor: extendedGraphic.bufferSettings.customOutlineColor ?? null,
 						hasLabel: extendedGraphic.bufferLabel ? true : false
 					};
 				}
@@ -5667,6 +5790,763 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		alert(message);
 	}
 
+	// ── True-curve line tool: arc / endpoint arc / bezier ────────────────
+	// Builds real hasCurves geometry via ArcGIS curve segments ("c" = circular
+	// arc by interior point, "b" = cubic bezier) and routes through svmGraCreate
+	// so it inherits naming, measurement labels and save. No OOTB Esri component.
+	// ── True-curve line tool: arc / endpoint arc / bezier ────────────────────
+	// Builds real hasCurves geometry via ArcGIS curve segments ("c" = circular
+	// arc by interior point, "b" = cubic bezier) as a MULTI-SEGMENT polyline:
+	// each completed segment continues from the previous endpoint, like the
+	// straight line tool but curved. Finalizes through svmGraCreate so curves get
+	// naming, measurement labels, and save. No OOTB Esri component.
+	// Lightweight vertex snapping for the custom curve/triangle tools. They bypass
+	// the SketchViewModel, so honor the Snapping toggle by snapping a clicked point
+	// to the nearest existing drawing vertex within a pixel tolerance. (Feature-layer
+	// and grid-node snapping are owned by the SVM and not available to these tools.)
+	private _snapMapPoint = (view: any, pt: number[]): number[] => {
+		try {
+			const so: any = this.sketchViewModel?.snappingOptions || (view as any)?.snappingOptions;
+			if (!so?.enabled) return pt;
+			const sr = view.spatialReference;
+			const toScr = (x: number, y: number) => { try { return view.toScreen(new Point({ x, y, spatialReference: sr })); } catch { return null; } };
+			const screen = toScr(pt[0], pt[1]);
+			if (!screen) return pt;
+			let best: number[] | null = null;
+			const tolPx = (typeof so.distance === 'number' && so.distance > 0) ? so.distance : 15; // px tolerance
+			let bestD = tolPx;
+			const consider = (vx: number, vy: number) => {
+				const s = toScr(vx, vy);
+				if (!s) return;
+				const d = Math.hypot(s.x - screen.x, s.y - screen.y);
+				if (d < bestD) { bestD = d; best = [vx, vy]; }
+			};
+			// Edge snapping: closest point on segment a-b to the click, measured in
+			// screen space so the px tolerance is consistent. Matches the built-in
+			// tools, which snap to edges, not just vertices.
+			const considerSegment = (ax: number, ay: number, bx: number, by: number) => {
+				const A = toScr(ax, ay); const B = toScr(bx, by);
+				if (!A || !B) { consider(ax, ay); consider(bx, by); return; }
+				const vx = B.x - A.x; const vy = B.y - A.y;
+				const len2 = vx * vx + vy * vy;
+				let t = len2 > 0 ? ((screen.x - A.x) * vx + (screen.y - A.y) * vy) / len2 : 0;
+				t = t < 0 ? 0 : (t > 1 ? 1 : t);
+				const d = Math.hypot((A.x + t * vx) - screen.x, (A.y + t * vy) - screen.y);
+				if (d < bestD) { bestD = d; best = [ax + t * (bx - ax), ay + t * (by - ay)]; }
+			};
+			const considerRing = (ring: number[][]) => {
+				if (ring.length === 1) { consider(ring[0][0], ring[0][1]); return; }
+				for (let i = 0; i < ring.length - 1; i++) considerSegment(ring[i][0], ring[i][1], ring[i + 1][0], ring[i + 1][1]);
+			};
+			const gs = this.drawLayer?.graphics?.toArray?.() || [];
+			for (const g of gs) {
+				const geom: any = (g as any).geometry;
+				const attrs: any = (g as any).attributes;
+				if (!geom || attrs?.isMeasurementLabel || attrs?.hideFromList || attrs?.isPreviewBuffer) continue;
+				if (geom.type === 'point') { consider(geom.x, geom.y); }
+				else if (Array.isArray(geom.rings)) { for (const ring of geom.rings) considerRing(ring); }
+				else if (Array.isArray(geom.paths) && geom.paths.length) { for (const path of geom.paths) considerRing(path); }
+				else if (Array.isArray(geom.curvePaths)) {
+					for (const path of geom.curvePaths) for (const el of path) {
+						if (Array.isArray(el)) consider(el[0], el[1]);
+						else if (el?.c) consider(el.c[0][0], el.c[0][1]);
+						else if (el?.b) consider(el.b[0][0], el.b[0][1]);
+					}
+				}
+			}
+			// also snap to the in-progress curve path / triangle center (self)
+			if (this._curvePathStart) consider(this._curvePathStart[0], this._curvePathStart[1]);
+			for (const seg of (this._curveSegs || [])) { const e = this._segEndVertex(seg); if (e) consider(e[0], e[1]); }
+			if (this._triCenter) consider(this._triCenter[0], this._triCenter[1]);
+			// feature candidates come from the throttled background cache so this stays
+			// synchronous and the preview can snap on every pointer-move without flicker.
+			// See _refreshFeatCache, which keeps the cache near the cursor.
+			if (so.featureEnabled !== false) {
+				for (const s of this._snapFeatSegs) considerSegment(s[0], s[1], s[2], s[3]);
+				for (const p of this._snapFeatPts) consider(p[0], p[1]);
+			}
+			// Hysteresis: if nothing newly snapped but the cursor is still close to the
+			// last snap target, keep holding it so motion near the threshold doesn't
+			// flip the snap on and off.
+			if (!best && this._snapLast) {
+				const ls = toScr(this._snapLast[0], this._snapLast[1]);
+				if (ls && Math.hypot(ls.x - screen.x, ls.y - screen.y) < tolPx * 1.6) return this._snapLast;
+			}
+			this._snapLast = best;
+			return best || pt;
+		} catch { return pt; }
+	};
+
+	// Show/move/remove the snap indicator marker at the snapped point. Tagged
+	// isPreviewBuffer so the snap scan never treats the indicator as a candidate.
+	private _updateSnapIndicator = (view: any, snapped: number[] | null) => {
+		try {
+			if (!snapped) { if (this._snapIndicator) this._snapIndicator.visible = false; return; }
+			const geom = new Point({ x: snapped[0], y: snapped[1], spatialReference: view.spatialReference });
+			if (!this._snapIndicator) {
+				const sym = new SimpleMarkerSymbol({ style: 'circle', size: 12, color: [255, 128, 0, 0.10], outline: { color: [255, 128, 0, 1], width: 2 } });
+				this._snapIndicator = new Graphic({ geometry: geom, symbol: sym, visible: true, attributes: { hideFromList: true, isPreviewBuffer: true, isSnapIndicator: true } });
+				if (this.drawLayer) this.drawLayer.add(this._snapIndicator);
+			} else {
+				this._snapIndicator.geometry = geom;
+				this._snapIndicator.visible = true;
+			}
+		} catch { }
+	};
+
+	private _clearSnapIndicator = () => {
+		try { if (this._snapIndicator && this.drawLayer) this.drawLayer.remove(this._snapIndicator); } catch { }
+		this._snapIndicator = null;
+		this._snapLast = null;
+		this._snapCacheAt = null;
+		this._snapFeatSegs = [];
+		this._snapFeatPts = [];
+	};
+
+	// On-map drawing tooltip for the custom curve/triangle tools, mirroring the SVM
+	// tooltipOptions used by the built-in tools. Gated on the same Tooltips toggle
+	// (sketchViewModel.tooltipOptions.enabled) and the same display units
+	// (sketchViewModel.valueOptions.displayUnits) the Measure panel configures.
+	private _tooltipsOn = (): boolean => !!(this.sketchViewModel?.tooltipOptions?.enabled);
+
+	private _ensureCursorTip = (view: any): HTMLDivElement => {
+		if (this._cursorTip) return this._cursorTip;
+		const d = document.createElement('div');
+		d.className = 'drawadv-cursor-tip';
+		// Mirrors Esri .esri-tooltip-content: translucent dark bg, hairline border,
+		// backdrop blur, soft double shadow, 4px radius.
+		d.style.cssText = 'position:fixed;z-index:9999;pointer-events:none;background:var(--calcite-color-foreground-1,#fff);color:var(--calcite-color-text-1,#151515);font:12px/1.2 var(--calcite-sans-family,"Avenir Next",Avenir,Helvetica,Arial,sans-serif);padding:6px 9px;border:1px solid var(--calcite-color-border-3,#dfdfdf);border-radius:5px;white-space:nowrap;display:none;box-shadow:0 6px 20px -4px rgba(0,0,0,0.18),0 4px 12px -2px rgba(0,0,0,0.12);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);';
+		try { document.body.appendChild(d); } catch { }
+		this._cursorTip = d;
+		return d;
+	};
+
+	private _updateCursorTip = (view: any, sx: number, sy: number, rows: Array<[string, string]>) => {
+		if (!rows || rows.length === 0) { this._hideCursorTip(); return; }
+		const d = this._ensureCursorTip(view);
+		const grid = document.createElement('div');
+		grid.style.cssText = 'display:grid;grid-template-columns:max-content max-content;column-gap:12px;row-gap:2px;align-items:baseline;';
+		for (const [label, value] of rows) {
+			const l = document.createElement('span'); l.textContent = label; l.style.cssText = 'color:var(--calcite-color-text-2,#5a5a5a);';
+			const v = document.createElement('span'); v.textContent = value; v.style.cssText = 'color:var(--calcite-color-text-1,#151515);text-align:right;font-variant-numeric:tabular-nums;';
+			grid.appendChild(l); grid.appendChild(v);
+		}
+		d.innerHTML = '';
+		d.appendChild(grid);
+		let cx = sx + 16, cy = sy + 16;
+		try { const r = view.container.getBoundingClientRect(); cx = r.left + sx + 16; cy = r.top + sy + 16; } catch { }
+		d.style.left = cx + 'px';
+		d.style.top = cy + 'px';
+		d.style.display = 'block';
+	};
+
+	private _hideCursorTip = () => { if (this._cursorTip) this._cursorTip.style.display = 'none'; };
+
+	private _clearCursorTip = () => {
+		try { if (this._cursorTip && this._cursorTip.parentNode) this._cursorTip.parentNode.removeChild(this._cursorTip); } catch { }
+		this._cursorTip = null;
+	};
+
+	private _tipLenUnit = (): string => this.sketchViewModel?.valueOptions?.displayUnits?.length || 'meters';
+	private _tipAreaUnit = (): string => this.sketchViewModel?.valueOptions?.displayUnits?.area || 'square-meters';
+	private _lenAbbr = (u: string): string => (({ meters: 'm', feet: 'ft', miles: 'mi', kilometers: 'km', yards: 'yd', 'nautical-miles': 'NM' } as any)[u] || u);
+	private _areaAbbr = (u: string): string => (({ 'square-meters': 'm\u00B2', 'square-feet': 'ft\u00B2', 'square-miles': 'mi\u00B2', 'square-kilometers': 'km\u00B2', acres: 'ac', hectares: 'ha', 'square-yards': 'yd\u00B2' } as any)[u] || u);
+	private _fmtTip = (n: number): string => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+	// Length via operators (geodetic first, planar fallback), matching measure.tsx.
+	// geometryEngine.geodesicLength does not exist in @arcgis/core 5.0.
+	private _lenOp = (geom: any, unit: string): number | null => {
+		try { const L = (geodeticLengthOperator as any).execute(geom, { unit }); if (typeof L === 'number' && isFinite(L)) return Math.abs(L); } catch { }
+		try { const L = (lengthOperator as any).execute(geom, { unit }); if (typeof L === 'number' && isFinite(L)) return Math.abs(L); } catch { }
+		return null;
+	};
+	private _areaOp = (geom: any, unit: string): number | null => {
+		try { const A = (geodeticAreaOperator as any).execute(geom, { unit }); if (typeof A === 'number' && isFinite(A)) return Math.abs(A); } catch { }
+		try { const A = (areaOperator as any).execute(geom, { unit }); if (typeof A === 'number' && isFinite(A)) return Math.abs(A); } catch { }
+		return null;
+	};
+
+	private _measureLengthTip = (view: any, geom: any, unit: string): number | null => {
+		try {
+			let g = geom;
+			if (geom && Array.isArray(geom.curvePaths) && geom.curvePaths.length) {
+				const maxSeg = (view?.resolution || 1) * 4;
+				try { g = (densifyOperator as any).execute(geom, maxSeg); } catch { g = geom; }
+			}
+			return this._lenOp(g, unit);
+		} catch { return null; }
+	};
+
+	private _measureAreaTip = (geom: any, unit: string): number | null => {
+		try { return this._areaOp(geom, unit); } catch { return null; }
+	};
+
+	// Absolute direction (degrees clockwise from north / +y) from a->b. Mirrors the
+	// SketchTooltipOptions "direction" element shown while drawing.
+	private _bearing = (ax: number, ay: number, bx: number, by: number): number => {
+		let deg = Math.atan2(bx - ax, by - ay) * 180 / Math.PI;
+		if (deg < 0) deg += 360;
+		return deg;
+	};
+
+	// Geodesic length of a single a->b segment, in the given unit.
+	private _segMeasure = (view: any, ax: number, ay: number, bx: number, by: number, unit: string): number | null => {
+		try {
+			const poly = Polyline.fromJSON({ paths: [[[ax, ay], [bx, by]]], spatialReference: view.spatialReference });
+			return this._lenOp(poly, unit);
+		} catch { return null; }
+	};
+
+	// Cursor tooltip text for the curve tool: total length + current segment
+	// distance and direction, matching the native polyline sketch tooltip.
+	private _curveTipText = (view: any, snapped: number[]): Array<[string, string]> => {
+		try {
+			const lu = this._tipLenUnit();
+			const geom = this._buildCurveGeometry(view, snapped);
+			const total = geom ? this._measureLengthTip(view, geom, lu) : null;
+			const segStart = (this._curveStart as number[]) || (this._curvePathStart as number[]);
+			let seg: number | null = null; let dir: number | null = null;
+			if (segStart) { seg = this._segMeasure(view, segStart[0], segStart[1], snapped[0], snapped[1], lu); dir = this._bearing(segStart[0], segStart[1], snapped[0], snapped[1]); }
+			const ve: any = this.sketchViewModel?.tooltipOptions?.visibleElements || {};
+			// Deflection: relative angle from the previous segment; em dash on the first
+			// segment, matching the native sketch tooltip default.
+			const nSeg = this._curveSegs?.length || 0;
+			let prev: number[] | null = null;
+			if (nSeg >= 2) prev = this._segEndVertex(this._curveSegs[nSeg - 2]);
+			else if (nSeg === 1) prev = this._curvePathStart as number[];
+			let defl: number | null = null;
+			if (prev && segStart) {
+				let dd = this._bearing(segStart[0], segStart[1], snapped[0], snapped[1]) - this._bearing(prev[0], prev[1], segStart[0], segStart[1]);
+				while (dd > 180) dd -= 360; while (dd < -180) dd += 360;
+				defl = dd;
+			}
+			const rows: Array<[string, string]> = [];
+			if (ve.direction !== false) rows.push(['Deflection', defl != null ? (Math.round(defl) + '\u00B0') : '\u2013']);
+			if (seg != null && ve.distance !== false) rows.push(['Distance', this._fmtTip(seg) + ' ' + this._lenAbbr(lu)]);
+			if (total != null && ve.totalLength !== false) rows.push(['Total length', this._fmtTip(total) + ' ' + this._lenAbbr(lu)]);
+			return rows;
+		} catch { return []; }
+	};
+
+	// Cursor tooltip text for the triangle tool: area + radius (center to cursor)
+	// and direction, matching the native sized-shape sketch tooltip.
+	private _triTipText = (view: any, snapped: number[], geom: any): Array<[string, string]> => {
+		try {
+			const au = this._tipAreaUnit(); const lu = this._tipLenUnit();
+			const A = geom ? this._measureAreaTip(geom, au) : null;
+			const center = this._triCenter as number[];
+			let rad: number | null = null; let dir: number | null = null;
+			if (center) { rad = this._segMeasure(view, center[0], center[1], snapped[0], snapped[1], lu); dir = this._bearing(center[0], center[1], snapped[0], snapped[1]); }
+			const ve: any = this.sketchViewModel?.tooltipOptions?.visibleElements || {};
+			const rows: Array<[string, string]> = [];
+			if (A != null && ve.area !== false) rows.push(['Area', this._fmtTip(A) + ' ' + this._areaAbbr(au)]);
+			if (rad != null && ve.distance !== false) rows.push(['Radius', this._fmtTip(rad) + ' ' + this._lenAbbr(lu)]);
+			if (dir != null && ve.direction !== false) rows.push(['Direction', Math.round(dir) + '\u00B0']);
+			return rows;
+		} catch { return []; }
+	};
+
+	// Throttled background refresh of feature snap candidates near the cursor. Runs
+	// the async layer-view query at most ~16/sec, trims results to segments within a
+	// small radius of the cursor (so the synchronous snap stays cheap), and stores
+	// them for _snapMapPoint to consume. Never redraws — the move handler draws once.
+	private _refreshFeatCache = (view: any, rawPt: number[]) => {
+		const now = Date.now();
+		if (this._previewSnapInFlight || (now - this._previewSnapLastTs) < 80) return;
+		const so: any = this.sketchViewModel?.snappingOptions || (view as any)?.snappingOptions;
+		if (!so?.enabled || so.featureEnabled === false) { this._snapFeatSegs = []; this._snapFeatPts = []; return; }
+		const sr = view.spatialReference;
+		const tolPx = (typeof so.distance === 'number' && so.distance > 0) ? so.distance : 15;
+		const tolMap = tolPx * (view.resolution || 0);
+		if (tolMap <= 0) return;
+		this._previewSnapInFlight = true; this._previewSnapLastTs = now;
+		const keep = 3 * tolMap; // retain only segments within ~3x tolerance of the cursor
+		const segDist = (px: number, py: number, ax: number, ay: number, bx: number, by: number) => {
+			const vx = bx - ax, vy = by - ay, wx = px - ax, wy = py - ay, L = vx * vx + vy * vy;
+			let t = L > 0 ? (wx * vx + wy * vy) / L : 0; t = t < 0 ? 0 : (t > 1 ? 1 : t);
+			return Math.hypot(px - (ax + t * vx), py - (ay + t * vy));
+		};
+		const ext = new Extent({ xmin: rawPt[0] - tolMap, ymin: rawPt[1] - tolMap, xmax: rawPt[0] + tolMap, ymax: rawPt[1] + tolMap, spatialReference: sr });
+		const lvs = (view.allLayerViews?.toArray?.() || []).filter((lv: any) =>
+			lv?.layer && lv.layer !== this.drawLayer && lv.visible !== false && typeof lv.queryFeatures === 'function');
+		Promise.all(lvs.map(async (lv: any) => {
+			try {
+				const r = await lv.queryFeatures({ geometry: ext, spatialRelationship: 'intersects', returnGeometry: true, outFields: [], outSpatialReference: sr });
+				return r?.features || [];
+			} catch { return []; }
+		})).then((groups: any[]) => {
+			const segs: number[][] = []; const pts: number[][] = [];
+			for (const feats of groups) for (const f of feats) {
+				const g: any = f.geometry; if (!g) continue;
+				if (g.type === 'point') { if (Math.hypot(rawPt[0] - g.x, rawPt[1] - g.y) < keep) pts.push([g.x, g.y]); continue; }
+				const rings = g.rings || g.paths; if (!Array.isArray(rings)) continue;
+				for (const ring of rings) for (let i = 0; i < ring.length - 1; i++) {
+					const a = ring[i], b = ring[i + 1];
+					if (segDist(rawPt[0], rawPt[1], a[0], a[1], b[0], b[1]) < keep) segs.push([a[0], a[1], b[0], b[1]]);
+				}
+			}
+			this._previewSnapInFlight = false;
+			// Ignore a transient empty result when the cursor hasn't moved off the
+			// previous spot, so a stationary cursor near an edge doesn't blink as the
+			// background query races with layer updates.
+			if (segs.length === 0 && pts.length === 0 && this._snapCacheAt &&
+				Math.hypot(rawPt[0] - this._snapCacheAt[0], rawPt[1] - this._snapCacheAt[1]) < tolMap) {
+				return;
+			}
+			this._snapFeatSegs = segs; this._snapFeatPts = pts; this._snapCacheAt = rawPt;
+		}).catch(() => { this._previewSnapInFlight = false; });
+	};
+
+	startCurveTool = (type: 'arc' | 'endpointArc' | 'bezier') => {
+		try { this.setDrawToolBtnState('' as any); } catch { }
+		try { this.sketchViewModel?.cancel(); } catch { }
+		this._deactivateCurveHandles();
+		this._clearCurvePreview();
+		const view = this.state.currentJimuMapView?.view;
+		if (!view) { console.warn('Curve tool: no map view'); return; }
+		this._curveType = type;
+		this._resetCurvePath();
+		this.setState({ curveToolActive: true, showCurveMenu: false, currentTool: type as any, curveHint: this._curveHintText(), showSymPreview: true, currentSymbolType: JimuSymbolType.Polyline });
+		this._activateCurveCapture(view);
+	};
+
+	private _resetCurvePath = () => {
+		this._clearSnapIndicator();
+		this._curvePathStart = null;
+		this._curveStart = null;
+		this._curveSegs = [];
+		this._curvePending = [];
+	};
+
+	// Clicks needed to COMPLETE one segment once its start vertex is known.
+	private _segClicksNeeded = (): number => (this._curveType === 'bezier' ? 3 : 2);
+
+	// Plain-language, step-numbered instructions for non-GIS users (mirrors the
+	// Esri "ABCs" model). Switches to "continue" wording after the first segment.
+	// Capitalize the first word after each ": " in on-map hint text.
+	private _capAfterColons = (s: string): string => s.replace(/:(\s+)([a-z])/g, (_m, sp, c) => ':' + sp + c.toUpperCase());
+	private _curveHintRaw = (): string => {
+		const t = this._curveType;
+		const started = this._curvePathStart !== null;
+		const p = this._curvePending.length;
+		const canFinish = this._curveSegs.length > 0;
+		const recovery = (started ? '   •   Backspace: Undo Last Point' : '') + (canFinish ? '   •   Double-click: finish' : '') + '   •   Esc: cancel';
+		if (t === 'arc') {
+			if (!started) return 'Arc — Step 1 of 3: click where the curve starts' + recovery;
+			if (p === 0) return (canFinish ? 'Add another arc: click a point on the curve' : 'Step 2 of 3: click a point on the curve (the bump)') + recovery;
+			return (canFinish ? 'Now click where this arc ends' : 'Step 3 of 3: click where the curve ends') + recovery;
+		}
+		if (t === 'endpointArc') {
+			if (!started) return 'Endpoint arc — Step 1 of 3: click where the curve starts' + recovery;
+			if (p === 0) return (canFinish ? 'Add another arc: click where it ends' : 'Step 2 of 3: click where the curve ends') + recovery;
+			return 'Step 3 of 3: move in or out to bend it, then click' + recovery;
+		}
+		// bezier
+		if (!started) return 'Bézier curve — Step 1 of 4: click the start point' + recovery;
+		if (p === 0) return (canFinish ? 'Add another curve: click its end point' : 'Step 2 of 4: click the end point') + recovery;
+		if (p === 1) return 'Step 3 of 4: click to pull the curve near the start' + recovery;
+		return 'Step 4 of 4: click to pull the curve near the end' + recovery;
+	};
+
+	private _curveHintText = (): string => this._capAfterColons(this._curveHintRaw());
+	private _updateCurveHint = () => { this.setState({ curveHint: this._curveHintText() }); };
+
+	private _activateCurveCapture = (view: any) => {
+		this._deactivateCurveHandles();
+		if (this._curvePrevPopup === null) this._curvePrevPopup = view.popupEnabled;
+		try { view.popupEnabled = false; } catch { }
+		if (view.container) view.container.style.cursor = 'crosshair';
+
+		const clickH = view.on('click', (evt: any) => {
+			evt.stopPropagation();
+			const mp = evt.mapPoint;
+			if (!mp) return;
+			this._onCurveClick(view, [mp.x, mp.y]);
+		});
+		const moveH = view.on('pointer-move', (evt: any) => {
+			const mp = view.toMap({ x: evt.x, y: evt.y });
+			if (!mp) return;
+			const raw: number[] = [mp.x, mp.y];
+			this._refreshFeatCache(view, raw);                 // throttled background update
+			const snapped = this._snapMapPoint(view, raw);     // synchronous
+			const didSnap = snapped !== raw;
+			this._updateSnapIndicator(view, didSnap ? snapped : null);
+			if (this._curvePathStart !== null) this._updateCurvePreview(view, snapped); // single draw
+			if (this._tooltipsOn() && this._curvePathStart !== null) {
+				this._updateCursorTip(view, evt.x, evt.y, this._curveTipText(view, snapped));
+			} else this._hideCursorTip();
+		});
+		const keyH = view.on('key-down', (evt: any) => {
+			if (evt.key === 'Escape') {
+				evt.stopPropagation();
+				if (this._curvePathStart !== null) this._cancelCurvePath(view); else this._deactivateCurveTool();
+			} else if (evt.key === 'Enter') {
+				evt.stopPropagation();
+				this._finishCurve(view);
+			} else if (evt.key === 'Backspace' || evt.key === 'Delete') {
+				evt.stopPropagation();
+				if (this._curvePathStart !== null) this._undoCurvePoint(view);
+			}
+		});
+		// Double-click finishes the path. The click pair only feeds the in-progress
+		// (incomplete) segment, which finish discards — committed segments are safe.
+		const dblH = view.on('double-click', (evt: any) => { evt.stopPropagation(); this._finishCurve(view); });
+		this._curveHandles.push(clickH, moveH, keyH, dblH);
+	};
+
+	private _onCurveClick = async (view: any, mp: number[]) => {
+		mp = await this._snapMapPoint(view, mp);
+		if (this._curvePathStart === null) {
+			this._curvePathStart = mp;
+			this._curveStart = mp;
+			this._updateCurveHint();
+			return;
+		}
+		this._curvePending.push(mp);
+		if (this._curvePending.length >= this._segClicksNeeded()) {
+			const made = this._makeSegment(this._curveStart as number[], this._curvePending);
+			if (made) { this._curveSegs.push(made.seg); this._curveStart = made.endVertex; }
+			this._curvePending = [];
+			this._renderCurvePreview(view, null); // redraw committed path without cursor
+		}
+		this._updateCurveHint();
+	};
+
+	// Build one curvePaths segment from its start vertex and the clicks for it.
+	private _makeSegment = (start: number[], pending: number[][]): { seg: any, endVertex: number[] } | null => {
+		const t = this._curveType;
+		try {
+			if (t === 'bezier') {
+				const end = pending[0], c1 = pending[1], c2 = pending[2];
+				return { seg: { b: [end, c1, c2] }, endVertex: end };
+			}
+			if (t === 'endpointArc') {
+				const end = pending[0], radius = pending[1];
+				const apex = this._endpointArcInterior(start, end, radius);
+				return { seg: apex ? { c: [end, apex] } : end, endVertex: end };
+			}
+			const through = pending[0], end = pending[1]; // arc
+			return { seg: { c: [end, through] }, endVertex: end };
+		} catch (e) { console.warn('curve segment build warning:', e); return null; }
+	};
+
+	// End vertex of a committed segment (arc/endpointArc -> c[0], bezier -> b[0],
+	// straight -> the point itself). Used to rewind _curveStart on undo.
+	private _segEndVertex = (seg: any): number[] | null => {
+		if (Array.isArray(seg)) return seg;
+		if (seg?.c) return seg.c[0];
+		if (seg?.b) return seg.b[0];
+		return null;
+	};
+
+	// Undo the last click: drop an in-progress point, else the last committed
+	// segment, else the start point. Gives non-GIS users a simple "oops" recovery.
+	private _undoCurvePoint = (view: any) => {
+		if (this._curvePending.length > 0) {
+			this._curvePending.pop();
+		} else if (this._curveSegs.length > 0) {
+			this._curveSegs.pop();
+			const last = this._curveSegs[this._curveSegs.length - 1];
+			this._curveStart = last ? (this._segEndVertex(last) || (this._curvePathStart as number[])) : (this._curvePathStart as number[]);
+		} else if (this._curvePathStart !== null) {
+			this._curvePathStart = null;
+			this._curveStart = null;
+		}
+		this._renderCurvePreview(view, null);
+		this._updateCurveHint();
+	};
+
+	private _curveLineSymbol = (): any => {
+		try { const base = (this.sketchViewModel?.polylineSymbol as any); if (base?.clone) return base.clone(); } catch { }
+		return new SimpleLineSymbol({ color: [0, 0, 0, 1], width: 2, style: 'solid' });
+	};
+
+	private _curveSR = (view: any): any => (view.spatialReference?.toJSON ? view.spatialReference.toJSON() : view.spatialReference);
+
+	// Endpoint arc: derive the symmetric apex (midpoint of the arc) from the
+	// perpendicular offset of the radius click off the start->end chord. That
+	// offset is the sagitta, so moving the cursor perpendicular dials the radius.
+	// Returns null when the chord is degenerate or the offset is ~0 (draw straight).
+	private _endpointArcInterior = (sPt: number[], ePt: number[], cPt: number[]): number[] | null => {
+		const dx = ePt[0] - sPt[0], dy = ePt[1] - sPt[1];
+		const Ld = Math.hypot(dx, dy);
+		if (Ld < 1e-6) return null;
+		const nx = -dy / Ld, ny = dx / Ld;
+		const mx = (sPt[0] + ePt[0]) / 2, my = (sPt[1] + ePt[1]) / 2;
+		const h = (cPt[0] - mx) * nx + (cPt[1] - my) * ny;
+		if (Math.abs(h) < Ld * 1e-3) return null;
+		return [mx + nx * h, my + ny * h];
+	};
+
+	// Assemble the full curvePaths path: committed segments, optionally plus the
+	// in-progress segment using the live cursor.
+	private _curvePathJSON = (cursor: number[] | null): any[] | null => {
+		if (this._curvePathStart === null) return null;
+		const path: any[] = [this._curvePathStart, ...this._curveSegs];
+		if (cursor) {
+			const t = this._curveType;
+			const start = this._curveStart as number[];
+			const p = this._curvePending;
+			if (t === 'arc') {
+				if (p.length === 0) path.push(cursor);            // roaming through/end candidate
+				else path.push({ c: [cursor, p[0]] });            // through fixed, end = cursor
+			} else if (t === 'endpointArc') {
+				if (p.length === 0) path.push(cursor);            // roaming end candidate
+				else { const apex = this._endpointArcInterior(start, p[0], cursor); path.push(apex ? { c: [p[0], apex] } : p[0]); }
+			} else { // bezier
+				if (p.length === 0) path.push(cursor);            // roaming end candidate
+				else if (p.length === 1) path.push(p[0]);         // end fixed; placing controls -> straight preview
+				else path.push({ b: [p[0], p[1], cursor] });      // end,c1 fixed; c2 = cursor
+			}
+		}
+		return path;
+	};
+
+	private _buildCurveGeometry = (view: any, cursor: number[] | null): any => {
+		const sr = this._curveSR(view);
+		const path = this._curvePathJSON(cursor);
+		if (!path || path.length < 2) return null;
+		const hasCurve = path.some(el => !Array.isArray(el) && typeof el === 'object');
+		try {
+			return hasCurve
+				? Polyline.fromJSON({ curvePaths: [path], spatialReference: sr })
+				: Polyline.fromJSON({ paths: [path], spatialReference: sr });
+		} catch (e) {
+			console.warn('curve geometry build warning:', e);
+			try { return Polyline.fromJSON({ paths: [path.filter(Array.isArray)], spatialReference: sr }); } catch { return null; }
+		}
+	};
+
+	private _renderCurvePreview = (view: any, cursor: number[] | null) => {
+		try {
+			const geom = this._buildCurveGeometry(view, cursor);
+			if (!geom) return;
+			const sym = this._curveLineSymbol();
+			if (!this._curvePreview) {
+				this._curvePreview = new Graphic({ geometry: geom, symbol: sym, attributes: { hideFromList: true, isPreviewBuffer: true } });
+				this.drawLayer.add(this._curvePreview);
+			} else { this._curvePreview.geometry = geom; this._curvePreview.symbol = sym; }
+		} catch { /* preview best-effort */ }
+	};
+
+	private _updateCurvePreview = (view: any, cursor: number[]) => { this._renderCurvePreview(view, cursor); };
+
+	private _finishCurve = async (view: any) => {
+		if (this._curveSegs.length === 0) { this._cancelCurvePath(view); return; }
+		const sr = this._curveSR(view);
+		const path = [this._curvePathStart, ...this._curveSegs];
+		this._clearCurvePreview();
+
+		let graphic: any = null;
+		try {
+			const hasCurve = path.some(el => !Array.isArray(el) && typeof el === 'object');
+			const geom = hasCurve
+				? Polyline.fromJSON({ curvePaths: [path], spatialReference: sr })
+				: Polyline.fromJSON({ paths: [path], spatialReference: sr });
+			graphic = new Graphic({ geometry: geom, symbol: this._curveLineSymbol() });
+			this.drawLayer.add(graphic);
+		} catch (e) { console.error('Curve build failed:', e); this._resetCurvePath(); return; }
+
+		try {
+			this.setState({ currentTool: (this._curveType || 'arc') as any });
+			await this.svmGraCreate({ state: 'complete', graphic });
+		} catch (e) { console.warn('Curve finalize warning:', e); }
+
+		// #3: measurement labels normally come from measure.tsx's SVM 'create'
+		// listener; curves bypass SketchViewModel.create(), so trigger them now
+		// that the graphic has a stable uniqueId from svmGraCreate.
+		try {
+			if (this.measureRef?.current?.isMeasurementEnabled?.()) {
+				this.measureRef.current.updateMeasurementsForGraphic(graphic);
+			}
+		} catch (e) { console.warn('Curve measurement warning:', e); }
+
+		// Custom tools bypass the SVM 'create' event, so tell BufferControls to
+		// auto-buffer this new graphic if the buffer toggle is on.
+		try { window.dispatchEvent(new CustomEvent('drawadv:bufferNewGraphic', { detail: { graphic } })); } catch { }
+
+		this._resetCurvePath();
+		if (this.creationMode === 'continuous' && this.state.curveToolActive) {
+			this.setState({ curveHint: this._curveHintText() }); // keep drawing the next curve
+		} else {
+			this._deactivateCurveTool();
+		}
+	};
+
+	// Finish button = explicit "done": commit the current path, then exit the tool
+	// and hide the help banner (unlike Enter/double-click which keep drawing).
+	private _finishCurveButton = async (view: any) => {
+		try { await this._finishCurve(view); } catch { }
+		this._deactivateCurveTool();
+	};
+
+	private _cancelCurvePath = (view: any) => {
+		this._clearCurvePreview();
+		this._resetCurvePath();
+		if (view?.container) view.container.style.cursor = 'crosshair';
+		this._updateCurveHint();
+	};
+
+	private _clearCurvePreview = () => {
+		this._hideCursorTip();
+		if (this._curvePreview) { try { this.drawLayer.remove(this._curvePreview); } catch { } this._curvePreview = null; }
+	};
+
+	private _deactivateCurveHandles = () => {
+		for (const h of this._curveHandles) { try { h.remove(); } catch { } }
+		this._curveHandles = [];
+	};
+
+	private _deactivateCurveTool = () => {
+		this._deactivateCurveHandles();
+		this._clearCurvePreview();
+		this._clearCursorTip();
+		this._resetCurvePath();
+		this._curveType = null;
+		const view = this.state.currentJimuMapView?.view;
+		if (view) {
+			if (view.container) view.container.style.cursor = 'default';
+			if (this._curvePrevPopup !== null) { try { view.popupEnabled = this._curvePrevPopup; } catch { } }
+		}
+		this._curvePrevPopup = null;
+		if (this.state.curveToolActive || this.state.curveHint) this.setState({ curveToolActive: false, curveHint: '', showSymPreview: false, currentSymbolType: null });
+	};
+
+	// ── Custom equilateral-triangle tool ────────────────────────────────────
+	// JSAPI 5.0 SketchViewModel has no triangle primitive (the old Web AppBuilder
+	// Draw.TRIANGLE did). Build an equilateral triangle from a center click + a
+	// vertex click (sets size and rotation), then finalize through svmGraCreate so
+	// it gets naming, measurement labels, and save like every other shape.
+	startTriangleTool = () => {
+		try { this.setDrawToolBtnState('' as any); } catch { }
+		try { this.sketchViewModel?.cancel(); } catch { }
+		this._deactivateTriHandles();
+		this._clearTriPreview();
+		const view = this.state.currentJimuMapView?.view;
+		if (!view) { console.warn('Triangle tool: no map view'); return; }
+		this._triCenter = null;
+		this.setState({ triangleActive: true, showCurveMenu: false, currentTool: 'triangle' as any, triangleHint: this._triHintText(), showSymPreview: true, currentSymbolType: JimuSymbolType.Polygon });
+		this._activateTriangleCapture(view);
+	};
+
+	private _triHintText = (): string => this._capAfterColons(this._triCenter === null
+		? 'Triangle: click the center point   •   Esc to cancel'
+		: 'Click to set the size and rotation   •   Esc to cancel');
+	private _updateTriHint = () => { this.setState({ triangleHint: this._triHintText() }); };
+
+	private _triFillSymbol = (): any => {
+		try { const base = (this.sketchViewModel?.polygonSymbol as any); if (base?.clone) return base.clone(); } catch { }
+		return new SimpleFillSymbol({ color: [0, 0, 0, 0.15], outline: { color: [0, 0, 0, 1], width: 2 } });
+	};
+
+	// Equilateral triangle: center C, first vertex V (size + rotation). Other two
+	// vertices are V rotated 120° and 240° about C.
+	private _buildTriangle = (view: any, center: number[], vertex: number[]): any => {
+		const sr = view.spatialReference?.toJSON ? view.spatialReference.toJSON() : view.spatialReference;
+		const dx = vertex[0] - center[0], dy = vertex[1] - center[1];
+		const R = Math.hypot(dx, dy);
+		if (R < 1e-6) return null;
+		const a0 = Math.atan2(dy, dx);
+		const pts = [0, 2 * Math.PI / 3, 4 * Math.PI / 3].map(a => [center[0] + R * Math.cos(a0 + a), center[1] + R * Math.sin(a0 + a)]);
+		// ArcGIS exterior rings must wind clockwise so the polygon area is positive;
+		// the equilateral points above are counter-clockwise (negative area, which
+		// breaks the measurement label), so flip to clockwise when needed.
+		const cross = (pts[1][0] - pts[0][0]) * (pts[2][1] - pts[0][1]) - (pts[2][0] - pts[0][0]) * (pts[1][1] - pts[0][1]);
+		if (cross > 0) pts.reverse();
+		pts.push([pts[0][0], pts[0][1]]);
+		try { return Polygon.fromJSON({ rings: [pts], spatialReference: sr }); }
+		catch (e) { console.warn('triangle build warning:', e); return null; }
+	};
+
+	private _activateTriangleCapture = (view: any) => {
+		this._deactivateTriHandles();
+		if (this._triPrevPopup === null) this._triPrevPopup = view.popupEnabled;
+		try { view.popupEnabled = false; } catch { }
+		if (view.container) view.container.style.cursor = 'crosshair';
+		const clickH = view.on('click', (evt: any) => {
+			evt.stopPropagation();
+			const mp = evt.mapPoint; if (!mp) return;
+			const raw: number[] = [mp.x, mp.y];
+			// Defer the single click briefly so a double-click can cancel it.
+			// ArcGIS fires click(s) AND double-click; without this, the trailing
+			// clicks of a double-click create phantom centers / extra triangles.
+			if (this._triClickTimer) { clearTimeout(this._triClickTimer); this._triClickTimer = null; }
+			this._triClickTimer = setTimeout(async () => {
+				this._triClickTimer = null;
+				if (this._triCenter === null) { this._triCenter = await this._snapMapPoint(view, raw); this._updateTriHint(); }
+				else { this._finishTriangle(view, raw); }
+			}, 220);
+		});
+		const moveH = view.on('pointer-move', (evt: any) => {
+			const mp = view.toMap({ x: evt.x, y: evt.y }); if (!mp) return;
+			const raw: number[] = [mp.x, mp.y];
+			if (this._triCenter === null) {
+				// Placing the center: snap it (and show the indicator) so the triangle
+				// can start on a feature or existing vertex.
+				this._refreshFeatCache(view, raw);
+				const snapped = this._snapMapPoint(view, raw);
+				this._updateSnapIndicator(view, snapped !== raw ? snapped : null);
+				return;
+			}
+			// Sizing: use the raw cursor for the size vertex. Snapping it would resize
+			// the whole triangle as the target shifts, which reads as jitter.
+			this._updateSnapIndicator(view, null);
+			const geom = this._buildTriangle(view, this._triCenter, raw); if (!geom) return;
+			if (!this._triPreview) { this._triPreview = new Graphic({ geometry: geom, symbol: this._triFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true } }); this.drawLayer.add(this._triPreview); }
+			else { this._triPreview.geometry = geom; }
+			if (this._tooltipsOn()) this._updateCursorTip(view, evt.x, evt.y, this._triTipText(view, raw, geom));
+			else this._hideCursorTip();
+		});
+		const keyH = view.on('key-down', (evt: any) => { if (evt.key === 'Escape') { evt.stopPropagation(); this._deactivateTriangleTool(); } });
+		// Double-click: cancel the pending single click and act once (set center or
+		// finish), and suppress the default map zoom.
+		const dblH = view.on('double-click', async (evt: any) => {
+			evt.stopPropagation();
+			if (this._triClickTimer) { clearTimeout(this._triClickTimer); this._triClickTimer = null; }
+			const mp = evt.mapPoint; if (!mp) return;
+			const raw: number[] = [mp.x, mp.y];
+			if (this._triCenter === null) { this._triCenter = await this._snapMapPoint(view, raw); this._updateTriHint(); }
+			else { this._finishTriangle(view, raw); }
+		});
+		this._triHandles.push(clickH, moveH, keyH, dblH);
+	};
+
+	private _finishTriangle = async (view: any, vertex: number[]) => {
+		if (this._triClickTimer) { clearTimeout(this._triClickTimer); this._triClickTimer = null; }
+		const center = this._triCenter;
+		this._clearTriPreview();
+		if (!center) { this._deactivateTriangleTool(); return; }
+		let graphic: any = null;
+		try {
+			const geom = this._buildTriangle(view, center, vertex);
+			if (!geom) { this._triCenter = null; return; }
+			graphic = new Graphic({ geometry: geom, symbol: this._triFillSymbol() });
+			this.drawLayer.add(graphic);
+		} catch (e) { console.error('Triangle build failed:', e); this._triCenter = null; return; }
+		try { this.setState({ currentTool: 'triangle' as any }); await this.svmGraCreate({ state: 'complete', graphic }); }
+		catch (e) { console.warn('Triangle finalize warning:', e); }
+		try { if (this.measureRef?.current?.isMeasurementEnabled?.()) this.measureRef.current.updateMeasurementsForGraphic(graphic); }
+		catch (e) { console.warn('Triangle measurement warning:', e); }
+		try { window.dispatchEvent(new CustomEvent('drawadv:bufferNewGraphic', { detail: { graphic } })); } catch { }
+		this._triCenter = null;
+		if (this.creationMode === 'continuous' && this.state.triangleActive) { this.setState({ triangleHint: this._triHintText() }); }
+		else { this._deactivateTriangleTool(); }
+	};
+
+	private _clearTriPreview = () => { this._hideCursorTip(); this._clearSnapIndicator(); if (this._triPreview) { try { this.drawLayer.remove(this._triPreview); } catch { } this._triPreview = null; } };
+	private _deactivateTriHandles = () => { for (const h of this._triHandles) { try { h.remove(); } catch { } } this._triHandles = []; };
+	private _deactivateTriangleTool = () => {
+		if (this._triClickTimer) { clearTimeout(this._triClickTimer); this._triClickTimer = null; }
+		this._deactivateTriHandles();
+		this._clearTriPreview();
+		this._clearCursorTip();
+		this._triCenter = null;
+		const view = this.state.currentJimuMapView?.view;
+		if (view) { if (view.container) view.container.style.cursor = 'default'; if (this._triPrevPopup !== null) { try { view.popupEnabled = this._triPrevPopup; } catch { } } }
+		this._triPrevPopup = null;
+		if (this.state.triangleActive || this.state.triangleHint) this.setState({ triangleActive: false, triangleHint: '', showSymPreview: false, currentSymbolType: null });
+	};
+
 	svmGraCreate = async (evt) => {
 		try {
 			// Basic validation
@@ -5864,6 +6744,37 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		}
 	};
 
+	// Shift every coordinate in a curvePaths JSON by (dx, dy).
+	private _translateCurveJSON = (curveJSON: any, dx: number, dy: number): any => {
+		const shift = (pt: number[]) => [pt[0] + dx, pt[1] + dy];
+		const curvePaths = (curveJSON.curvePaths || []).map((path: any[]) => path.map((el: any) => {
+			if (Array.isArray(el)) return shift(el);
+			const o: any = {};
+			for (const k of Object.keys(el)) o[k] = (el[k] as number[][]).map(shift);
+			return o;
+		}));
+		return { curvePaths, spatialReference: curveJSON.spatialReference };
+	};
+
+	// Safety net: if an edit linearized a true curve (curvePaths stripped to plain
+	// straight paths), restore the original curve geometry shifted by the net move,
+	// so dragging still repositions it but the curve shape is never corrupted.
+	private _restoreCurveIfLinearized = (graphic: any) => {
+		try {
+			const uid = graphic?.attributes?.uniqueId;
+			if (!uid || !this._curveUpdateBackup.has(uid)) return;
+			const backup = this._curveUpdateBackup.get(uid);
+			this._curveUpdateBackup.delete(uid);
+			const geom: any = graphic?.geometry;
+			if (!geom || geom.type !== 'polyline' || geom.curvePaths) return; // still a curve -> leave it
+			let dx = 0, dy = 0;
+			const c = geom.extent?.center;
+			if (c && isFinite(backup.cx) && isFinite(backup.cy)) { dx = c.x - backup.cx; dy = c.y - backup.cy; }
+			graphic.geometry = Polyline.fromJSON(this._translateCurveJSON(backup.json, dx, dy));
+			try { if (this.measureRef?.current?.isMeasurementEnabled?.()) this.measureRef.current.updateMeasurementsForGraphic(graphic); } catch { }
+		} catch (e) { console.warn('curve restore warning:', e); }
+	};
+
 	svmGraUpdate = (evt) => {
 		try {
 			// Validate SketchViewModel and view before proceeding
@@ -5913,6 +6824,18 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 						} catch (error) {
 							console.warn('Error setting up buffer watcher:', error);
 						}
+					});
+
+					// Snapshot true-curve geometry so it can be restored if an edit
+					// linearizes it (SketchViewModel edits curves as straight paths).
+					selectableGraphics.forEach((graphic: any) => {
+						try {
+							const cg = graphic?.geometry;
+							if (cg && (cg as any).curvePaths && graphic.attributes?.uniqueId) {
+								const c = cg.extent?.center;
+								this._curveUpdateBackup.set(graphic.attributes.uniqueId, { json: cg.toJSON(), cx: c?.x ?? NaN, cy: c?.y ?? NaN });
+							}
+						} catch { }
 					});
 
 					// 🔧 FIX: Commented out automatic checkbox toggling to prevent unwanted measurement re-enabling
@@ -6016,20 +6939,16 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 								}
 								this.setState(cState);
 							} else {
-								if (gra.geometry.type === 'polyline' && gra.symbol?.type === 'simple-line') {
-									const lineSymbol = gra.symbol as any;
-									const hasArrows = !!(lineSymbol as any).marker;
-									if (!hasArrows && this.state.arrowEnabled) {
-										try {
-											const arrowSymbol = this.createLineSymbolWithBuiltInArrows(
-												lineSymbol,
-												this.state.arrowPosition,
-												this.state.arrowSize
-											);
-											gra.symbol = arrowSymbol;
-										} catch (error) {
-											console.warn('Error applying arrow settings:', error);
-										}
+								// Sync the arrow controls to reflect the selected line's OWN state
+								// (so the toggle/position match the line, and can be turned off).
+								let selArrowEnabled = this.state.arrowEnabled;
+								let selArrowPosition = this.state.arrowPosition;
+								if (selectableGraphics[0]?.geometry?.type === 'polyline') {
+									const mk = (selectableGraphics[0].symbol as any)?.marker;
+									selArrowEnabled = !!mk;
+									if (mk) {
+										selArrowPosition = mk.placement === 'begin' ? 'start'
+											: mk.placement === 'begin-end' ? 'both' : 'end';
 									}
 								}
 								if (gra.geometry.type === 'point') {
@@ -6039,7 +6958,13 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 									showSymPreview: true,
 									showTextPreview: false,
 									currentSymbol: selectableGraphics[0].symbol,
+									currentSymbolType: selectableGraphics[0].geometry?.type === 'polyline' ? JimuSymbolType.Polyline
+										: selectableGraphics[0].geometry?.type === 'point' ? JimuSymbolType.Point
+											: selectableGraphics[0].geometry?.type === 'polygon' ? JimuSymbolType.Polygon
+												: this.state.currentSymbolType,
 									graphics: selectableGraphics,
+									arrowEnabled: selArrowEnabled,
+									arrowPosition: selArrowPosition,
 									clearBtnTitle: this.nls('drawClearSelected')
 								});
 							}
@@ -6078,6 +7003,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					rotationMode: false
 				});
 				if (evt.graphics && evt.graphics.length > 0) {
+					evt.graphics.forEach((g: any) => this._restoreCurveIfLinearized(g));
 					const completedGraphic = evt.graphics[0];
 					if (completedGraphic.geometry?.type === 'polyline' && this.state.arrowEnabled) {
 						if (completedGraphic.symbol?.type === 'simple-line') {
@@ -6198,9 +7124,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			return;
 		}
 
-		// Clone and clean the symbol
-		const cleanSymbol = evt.clone();
-		delete (cleanSymbol as any).marker; // Remove any existing marker
+		// Build a fresh marker-free symbol (delete on an Esri Accessor's 'marker'
+		// is unreliable, which left arrows on the line when toggled off).
+		const cleanSymbol = new SimpleLineSymbol({ color: (evt as any).color, width: (evt as any).width, style: (evt as any).style });
 
 		let finalSymbol = cleanSymbol;
 
@@ -6721,6 +7647,10 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	}
 
 	setDrawToolBtnState = (toolBtn: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | '') => {
+		// Exit the custom curve line tool whenever any draw tool is (re)selected,
+		// so the line button and another tool never show active simultaneously.
+		this._deactivateCurveTool();
+		this._deactivateTriangleTool();
 		// ENHANCED: Clean measurement editing coordination before drawing tool activation
 		if (toolBtn !== '' && this.measureRef?.current?.isEditingMeasurements?.()) {
 			//console.log('Drawing tool activating - cleaning up measurement editing');
@@ -7221,6 +8151,18 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					role="region"
 					aria-label="Drawing tools"
 				>
+					{this.state.curveToolActive && (
+						<div
+							role="status"
+							aria-live="polite"
+							style={{ margin: '0 0 8px', padding: '6px 10px', borderRadius: 4, background: 'var(--light-200, #f0f0f0)', color: 'var(--dark-800, #2b2b2b)', borderLeft: '3px solid var(--primary-600, #2e7d9a)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}
+						>
+							<span style={{ flex: '1 1 auto', minWidth: 0 }}>{this.state.curveHint}</span>
+							<Button size="sm" type="default" onClick={() => { const v = this.state.currentJimuMapView?.view; if (v) this._undoCurvePoint(v); }}>Undo Last Point</Button>
+							<Button size="sm" type="primary" onClick={() => { const v = this.state.currentJimuMapView?.view; if (v) this._finishCurveButton(v); else this._deactivateCurveTool(); }}>Finish</Button>
+							<Button size="sm" type="default" onClick={() => this._deactivateCurveTool()}>Cancel</Button>
+						</div>
+					)}
 					<div className="d-flex justify-content-center">
 						<div
 							className="drawToolbarDiv d-flex flex-column"
@@ -7256,12 +8198,41 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 										active={lineBtnActive}
 										onClick={() => this.setDrawToolBtnState('polyline')}
 										title={this.nls('drawLine')}
-										aria-label={`Draw polyline${lineBtnActive ? ' - currently active' : ''}`}
+										aria-label={`Draw line${lineBtnActive ? ' - currently active' : ''}`}
 										aria-pressed={lineBtnActive}
 									>
 										<Icon icon={lineIcon} aria-hidden="true" />
-										<span className="sr-only">Polyline tool</span>
+										<span className="sr-only">Line tool</span>
 									</Button>
+								)}
+								{config.enableCurveTools !== false && (
+									<div
+										style={{ position: 'relative', display: 'inline-flex', verticalAlign: 'middle' }}
+										onMouseEnter={() => this.setState({ showCurveMenu: true })}
+										onMouseLeave={() => this.setState({ showCurveMenu: false })}
+									>
+										<Button
+											size="sm"
+											type="default"
+											color={this.state.curveToolActive ? 'primary' : 'default'}
+											active={!!this.state.curveToolActive}
+											onClick={() => this.setState({ showCurveMenu: !this.state.showCurveMenu })}
+											title="True-curve line tools (arc, endpoint arc, bézier)"
+											aria-label="Curve line tools"
+											aria-haspopup="true"
+											aria-expanded={!!this.state.showCurveMenu}
+										>
+											<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 13 C 4 13, 5 3, 8 3 S 12 13, 15 13" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>
+											<span className="sr-only">Curve line tools</span>
+										</Button>
+										{this.state.showCurveMenu && (
+											<div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: 'var(--white, #fff)', border: '1px solid var(--light-300, #ccc)', borderRadius: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.25)', minWidth: 160, overflow: 'hidden' }}>
+												<Button size="sm" type="default" color={this.state.currentTool === 'arc' ? 'primary' : 'default'} active={this.state.currentTool === 'arc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('arc')} title="Click start, a point on the curve, then end. Keeps adding connected arc segments.">Arc segment</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'endpointArc' ? 'primary' : 'default'} active={this.state.currentTool === 'endpointArc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('endpointArc')} title="Click start, end, then move out to set the radius.">Endpoint arc</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'bezier' ? 'primary' : 'default'} active={this.state.currentTool === 'bezier'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('bezier')} title="Click start, end, control 1, control 2.">Bézier curve</Button>
+											</div>
+										)}
+									</div>
 								)}
 								{config.enableFreePolylineTool !== false && (
 									<Button
@@ -7357,6 +8328,21 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 									>
 										<Icon icon={circleIcon} aria-hidden="true" />
 										<span className="sr-only">Circle tool</span>
+									</Button>
+								)}
+								{config.enableTriangleTool !== false && (
+									<Button
+										size="sm"
+										type="default"
+										color={this.state.triangleActive ? 'primary' : 'default'}
+										active={!!this.state.triangleActive}
+										onClick={() => { if (this.state.triangleActive) { this._deactivateTriangleTool(); } else { this.startTriangleTool(); } }}
+										title="Draw equilateral triangle (click center, then click to set size)"
+										aria-label={`Draw triangle${this.state.triangleActive ? ' - currently active' : ''}`}
+										aria-pressed={!!this.state.triangleActive}
+									>
+										<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L15 14 L1 14 Z" fill="currentColor" /></svg>
+										<span className="sr-only">Triangle tool</span>
 									</Button>
 								)}
 							</div>
@@ -8313,6 +9299,10 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 						<BufferControls
 							sketchViewModel={this.sketchViewModel}
 							jimuMapView={this.state.currentJimuMapView}
+							defaultDistance={this.props.config?.defaultBufferDistance}
+							defaultUnit={this.props.config?.defaultBufferUnit}
+							defaultOpacity={this.props.config?.defaultBufferOpacity}
+							defaultColor={this.props.config?.defaultBufferColor}
 						/>
 					)}
 				</div>

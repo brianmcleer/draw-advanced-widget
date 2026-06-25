@@ -1,5 +1,6 @@
 ﻿import { React } from 'jimu-core';
-import { Label, NumericInput, Select, Option, Button } from 'jimu-ui';
+import { Label, NumericInput, Select, Option, Button, Checkbox } from 'jimu-ui';
+import { ColorPicker } from 'jimu-ui/basic/color-picker';
 import { CollapsableCheckbox } from 'jimu-ui/advanced/setting-components';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import Graphic from 'esri/Graphic';
@@ -11,8 +12,9 @@ import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
 import TextSymbol from 'esri/symbols/TextSymbol';
 import Color from 'esri/Color';
 import * as geometryEngine from 'esri/geometry/geometryEngine';
+import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
 
-interface ExtendedGraphic extends any {
+interface ExtendedGraphic extends Graphic {
     isBufferDrawing?: boolean;
     sourceGraphicId?: string;
     bufferGraphic?: ExtendedGraphic | null;
@@ -28,6 +30,9 @@ interface ExtendedGraphic extends any {
         enabled: boolean;
         opacity?: number;
         hasLabel?: boolean;
+        outlineOnly?: boolean;
+        customColor?: string | null;
+        customOutlineColor?: string | null;
     } | null;
 }
 
@@ -272,7 +277,7 @@ const manualBuffer = (geometry: any, distMeters: number, sr: any): any => {
     // restored polygons, which previously routed to the extent fallback below
     // and produced a circle around the centroid instead of a polygon outline.
     const hasRings = Array.isArray(geometry.rings) && geometry.rings.length > 0 &&
-                     Array.isArray(geometry.rings[0]) && geometry.rings[0].length >= 3;
+        Array.isArray(geometry.rings[0]) && geometry.rings[0].length >= 3;
     const hasPaths = Array.isArray(geometry.paths) && geometry.paths.length > 0;
     const hasXY = typeof geometry.x === 'number' && typeof geometry.y === 'number';
 
@@ -322,22 +327,38 @@ const manualBuffer = (geometry: any, distMeters: number, sr: any): any => {
 interface BufferControlsProps {
     jimuMapView: any;
     sketchViewModel: any;
+    defaultDistance?: number;
+    defaultUnit?: string;
+    defaultOpacity?: number;
+    defaultColor?: string;
+    defaultOutlineColor?: string;
 }
 
 const asExtended = (g: any) => g as ExtendedGraphic;
 
-export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, sketchViewModel }) => {
+export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, sketchViewModel, defaultDistance, defaultUnit, defaultOpacity, defaultColor, defaultOutlineColor }) => {
     // OFF by default
     const [bufferEnabled, setBufferEnabled] = React.useState<boolean>(false);
-    const [bufferDistance, setBufferDistance] = React.useState<number>(100);
-    const [bufferUnit, setBufferUnit] = React.useState<string>('feet');
-    const [bufferOpacity, setBufferOpacity] = React.useState<number>(75);
+    const [bufferDistance, setBufferDistance] = React.useState<number>(typeof defaultDistance === 'number' ? defaultDistance : 100);
+    const [bufferUnit, setBufferUnit] = React.useState<string>(defaultUnit || 'feet');
+    const [bufferOpacity, setBufferOpacity] = React.useState<number>(typeof defaultOpacity === 'number' ? defaultOpacity : 75);
+    // Outline-only: transparent fill, outline stroke only. OFF by default.
+    const [bufferOutlineOnly, setBufferOutlineOnly] = React.useState<boolean>(false);
+    // Custom buffer color: override the color inherited from the source graphic.
+    // Fill and outline colors are picked independently.
+    const [bufferUseCustomColor, setBufferUseCustomColor] = React.useState<boolean>(false);
+    const [bufferColor, setBufferColor] = React.useState<string>(defaultColor || '#d83020');
+    const [bufferOutlineColor, setBufferOutlineColor] = React.useState<string>(defaultOutlineColor || defaultColor || '#d83020');
 
     // Accessibility: Status announcement for screen readers
     const [statusMessage, setStatusMessage] = React.useState<string>('');
     const statusTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const geometryWatchers = React.useRef<Map<string, any>>(new Map());
+    // The most recently created/edited buffer's parent graphic. Used as the
+    // live-style target when nothing is selected, so a just-drawn buffer can be
+    // recolored without selecting it — without affecting every other buffer.
+    const lastBufferParentRef = React.useRef<ExtendedGraphic | null>(null);
 
     // Unique IDs for ARIA associations
     const componentId = React.useRef(`buffer-controls-${Math.random().toString(36).substr(2, 9)}`).current;
@@ -362,18 +383,22 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
     }, []);
 
     // --- persistence ---
-    const saveSettings = React.useCallback((partial?: { enabled?: boolean; distance?: number; unit?: string; opacity?: number }) => {
+    const saveSettings = React.useCallback((partial?: { enabled?: boolean; distance?: number; unit?: string; opacity?: number; outlineOnly?: boolean; useCustomColor?: boolean; color?: string; outlineColor?: string }) => {
         try {
             const toSave = {
                 enabled: bufferEnabled,
                 distance: bufferDistance,
                 unit: bufferUnit,
                 opacity: bufferOpacity,
+                outlineOnly: bufferOutlineOnly,
+                useCustomColor: bufferUseCustomColor,
+                color: bufferColor,
+                outlineColor: bufferOutlineColor,
                 ...partial
             };
             localStorage.setItem('bufferControlSettings', JSON.stringify(toSave));
         } catch { /* no-op */ }
-    }, [bufferEnabled, bufferDistance, bufferUnit, bufferOpacity]);
+    }, [bufferEnabled, bufferDistance, bufferUnit, bufferOpacity, bufferOutlineOnly, bufferUseCustomColor, bufferColor, bufferOutlineColor]);
 
     const loadSettings = React.useCallback(() => {
         try {
@@ -388,6 +413,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             if (typeof parsed.distance === 'number') setBufferDistance(parsed.distance);
             if (typeof parsed.unit === 'string') setBufferUnit(parsed.unit);
             if (typeof parsed.opacity === 'number') setBufferOpacity(parsed.opacity);
+            // Always start outline-only and custom-color OFF, regardless of saved state.
+            // (Per-drawing buffer styles still restore via My Drawings.)
+            // if (typeof parsed.outlineOnly === 'boolean') setBufferOutlineOnly(parsed.outlineOnly);
+            // if (typeof parsed.useCustomColor === 'boolean') setBufferUseCustomColor(parsed.useCustomColor);
+            if (typeof parsed.color === 'string') setBufferColor(parsed.color);
+            if (typeof parsed.outlineColor === 'string') setBufferOutlineColor(parsed.outlineColor);
         } catch { /* no-op */ }
     }, []);
 
@@ -454,6 +485,19 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             if (!view) return null;
             const sr = view.spatialReference;
 
+            // True curves carry empty paths, which geometryEngine.buffer and the
+            // manual fallback can't consume (buffer collapses to a bounding circle).
+            // Densify the curve into a plain polyline first so the buffer follows it.
+            if (geometry?.type === 'polyline' && (geometry as any).curvePaths) {
+                try {
+                    const ext = (geometry as any).extent;
+                    const span = ext ? Math.max(ext.width || 0, ext.height || 0) : 0;
+                    const maxSeg = Math.max(span ? span / 200 : 1, 1e-6);
+                    const dense: any = densifyOperator.execute(geometry, maxSeg);
+                    if (dense && dense.paths && dense.paths.length) geometry = dense;
+                } catch (e) { console.warn('curve densify for buffer failed:', e); }
+            }
+
             // PRIMARY: try geometryEngine — produces topologically clean buffers
             // (self-intersections from offset overlap are dissolved automatically).
             try {
@@ -488,6 +532,38 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
         let out = new Color([0, 122, 194, 1.0 * op]);
         let width = 2.5;
 
+        // Resolve custom fill and outline colors independently. Per-buffer
+        // settings are authoritative when present (null = "explicitly none");
+        // otherwise fall back to the current panel state for new buffers.
+        // customOutlineColor falls back to customColor for buffers saved before
+        // the outline color was a separate option.
+        const settings = parent.bufferSettings;
+        const customColor: string | null =
+            (settings && settings.customColor !== undefined)
+                ? settings.customColor
+                : (bufferUseCustomColor ? bufferColor : null);
+        const customOutlineColor: string | null =
+            (settings && settings.customOutlineColor !== undefined)
+                ? settings.customOutlineColor
+                : (settings && settings.customColor !== undefined)
+                    ? settings.customColor
+                    : (bufferUseCustomColor ? bufferOutlineColor : null);
+
+        if (customColor || customOutlineColor) {
+            try {
+                const fillSrc = customColor || customOutlineColor;
+                const outSrc = customOutlineColor || customColor;
+                const fc = new Color(fillSrc);
+                const oc = new Color(outSrc);
+                fill = new Color([fc.r, fc.g, fc.b, 0.3 * op]);
+                out = new Color([oc.r, oc.g, oc.b, 1.0 * op]);
+                return new SimpleFillSymbol({
+                    color: fill,
+                    outline: new SimpleLineSymbol({ color: out, width, style: 'dash' })
+                });
+            } catch { /* fall through to inherited color */ }
+        }
+
         try {
             if (gType === 'polygon' && parent.symbol?.type === 'simple-fill') {
                 const s = parent.symbol as any;
@@ -517,6 +593,33 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             color: fill,
             outline: new SimpleLineSymbol({ color: out, width, style: 'dash' })
         });
+    };
+
+    // When outline-only is active for a buffer, swap to a transparent fill and a
+    // solid stroke so only the buffer outline is shown. Mutates a copy of the
+    // base symbol returned by makeBufferSymbol.
+    const applyOutlineOnly = (symbol: SimpleFillSymbol): SimpleFillSymbol => {
+        try {
+            const outColor = symbol.outline?.color
+                ? new Color([symbol.outline.color.r, symbol.outline.color.g, symbol.outline.color.b, symbol.outline.color.a ?? 1])
+                : new Color([0, 122, 194, 1]);
+            return new SimpleFillSymbol({
+                color: new Color([0, 0, 0, 0]),
+                outline: new SimpleLineSymbol({
+                    color: outColor,
+                    width: Math.max(symbol.outline?.width ?? 2.5, 2.5),
+                    style: 'solid'
+                })
+            });
+        } catch {
+            return symbol;
+        }
+    };
+
+    const buildBufferSymbol = (parent: ExtendedGraphic): SimpleFillSymbol => {
+        const base = makeBufferSymbol(parent);
+        const outlineOnly = parent.bufferSettings?.outlineOnly ?? bufferOutlineOnly;
+        return outlineOnly ? applyOutlineOnly(base) : base;
     };
 
     const ensureWatcher = (parent: ExtendedGraphic) => {
@@ -609,7 +712,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             const buf = parent.bufferGraphic;
             layer.remove(buf);
             buf.geometry = geom;
-            buf.symbol = makeBufferSymbol(parent);
+            buf.symbol = buildBufferSymbol(parent);
             layer.add(buf);
 
             // Update label position/text if it exists
@@ -851,18 +954,21 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
         const geom = await createBufferGeometry(parent.geometry, distance, unit);
         if (!geom) return;
 
-        // Track hasLabel state in buffer settings
+        // Track hasLabel/outlineOnly/customColor state in buffer settings
         parent.bufferSettings = {
             distance,
             unit,
             enabled: true,
             opacity: bufferOpacity,
-            hasLabel: parent.bufferLabel ? true : false
+            hasLabel: parent.bufferLabel ? true : false,
+            outlineOnly: bufferOutlineOnly,
+            customColor: bufferUseCustomColor ? bufferColor : null,
+            customOutlineColor: bufferUseCustomColor ? bufferOutlineColor : null
         };
 
         const buf = new Graphic({
             geometry: geom,
-            symbol: makeBufferSymbol(parent),
+            symbol: buildBufferSymbol(parent),
             attributes: {
                 uniqueId: `buffer_${id}_${Date.now()}`,
                 name: `${a.name ?? 'Drawing'} Buffer`,
@@ -878,6 +984,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
         buf.isBufferDrawing = true;
         buf.sourceGraphicId = id;
         parent.bufferGraphic = buf;
+        lastBufferParentRef.current = parent;
 
         const idx = layer.graphics.indexOf(parent);
         if (idx >= 0) layer.graphics.add(buf, idx);
@@ -943,7 +1050,26 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             }
         });
         return () => { try { handle.remove(); } catch { } };
-    }, [sketchViewModel, bufferEnabled, bufferDistance, bufferUnit, announceStatus]);
+    }, [sketchViewModel, bufferEnabled, bufferDistance, bufferUnit, bufferOpacity, bufferOutlineOnly, bufferUseCustomColor, bufferColor, announceStatus]);
+
+    // Custom tools (triangle, curve segments) finalize via svmGraCreate and never
+    // emit the SketchViewModel 'create' event the auto-buffer above listens for, so
+    // the widget fires this window event for them. Reuses the same attach path.
+    React.useEffect(() => {
+        const onBufferNew = (e: any) => {
+            const g = asExtended(e?.detail?.graphic);
+            if (!g?.geometry || !bufferEnabled || g.bufferGraphic) return;
+            setTimeout(async () => {
+                try {
+                    await createOrUpdateBufferFor(g, bufferDistance, bufferUnit);
+                    triggerSave();
+                    announceStatus(`Buffer automatically created: ${bufferDistance} ${formatUnit(bufferDistance, bufferUnit)}`);
+                } catch (err) { console.error('Auto buffer (custom tool) failed', err); }
+            }, 100);
+        };
+        window.addEventListener('drawadv:bufferNewGraphic', onBufferNew as any);
+        return () => window.removeEventListener('drawadv:bufferNewGraphic', onBufferNew as any);
+    }, [bufferEnabled, bufferDistance, bufferUnit, bufferOpacity, bufferOutlineOnly, bufferUseCustomColor, bufferColor, announceStatus]);
 
     // --- button handlers (selected only) ---
     const handleUpdateBuffer = async () => {
@@ -970,27 +1096,107 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
         announceStatus(`Buffer updated: ${bufferDistance} ${formatUnit(bufferDistance, bufferUnit)} applied to ${selected.length} graphic${selected.length !== 1 ? 's' : ''}`);
     };
 
+    // Buffers to apply style controls to: the selected drawings' buffers, or
+    // the single most-recently-created/edited buffer when nothing is selected,
+    // so a just-drawn buffer can still be recolored live without changing every
+    // other buffer on the map.
+    const getBufferStyleTargets = (): ExtendedGraphic[] => {
+        const selected = getSelectedMainGraphics().filter(g => g.bufferGraphic && g.bufferSettings);
+        if (selected.length > 0) return selected;
+        const layer = getDrawLayer();
+        const last = lastBufferParentRef.current;
+        if (layer && last && last.bufferGraphic && last.bufferSettings &&
+            layer.graphics.indexOf(last) >= 0 &&
+            layer.graphics.indexOf(last.bufferGraphic) >= 0) {
+            return [last];
+        }
+        return [];
+    };
+
     const handleUpdateOpacity = () => {
         if (!bufferEnabled) {
             announceStatus('Buffer feature is disabled. Enable buffer to use this action.');
             return;
         }
-        const selected = getSelectedMainGraphics();
+        const selected = getBufferStyleTargets();
         if (selected.length === 0) {
-            announceStatus('No graphics selected. Select graphics with buffers to update opacity.');
+            announceStatus('No buffers to update. Draw a buffer first, or select a drawing with a buffer.');
             return;
         }
         let updatedCount = 0;
         selected.forEach(g => {
             if (g.bufferSettings && g.bufferGraphic) {
                 g.bufferSettings.opacity = bufferOpacity;
-                g.bufferGraphic.symbol = makeBufferSymbol(g);
+                g.bufferSettings.outlineOnly = bufferOutlineOnly;
+                g.bufferSettings.customColor = bufferUseCustomColor ? bufferColor : null;
+                g.bufferSettings.customOutlineColor = bufferUseCustomColor ? bufferOutlineColor : null;
+                g.bufferGraphic.symbol = buildBufferSymbol(g);
                 updatedCount++;
             }
         });
-        saveSettings({ opacity: bufferOpacity });
+        saveSettings({ opacity: bufferOpacity, outlineOnly: bufferOutlineOnly, useCustomColor: bufferUseCustomColor, color: bufferColor, outlineColor: bufferOutlineColor });
         triggerSave();
-        announceStatus(`Opacity updated to ${bufferOpacity}% for ${updatedCount} buffer${updatedCount !== 1 ? 's' : ''}`);
+        announceStatus(`Style updated for ${updatedCount} buffer${updatedCount !== 1 ? 's' : ''}`);
+    };
+
+    // Apply explicit style overrides to selected buffers immediately. Values are
+    // passed in (not read from state) to avoid stale-state races on toggle.
+    const applyStyleToSelected = (opts: { outlineOnly?: boolean; customColor?: string | null; customOutlineColor?: string | null }) => {
+        const selected = getBufferStyleTargets();
+        let count = 0;
+        selected.forEach(g => {
+            if (g.bufferSettings && g.bufferGraphic) {
+                if ('outlineOnly' in opts) g.bufferSettings.outlineOnly = opts.outlineOnly;
+                if ('customColor' in opts) g.bufferSettings.customColor = opts.customColor ?? null;
+                if ('customOutlineColor' in opts) g.bufferSettings.customOutlineColor = opts.customOutlineColor ?? null;
+                g.bufferGraphic.symbol = buildBufferSymbol(g);
+                count++;
+            }
+        });
+        if (count > 0) triggerSave();
+        return count;
+    };
+
+    // Toggle outline-only and immediately re-style any selected buffers so the
+    // change is visible without requiring a separate apply click.
+    const handleOutlineOnlyChange = (val: boolean) => {
+        setBufferOutlineOnly(val);
+        saveSettings({ outlineOnly: val });
+        const count = applyStyleToSelected({ outlineOnly: val });
+        announceStatus(val
+            ? `Outline-only enabled${count ? ` for ${count} selected buffer${count !== 1 ? 's' : ''}` : ''}`
+            : `Outline-only disabled${count ? ` for ${count} selected buffer${count !== 1 ? 's' : ''}` : ''}`);
+    };
+
+    // Toggle custom color on/off and re-style selected buffers.
+    const handleUseCustomColorChange = (val: boolean) => {
+        setBufferUseCustomColor(val);
+        saveSettings({ useCustomColor: val });
+        const count = applyStyleToSelected({
+            customColor: val ? bufferColor : null,
+            customOutlineColor: val ? bufferOutlineColor : null
+        });
+        announceStatus(val
+            ? `Custom buffer color enabled${count ? ` for ${count} selected buffer${count !== 1 ? 's' : ''}` : ''}`
+            : `Custom buffer color disabled${count ? ` for ${count} selected buffer${count !== 1 ? 's' : ''}` : ''}`);
+    };
+
+    // Change the custom FILL color; re-style selected buffers when active.
+    const handleBufferColorChange = (color: string) => {
+        setBufferColor(color);
+        saveSettings({ color });
+        if (bufferUseCustomColor) {
+            applyStyleToSelected({ customColor: color });
+        }
+    };
+
+    // Change the custom OUTLINE color; re-style selected buffers when active.
+    const handleBufferOutlineColorChange = (color: string) => {
+        setBufferOutlineColor(color);
+        saveSettings({ outlineColor: color });
+        if (bufferUseCustomColor) {
+            applyStyleToSelected({ customOutlineColor: color });
+        }
     };
 
     const handleLabelBuffer = () => {
@@ -1120,6 +1326,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 id={`${distanceInputId}-label`}
                                 for={distanceInputId}
                                 className='mr-2 mb-0 d-flex align-items-center'
+                                style={{ width: '70px', flexShrink: 0 }}
                                 title="Buffer distance - the radius of the buffer zone around graphics"
                             >
                                 Distance:
@@ -1207,6 +1414,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 id={`${opacityInputId}-label`}
                                 for={opacityInputId}
                                 className='mr-2 mb-0 d-flex align-items-center'
+                                style={{ width: '70px', flexShrink: 0 }}
                                 title="Buffer opacity - controls the transparency of the buffer visualization"
                             >
                                 Opacity:
@@ -1243,6 +1451,74 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                             >
                                 %
                             </span>
+                        </div>
+
+                        {/* Outline-only toggle */}
+                        <div
+                            className='d-flex align-items-center mb-2'
+                            title="Outline only - show just the buffer outline with no fill"
+                        >
+                            <Checkbox
+                                checked={bufferOutlineOnly}
+                                onChange={(e: any) => handleOutlineOnlyChange(!!e?.target?.checked)}
+                                aria-label="Outline only - show buffers as an outline with no fill"
+                            />
+                            <Label
+                                className='ml-2 mb-0'
+                                onClick={() => handleOutlineOnlyChange(!bufferOutlineOnly)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                Outline Only (No Fill)
+                            </Label>
+                        </div>
+
+                        {/* Custom buffer color toggle + picker */}
+                        <div
+                            className='d-flex align-items-center mb-2'
+                            title="Custom buffer color - use a chosen color instead of inheriting the drawing's color"
+                        >
+                            <Checkbox
+                                checked={bufferUseCustomColor}
+                                onChange={(e: any) => handleUseCustomColorChange(!!e?.target?.checked)}
+                                aria-label="Custom buffer color - override the color inherited from the drawing"
+                            />
+                            <Label
+                                className='ml-2 mb-0 mr-2'
+                                onClick={() => handleUseCustomColorChange(!bufferUseCustomColor)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                Custom Buffer Color
+                            </Label>
+                            {bufferUseCustomColor && (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                        <span style={{ fontSize: '12px' }}>Fill</span>
+                                        <ColorPicker
+                                            style={{ padding: 0 }}
+                                            width={24}
+                                            height={24}
+                                            color={bufferColor || 'rgba(216,48,32,1)'}
+                                            onChange={handleBufferColorChange}
+                                            title={`Buffer fill color: ${bufferColor}. Click to change.`}
+                                            aria-label={`Buffer fill color picker, current color ${bufferColor}`}
+                                            aria-haspopup="dialog"
+                                        />
+                                    </span>
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                        <span style={{ fontSize: '12px' }}>Outline</span>
+                                        <ColorPicker
+                                            style={{ padding: 0 }}
+                                            width={24}
+                                            height={24}
+                                            color={bufferOutlineColor || 'rgba(216,48,32,1)'}
+                                            onChange={handleBufferOutlineColorChange}
+                                            title={`Buffer outline color: ${bufferOutlineColor}. Click to change.`}
+                                            aria-label={`Buffer outline color picker, current color ${bufferOutlineColor}`}
+                                            aria-haspopup="dialog"
+                                        />
+                                    </span>
+                                </span>
+                            )}
                         </div>
 
                         {/* Action Buttons - spread across the widget */}
@@ -1290,13 +1566,13 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 onClick={handleUpdateOpacity}
                                 className='flex-fill'
                                 style={{ minWidth: 0 }}
-                                title='Update Graphic - Applies the current opacity setting to all buffers on selected graphics without changing their size or shape'
-                                aria-label={`Update Graphic Opacity - Set buffer opacity to ${bufferOpacity}% for selected graphics`}
+                                title='Update Style - Applies the current opacity and outline-only settings to all buffers on selected graphics without changing their size or shape'
+                                aria-label={`Update Style - Set buffer opacity to ${bufferOpacity}% and outline-only ${bufferOutlineOnly ? 'on' : 'off'} for selected graphics`}
                                 aria-describedby={`${componentId}-opacity-btn-desc`}
                                 disabled={!bufferEnabled}
                                 aria-disabled={!bufferEnabled}
                             >
-                                Update Graphic
+                                Update Style
                             </Button>
                             {/* Hidden button description */}
                             <span

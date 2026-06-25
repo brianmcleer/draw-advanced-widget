@@ -60,7 +60,7 @@ npm install --save shpjs jszip
 - **Measurement system:** real-time area, perimeter, length, radius, and coordinate calculations; geodetic or planar based on spatial reference; distance and area units including user-defined custom units; per-segment line measurements; configurable decimal precision and per-metric toggles.
 - **Tooltips:** live length, area, perimeter, radius, and coordinate readouts while drawing, with smart placement and styling.
 - **Snapping:** detects all visible snappable layers (feature, graphics, CSV, GeoJSON, WFS, sublayers) with a 15 pixel tolerance, self-snapping, and temporary disable via Ctrl/Cmd. Optional alignment grid.
-- **Buffers:** add buffers to points, lines, polygons, and circles with configurable distance, unit, and opacity; buffers update when the parent is reshaped and are included in import and export.
+- **Buffers:** add buffers to points, lines, polygons, and circles with configurable distance, unit, and opacity; an outline-only option (transparent fill, solid stroke) and an optional custom buffer color that overrides the source drawing's color. Buffers update when the parent is reshaped and are included in import and export.
 - **Line arrows:** add direction arrowheads to straight and freehand lines.
 - **Text tool:** expanded font library, real-time preview, rotation, multi-line support, and outline/halo controls.
 - **Layer management:** toggle the drawing layer in the map layer list and set a custom layer name.
@@ -75,6 +75,11 @@ npm install --save shpjs jszip
 ### Integration
 - Send a drawn geometry to the Mailing Labels widget as a selection.
 - Optional integration with the custom Identify By Query widget.
+
+### Settings & configuration
+- **Granular toggles:** enable or disable each drawing tool, major feature (symbol editor, measurements, snapping, buffer, undo/redo, copy-from-map), and each My Drawings action independently.
+- **Defaults:** configure default draw mode, layer name, storage scope, maximum saved drawings, default tab, default buffer distance/unit/opacity/color, and customizable measurement label templates.
+- **Settings import/export:** save the full widget configuration to an XML file and load it into another application to copy settings between experiences.
 
 For the complete narrative of capabilities and known issues, see the [Esri Community post](https://community.esri.com/t5/experience-builder-custom-widgets/advanced-draw-widget-improvements-import-export/ba-p/1618579).
 
@@ -108,6 +113,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 
 ## Changelog
 
+- 2026-06-25 v4.2.0: Outline-only buffer option (transparent fill, solid stroke) toggled per buffer; applies live to selected buffers and to new buffers, and persists across reloads. Optional custom buffer color, chosen at creation, that overrides the color inherited from the source drawing. Buffer geometry is now included in all export formats (GeoJSON, shapefile, KML, and ExB Draw) as its own feature, not just as parent attributes. Settings: developer-configurable buffer defaults (distance, unit, opacity, color) and measurement label templates; XML import/export of the full widget configuration to copy settings between applications; settings panel standardized on Jimu UI with developer tooltips and accessibility (WCAG) improvements.
+
 - 2026-06-23 v4.1.0: Triangle tool and optional curve tools (enabled in settings); on-map tooltip overhaul with native Esri styling and Calcite Design System tokens; UI tokenization pass across the widget chrome; text style editor overflow fix; triangle-tool jitter fix.
 
 - 2026-06-11 v4.0.2: Security fixes for CodeQL code scanning alerts
@@ -121,6 +128,7 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 - **2026-02-12** Fixed import of SHP files using regional coordinate systems (for example EPSG:5514).
 - **2026-02-05** Version 3: shapefile and KML import/export, storage scope setting, and a My Drawings UI overhaul.
 - **2025-10-15** Version 2: buffers, line arrows, GeoJSON import/export, measurement label editing, and Delete All.
+- **2025-05-28** Version 1.0.0: initial release.
 
 ---
 

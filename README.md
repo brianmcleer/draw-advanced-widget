@@ -65,10 +65,11 @@ Dependencies (installed automatically, pinned in `draw-advanced/package-lock.jso
 - Drawing tools for point, line, freehand line, text, rectangle, polygon, freehand polygon, circle, and an optional triangle tool, plus optional curve tools enabled in the widget settings.
 - Real-time measurement (area, perimeter, length, radius, coordinates) with geodetic or planar calculation, custom units, per-segment labels, and configurable precision.
 - Live tooltips, multi-layer snapping with a 15 pixel tolerance, and an optional alignment grid.
-- Buffers, line arrows, an expanded text-styling tool, and drawing-layer management.
+- Buffers (with outline-only and custom-color options), line arrows, an expanded text-styling tool, and drawing-layer management.
 - A My Drawings manager: local-storage save, sorting, filtering, locking, notes, undo/redo, bulk operations, and draw-order control.
 - Import and export across GeoJSON, KML, zipped shapefile, and legacy JSON, plus EB Draw widget compatible JSON.
 - Optional integration with the Mailing Labels and Identify By Query custom widgets.
+- Configurable settings: per-tool and per-feature toggles, default buffer and measurement options, and XML import/export to copy a configuration between applications.
 
 See [`draw-advanced/README.md`](draw-advanced/README.md) for the full feature reference, known issues, and changelog.
 

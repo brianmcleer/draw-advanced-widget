@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+ï»¿@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
 /* ========================================================================== */
 /* LEGACY / BASE UTILITIES                                                    */
@@ -55,8 +55,8 @@
 .tab-header {
     flex-shrink: 0;
     display: flex;
-    border-bottom: 2px solid #ccc;
-    background: #fff;
+    border-bottom: 2px solid var(--calcite-color-border-2, #ccc);
+    background: var(--calcite-color-foreground-1, #fff);
     z-index: 10;
     position: relative;
     margin: 0; /* no extra spacing */
@@ -68,21 +68,21 @@
     text-align: center;
     cursor: pointer;
     font-weight: 500;
-    color: #003a55;
+    color: var(--calcite-color-brand, #003a55);
     border-bottom: 2px solid transparent;
-    background: #f8f9fa;
+    background: var(--calcite-color-foreground-2, #f8f9fa);
     transition: all 0.2s ease;
 }
 
     .tab-button:hover {
-        background-color: #e9ecef;
+        background-color: var(--calcite-color-foreground-3, #e9ecef);
     }
 
     .tab-button.active {
-        background: #fff;
-        border-bottom: 2px solid #003a55;
+        background: var(--calcite-color-foreground-1, #fff);
+        border-bottom: 2px solid var(--calcite-color-brand, #003a55);
         font-weight: 600;
-        color: #003a55;
+        color: var(--calcite-color-brand, #003a55);
     }
 
 /* Scrollable content */
@@ -92,7 +92,7 @@
     overflow-x: hidden;
     min-height: 0;
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    scrollbar-color: var(--calcite-color-border-1, #c1c1c1) var(--calcite-color-foreground-2, #f1f1f1);
 }
 
     .tab-content::-webkit-scrollbar {
@@ -100,17 +100,17 @@
     }
 
     .tab-content::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: var(--calcite-color-foreground-2, #f1f1f1);
         border-radius: 3px;
     }
 
     .tab-content::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
+        background: var(--calcite-color-border-1, #c1c1c1);
         border-radius: 3px;
     }
 
         .tab-content::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: var(--calcite-color-border-2, #a8a8a8);
         }
 
 /* ========================================================================== */
@@ -129,12 +129,12 @@
 
     .mode-message h5 {
         margin: 0.5rem 0 0.25rem 0;
-        color: #003a55;
+        color: var(--calcite-color-brand, #003a55);
     }
 
     .mode-message h6 {
         margin: 0;
-        color: #666;
+        color: var(--calcite-color-text-2, #666);
         font-weight: normal;
     }
 
@@ -143,7 +143,7 @@
 }
 
 /* ========================================================================== */
-/* MAIN CHECKBOX STACKS — NO VERTICAL SPACING                                 */
+/* MAIN CHECKBOX STACKS ï¿½ NO VERTICAL SPACING                                 */
 /* ========================================================================== */
 
 /* Parent stack that holds: Measure, Snapping, Buffer */
@@ -160,14 +160,14 @@
     gap: 0; /* absolutely no space between these two as well */
 }
 
-    /* Make sure panels themselves don’t create margins */
+    /* Make sure panels themselves donï¿½t create margins */
     .main-checkbox-stack .jimu-collapsable-panel,
     .measure-toggle-stack .jimu-collapsable-panel {
         margin: 0 !important;
     }
 
 /* ========================================================================== */
-/* COLLAPSIBLE SECTIONS — RESET ALL EXTRA SPACING                             */
+/* COLLAPSIBLE SECTIONS ï¿½ RESET ALL EXTRA SPACING                             */
 /* ========================================================================== */
 
 /* Each wrapper around a collapsible panel */
@@ -186,13 +186,13 @@
         margin: 0 !important;
         border-radius: 4px;
         overflow: hidden;
-        background: #fff;
+        background: var(--calcite-color-foreground-1, #fff);
     }
 
         /* Panel header/body internal padding (visual comfort without external gaps) */
         .collapsible-section .jimu-collapsable-panel > .header {
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
+            background: var(--calcite-color-foreground-2, #f8f9fa);
+            border-bottom: 1px solid var(--calcite-color-border-3, #dee2e6);
             padding: 12px 16px;
             font-weight: 500;
             display: flex;
@@ -243,7 +243,7 @@
         padding-bottom: 0 !important; /* ensure bodies don't extend spacing */
     }
 
-/* Arrow controls — keep tight */
+/* Arrow controls ï¿½ keep tight */
 .arrow-controls {
     padding: 0;
     background: transparent;
@@ -264,7 +264,7 @@
 }
 
     .myss .border {
-        border: 1px solid #dee2e6 !important;
+        border: 1px solid var(--calcite-color-border-3, #dee2e6) !important;
         border-radius: 4px;
     }
 

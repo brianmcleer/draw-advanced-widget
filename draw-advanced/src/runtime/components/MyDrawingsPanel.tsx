@@ -1,4 +1,5 @@
-import { React, useState, useEffect, useRef } from 'jimu-core';
+import { React } from 'jimu-core';
+const { useState, useEffect, useRef } = React as any;
 import { Button, TextInput, NumericInput, Switch, Slider, Label, AdvancedButtonGroup, Select, Option, Popper } from 'jimu-ui';
 import { SymbolSelector, JimuSymbolType, JimuSymbol } from 'jimu-ui/advanced/map';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
@@ -21,8 +22,9 @@ import Polyline from "esri/geometry/Polyline";
 import Multipoint from "esri/geometry/Multipoint";
 import Extent from "esri/geometry/Extent";
 import SpatialReference from "esri/geometry/SpatialReference";
-import webMercatorUtils from "esri/geometry/support/webMercatorUtils";
+import * as webMercatorUtils from "esri/geometry/support/webMercatorUtils";
 import * as geometryEngine from 'esri/geometry/geometryEngine';
+import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
 import proj4 from 'proj4';
 import shpwrite from '@mapbox/shp-write';
 import JSZip from 'jszip';
@@ -31,16 +33,16 @@ import type { FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
 import ReactDOM from 'react-dom';
 
 // Optional: Import icons for text alignment if available
-import hAlignLeft from 'jimu-icons/svg/outlined/editor/text-left.svg';
-import hAlignCenter from 'jimu-icons/svg/outlined/editor/text-center.svg';
-import hAlignRight from 'jimu-icons/svg/outlined/editor/text-right.svg';
-import vAlignBase from './assets/text-align-v-base.svg';
-import vAlignTop from './assets/text-align-v-t.svg';
-import vAlignMid from './assets/text-align-v-m.svg';
-import vAlignBot from './assets/text-align-v-b.svg';
-import fsBoldIcon from './assets/bold.svg';
-import fItalicIcon from './assets/italic.svg';
-import fUnderlineIcon from './assets/underline.svg';
+const hAlignLeft = require('jimu-icons/svg/outlined/editor/text-left.svg');
+const hAlignCenter = require('jimu-icons/svg/outlined/editor/text-center.svg');
+const hAlignRight = require('jimu-icons/svg/outlined/editor/text-right.svg');
+const vAlignBase = require('../assets/text-align-v-base.svg');
+const vAlignTop = require('../assets/text-align-v-t.svg');
+const vAlignMid = require('../assets/text-align-v-m.svg');
+const vAlignBot = require('../assets/text-align-v-b.svg');
+const fsBoldIcon = require('../assets/bold.svg');
+const fItalicIcon = require('../assets/italic.svg');
+const fUnderlineIcon = require('../assets/underline.svg');
 
 import { InputUnit } from 'jimu-ui/advanced/style-setting-components';
 import { Icon } from 'jimu-ui';
@@ -195,8 +197,23 @@ const _mdpPolygonBuffer = (rings: number[][][], distM: number, sr: any): any => 
     return _mdpMakePoly(rings.map(r => offsetRing(r)), sr);
 };
 
+// True curves keep their shape in curvePaths and have an empty paths array, which
+// every paths-based operation below (buffer, reproject, export) would treat as empty.
+// Densify a curve into a plain polyline so those operations capture it.
+const _mdpDensifyIfCurve = (geom: any): any => {
+    try {
+        if (!geom || geom.type !== 'polyline' || !(geom as any).curvePaths) return geom;
+        const ext = (geom as any).extent;
+        const span = ext ? Math.max(ext.width || 0, ext.height || 0) : 0;
+        const maxSeg = Math.max(span ? span / 200 : 1, 1e-6);
+        const dense: any = densifyOperator.execute(geom, maxSeg);
+        return (dense && dense.paths && dense.paths.length) ? dense : geom;
+    } catch (e) { console.warn('MyDrawings curve densify failed:', e); return geom; }
+};
+
 const _mdpManualBuffer = (geom: any, distM: number, sr: any): any => {
     if (!geom) return null;
+    geom = _mdpDensifyIfCurve(geom);
     const isGeo = sr?.isGeographic || sr?.wkid === 4326;
 
     // Convert meters to the SR's native coordinate units (projected SRs only).
@@ -406,7 +423,7 @@ const genThumb = async (g: any, jmv: JimuMapView): Promise<string | null> => {
     });
 };
 
-interface ExtendedGraphic extends any {
+interface ExtendedGraphic extends Graphic {
     measure?: {
         graphic: any | null;
         areaUnit?: string;
@@ -427,6 +444,9 @@ interface ExtendedGraphic extends any {
         enabled: boolean;
         opacity?: number;
         hasLabel?: boolean; // 🔧 NEW: Track if buffer has a label
+        outlineOnly?: boolean;
+        customColor?: string | null;
+        customOutlineColor?: string | null;
     };
     // 🔧 MEASUREMENT FIX: Additional properties for measurement handling
     attributes: any["attributes"] & {
@@ -767,13 +787,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 return geometry;
             }
             // Delegate to the full conversion method which has webMercatorUtils + proj4 fallbacks
-            return this.convertGeometryToWGS84ForExport(geometry);
+            return this.convertGeometryToWGS84(geometry);
         } catch (error) {
             console.error('Error projecting geometry to WGS84:', error);
             return null;
         }
     };
     private convertGeometryToWGS84 = (geometry: any): any | null => {
+        geometry = _mdpDensifyIfCurve(geometry);
         const mapSR = geometry.spatialReference;
 
         if (!mapSR) {
@@ -1004,6 +1025,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
 
     private manualProjectionFallback = (geometry: any): any | null => {
+        geometry = _mdpDensifyIfCurve(geometry);
         const mapSR = geometry.spatialReference;
 
         if (!mapSR) {
@@ -1196,6 +1218,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         }
     };
     private manualProjectionFallbackEnhanced = (geometry: any): any | null => {
+        geometry = _mdpDensifyIfCurve(geometry);
         const mapSR = geometry.spatialReference;
 
         if (!mapSR) {
@@ -2268,6 +2291,20 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                     },
                     popupTemplate: null
                 });
+
+                // Include the attached buffer polygon as its own graphic.
+                const bufferGraphic = this.getAttachedBufferGraphic(graphic);
+                if (bufferGraphic?.geometry) {
+                    graphicsJson.push({
+                        aggregateGeometries: null,
+                        geometry: bufferGraphic.geometry.toJSON(),
+                        symbol: bufferGraphic.symbol ? bufferGraphic.symbol.toJSON() : null,
+                        attributes: {
+                            jimuDrawId: `${jimuDrawId}-buffer`
+                        },
+                        popupTemplate: null
+                    });
+                }
             }
 
             return JSON.stringify(graphicsJson, null, 2);
@@ -2769,6 +2806,48 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         }
     };
 
+    // Resolve the buffer graphic attached to a parent drawing for export.
+    // Prefers the live bufferGraphic link; falls back to scanning the draw layer
+    // by parentId so buffers survive a reload where the live link is gone.
+    private getAttachedBufferGraphic = (parent: ExtendedGraphic): ExtendedGraphic | null => {
+        if (parent?.bufferGraphic?.geometry) return parent.bufferGraphic;
+        const layer = this.props.graphicsLayer as any;
+        const pid = parent?.attributes?.uniqueId;
+        if (!layer || !pid) return null;
+        try {
+            const found = layer.graphics.toArray().find((g: any) =>
+                (g.attributes?.isBuffer || g.attributes?.isBufferDrawing) &&
+                (g.attributes?.parentId === pid || g.sourceGraphicId === pid));
+            return (found && found.geometry) ? found as ExtendedGraphic : null;
+        } catch {
+            return null;
+        }
+    };
+
+    // Build the export properties for a buffer feature derived from its parent.
+    private buildBufferExportProps = (parent: ExtendedGraphic, parentId: string, parentName: string, created: string, bufferGraphic: ExtendedGraphic): any => {
+        const bufProps: any = {
+            id: `${parentId}_buffer`,
+            name: `${parentName} Buffer`,
+            description: 'Buffer',
+            type: 'Buffer',
+            isBuffer: true,
+            parentId,
+            created,
+            notes: ''
+        };
+        const settings = parent.bufferSettings;
+        const ba = bufferGraphic.attributes || {};
+        const distance = settings?.distance ?? ba.bufferDistance;
+        const unit = settings?.unit ?? ba.bufferUnit;
+        if (distance != null) bufProps.bufferDistance = distance;
+        if (unit != null) bufProps.bufferUnit = unit;
+        if (typeof settings?.opacity === 'number') bufProps.bufferOpacity = settings.opacity;
+        if (typeof settings?.outlineOnly === 'boolean') bufProps.bufferOutlineOnly = settings.outlineOnly;
+        Object.assign(bufProps, this.convertSymbolToStandardProperties(bufferGraphic.symbol));
+        return bufProps;
+    };
+
     generateCompatibleExportData = async (
         drawingsToExport: ExtendedGraphic[]
     ): Promise<{ geoJSONFormat: any }> => {
@@ -2886,6 +2965,21 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 geometry: geoJSONGeom,
                 properties: props
             });
+
+            // 7. Also export the attached buffer polygon as its own feature so the
+            // buffer geometry is present in GeoJSON/shapefile (not just metadata).
+            const bufferGraphic = this.getAttachedBufferGraphic(graphic);
+            if (bufferGraphic?.geometry) {
+                const bufferGeoJSON = await this.convertToStandardGeoJSON(bufferGraphic.geometry);
+                if (bufferGeoJSON) {
+                    const bufferProps = this.buildBufferExportProps(graphic, getId(graphic, i), props.name, props.created, bufferGraphic);
+                    geoJSONFeatures.push({
+                        type: 'Feature',
+                        geometry: bufferGeoJSON,
+                        properties: bufferProps
+                    });
+                }
+            }
         }
 
         return {
@@ -3047,6 +3141,30 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         let fillColor = new Color([0, 0, 0, 0.15 * opacityMultiplier]);
         let outlineColor = new Color([0, 0, 0, 0.6 * opacityMultiplier]);
 
+        // Custom color override: drive fill and outline from the chosen colors
+        // instead of inheriting from the parent symbol. Outline color falls back
+        // to the fill color for buffers saved before outline color was separate.
+        const customColor = parentGraphic.bufferSettings?.customColor || null;
+        const customOutlineColor = parentGraphic.bufferSettings?.customOutlineColor || customColor || null;
+        if (customColor || customOutlineColor) {
+            try {
+                const fc = new Color(customColor || customOutlineColor);
+                const oc = new Color(customOutlineColor || customColor);
+                fillColor = new Color([fc.r, fc.g, fc.b, 0.3 * opacityMultiplier]);
+                outlineColor = new Color([oc.r, oc.g, oc.b, 1.0 * opacityMultiplier]);
+                if (parentGraphic.bufferSettings?.outlineOnly) {
+                    return new SimpleFillSymbol({
+                        color: new Color([0, 0, 0, 0]),
+                        outline: new SimpleLineSymbol({ color: outlineColor, width: 2.5, style: 'solid' })
+                    });
+                }
+                return new SimpleFillSymbol({
+                    color: fillColor,
+                    outline: new SimpleLineSymbol({ color: outlineColor, width: 2.5, style: 'dash' })
+                });
+            } catch { /* fall through to inherited color */ }
+        }
+
         try {
             if (geomType === 'polygon' && parentSymbol) {
                 const fillSym = parentSymbol as any;
@@ -3079,6 +3197,17 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         }
 
         //console.log(`🎨 MyDrawingsPanel: Creating buffer symbol with ${opacityToUse}% opacity`);
+
+        if (parentGraphic.bufferSettings?.outlineOnly) {
+            return new SimpleFillSymbol({
+                color: new Color([0, 0, 0, 0]),
+                outline: new SimpleLineSymbol({
+                    color: outlineColor,
+                    width: 2.5,
+                    style: 'solid'
+                })
+            });
+        }
 
         return new SimpleFillSymbol({
             color: fillColor,
@@ -3467,6 +3596,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             const placemark = await this.convertGraphicToKMLPlacemark(graphic, i);
             if (placemark) {
                 placemarks += placemark;
+            }
+            // Export the attached buffer polygon as its own placemark.
+            const bufferGraphic = this.getAttachedBufferGraphic(graphic);
+            if (bufferGraphic?.geometry) {
+                const bufferPlacemark = await this.convertGraphicToKMLPlacemark(bufferGraphic, drawingsToExport.length + i);
+                if (bufferPlacemark) {
+                    placemarks += bufferPlacemark;
+                }
             }
         }
 
@@ -4099,6 +4236,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             const view = this.props.jimuMapView?.view;
             if (!view) return null;
             const sr = view.spatialReference;
+            geometry = _mdpDensifyIfCurve(geometry);
 
             // PRIMARY: geometryEngine — produces a TRUE buffer. Self-intersections
             // from a crossing/weird source shape are dissolved automatically, so the
@@ -4184,6 +4322,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             unit: extendedGraphic.bufferSettings.unit,
                             enabled: extendedGraphic.bufferSettings.enabled,
                             opacity: extendedGraphic.bufferSettings.opacity,  // 🚨 CRITICAL: Include opacity in save
+                            outlineOnly: extendedGraphic.bufferSettings.outlineOnly ?? false,
+                            customColor: extendedGraphic.bufferSettings.customColor ?? null,
+                            customOutlineColor: extendedGraphic.bufferSettings.customOutlineColor ?? null,
                             hasLabel: extendedGraphic.bufferLabel ? true : false  // 🔧 NEW: Track if label exists
                         };
                     }
@@ -4240,6 +4381,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             unit: extendedGraphic.bufferSettings.unit,
                             enabled: extendedGraphic.bufferSettings.enabled,
                             opacity: extendedGraphic.bufferSettings.opacity,  // 🚨 CRITICAL: Include opacity in save
+                            outlineOnly: extendedGraphic.bufferSettings.outlineOnly ?? false,
+                            customColor: extendedGraphic.bufferSettings.customColor ?? null,
+                            customOutlineColor: extendedGraphic.bufferSettings.customOutlineColor ?? null,
                             hasLabel: extendedGraphic.bufferLabel ? true : false  // 🔧 NEW: Track if label exists
                         };
                     }
@@ -5403,7 +5547,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             return;
         }
 
-        const { distance, unit, enabled, opacity } = parentGraphic.bufferSettings;
+        const { distance, unit, enabled, opacity, outlineOnly, customColor, customOutlineColor } = parentGraphic.bufferSettings;
 
         if (!enabled) {
             //console.log(`⏭️ Buffer disabled for graphic ${parentGraphic.attributes?.uniqueId}`);
@@ -5427,7 +5571,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 distance: distance,
                 unit: unit,
                 enabled: enabled,
-                opacity: savedOpacity  // Ensure this is set before creating the symbol
+                opacity: savedOpacity,  // Ensure this is set before creating the symbol
+                outlineOnly: outlineOnly ?? false,
+                customColor: customColor ?? null,
+                customOutlineColor: customOutlineColor ?? null
             };
 
             // Create buffer symbol using parent graphic's colors AND saved opacity
@@ -6807,6 +6954,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             try {
                 this.sketchViewModel = new SketchViewModel({
                     view: this.props.jimuMapView.view,
+                    useLegacyCreateTools: false, // match main draw SVM: next-gen create with true curve tools
                     layer: this.props.graphicsLayer
                 });
                 this.internalSketchVM = true;
@@ -8047,7 +8195,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         distance: item.attributes.bufferSettings.distance,
                                         unit: item.attributes.bufferSettings.unit,
                                         enabled: item.attributes.bufferSettings.enabled,
-                                        opacity: item.attributes.bufferSettings.opacity
+                                        opacity: item.attributes.bufferSettings.opacity,
+                                        outlineOnly: item.attributes.bufferSettings.outlineOnly ?? false,
+                                        customColor: item.attributes.bufferSettings.customColor ?? null,
+                                        customOutlineColor: item.attributes.bufferSettings.customOutlineColor ?? null
                                     };
 
                                     if (graphic.bufferSettings.enabled) {
@@ -8533,6 +8684,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 if (!this.sketchViewModel) {
                     this.sketchViewModel = new SketchViewModel({
                         view,
+                        useLegacyCreateTools: false, // next-gen create/update: allows curve segments + shift-drag-to-curve on edit
                         layer,
                         defaultUpdateOptions: { enableScaling: true, enableRotation: true }
                     });
@@ -12465,7 +12617,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             distance: item.attributes.bufferSettings.distance,
                             unit: item.attributes.bufferSettings.unit,
                             enabled: item.attributes.bufferSettings.enabled,
-                            opacity: item.attributes.bufferSettings.opacity
+                            opacity: item.attributes.bufferSettings.opacity,
+                            outlineOnly: item.attributes.bufferSettings.outlineOnly ?? false,
+                            customColor: item.attributes.bufferSettings.customColor ?? null,
+                            customOutlineColor: item.attributes.bufferSettings.customOutlineColor ?? null
                         };
 
                         if (graphic.bufferSettings.enabled) {
@@ -14031,13 +14186,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     rgbaToHex = (rgba) => {
         // Handle potential errors with rgba format
         if (!rgba || typeof rgba !== 'string') {
-            return '#000000'; // Default to black
+            return 'var(--calcite-color-text-1, #000000)'; // Default to black
         }
 
         // Extract RGBA values
         const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
         if (!match) {
-            return '#000000'; // Default to black if format doesn't match
+            return 'var(--calcite-color-text-1, #000000)'; // Default to black if format doesn't match
         }
 
         // Convert to hex
@@ -15111,7 +15266,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
         // Custom styles to override any gray backgrounds
         const whiteBackgroundStyle = {
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--calcite-color-foreground-1, #fff)',
             boxShadow: 'none'
         };
 
@@ -15122,7 +15277,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 aria-modal="true"
                 aria-labelledby="storageDisclaimerTitle"
                 aria-describedby="storageDisclaimerDescription"
-                style={{ backgroundColor: '#fff' }}
+                style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)' }}
             >
                 <h5 id="storageDisclaimerTitle" className="mb-3" tabIndex={-1}>
                     Important Notice
@@ -15158,7 +15313,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
         // Header style with !important to override any external styles
         const headerStyle = {
-            backgroundColor: '#fff !important',
+            backgroundColor: 'var(--calcite-color-foreground-1, #fff) !important',
             boxShadow: 'none'
         };
 
@@ -15190,7 +15345,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .my-drawings-panel .border-bottom,
   .my-drawings-panel > div,
   .my-drawings-panel > div > div {
-      background-color: #fff !important;
+      background-color: var(--calcite-color-foreground-1, #fff) !important;
   }
 
   .my-drawings-panel .drawing-list-container {
@@ -15203,12 +15358,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .widget-title,
   .widget-heading,
   .widget-header {
-      background-color: #fff !important;
+      background-color: var(--calcite-color-foreground-1, #fff) !important;
   }
 
   /* Style the main panel header specifically */
   .my-drawings {
-      background-color: #fff !important;
+      background-color: var(--calcite-color-foreground-1, #fff) !important;
   }
 
   /* ======= EXPORT DROPDOWN STYLING - CLICK-ONLY VERSION ======= */
@@ -15256,13 +15411,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .export-dropdown-content {
       display: none !important;
       position: absolute !important;
-      background-color: #ffffff !important;
+      background-color: var(--calcite-color-foreground-1, #ffffff) !important;
       min-width: 200px !important;
       box-shadow: 0 8px 16px rgba(0,0,0,0.3) !important;
       z-index: 999999 !important;
       border-radius: 8px !important;
       overflow: visible !important;
-      border: 2px solid #dee2e6 !important;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6) !important;
       top: 100% !important;
       left: 0 !important;
       margin-top: 4px !important;
@@ -15299,7 +15454,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       cursor: pointer !important;
       font-size: 13px !important;
       transition: background-color 0.2s !important;
-      color: #212529 !important;
+      color: var(--calcite-color-text-1, #212529) !important;
       white-space: nowrap !important;
       position: relative !important;
       z-index: 999999 !important;
@@ -15307,7 +15462,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   /* Hover state for dropdown items */
   .export-dropdown-content button:hover {
-      background-color: #f8f9fa !important;
+      background-color: var(--calcite-color-foreground-2, #f8f9fa) !important;
       transform: none !important;
       box-shadow: none !important;
   }
@@ -15322,7 +15477,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   /* Icons inside dropdown items */
   .export-dropdown-content button i {
       margin-right: 8px !important;
-      color: #6c757d !important;
+      color: var(--calcite-color-text-2, #6c757d) !important;
       width: 16px !important;
       display: inline-block !important;
   }
@@ -15370,7 +15525,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   /* CRITICAL FIX: Drawing items base state */
   .drawing-item {
       position: relative !important;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--calcite-color-border-3, #e5e7eb);
       border-radius: 8px;
       overflow: visible !important;
       box-sizing: border-box;
@@ -15379,14 +15534,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       margin-bottom: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       transition: all 0.2s ease;
-      background: #fff;
+      background: var(--calcite-color-foreground-1, #fff);
       cursor: move;
       padding: 10px 12px;
       z-index: 1 !important;
   }
   
   .drawing-item:hover {
-      border-color: #d1d5db;
+      border-color: var(--calcite-color-border-2, #d1d5db);
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   }
 
@@ -15412,7 +15567,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .drawing-item-type-row .text-muted {
       font-size: 11px !important;
       line-height: 1.3 !important;
-      color: #6b7280 !important;
+      color: var(--calcite-color-text-2, #6b7280) !important;
   }
 
   /* Inline name in header row */
@@ -15695,8 +15850,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       opacity: 0 !important;
       position: absolute !important;
       z-index: 10000 !important;
-      background: #1f2937 !important;
-      color: #fff !important;
+      background: var(--calcite-color-inverse, #1f2937) !important;
+      color: var(--calcite-color-text-inverse, #fff) !important;
       text-align: center !important;
       padding: 6px 10px !important;
       border-radius: 6px !important;
@@ -15745,28 +15900,28 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       top: 100% !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
-      border-top-color: #1f2937 !important;
+      border-top-color: var(--calcite-color-inverse, #1f2937) !important;
   }
 
   .accessible-tooltip-wrapper .accessible-tooltip[data-placement="bottom"]::after {
       bottom: 100% !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
-      border-bottom-color: #1f2937 !important;
+      border-bottom-color: var(--calcite-color-inverse, #1f2937) !important;
   }
 
   .accessible-tooltip-wrapper .accessible-tooltip[data-placement="left"]::after {
       top: 50% !important;
       left: 100% !important;
       transform: translateY(-50%) !important;
-      border-left-color: #1f2937 !important;
+      border-left-color: var(--calcite-color-inverse, #1f2937) !important;
   }
 
   .accessible-tooltip-wrapper .accessible-tooltip[data-placement="right"]::after {
       top: 50% !important;
       right: 100% !important;
       transform: translateY(-50%) !important;
-      border-right-color: #1f2937 !important;
+      border-right-color: var(--calcite-color-inverse, #1f2937) !important;
   }
 
   /* Main scrollable container */
@@ -15821,7 +15976,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   /* Drawing item container - TILE STYLE with proper overflow handling */
   .drawing-item {
       position: relative;
-      border: 2px solid #e8e8e8;
+      border: 2px solid var(--calcite-color-border-3, #e8e8e8);
       border-radius: 12px;
       overflow: visible !important;
       box-sizing: border-box;
@@ -15830,7 +15985,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      background: linear-gradient(135deg, var(--calcite-color-foreground-1, #ffffff) 0%, var(--calcite-color-foreground-2, #f8f9fa) 100%);
       cursor: move;
       padding: 16px;
   }
@@ -15843,7 +15998,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       top: 50%;
       transform: translateY(-50%);
       font-size: 14px;
-      color: #999;
+      color: var(--calcite-color-text-3, #999);
       opacity: 0;
       transition: opacity 0.2s;
       pointer-events: none;
@@ -15857,7 +16012,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   /* Hover effect for drawing items */
   .drawing-item:hover {
-      border-color: #b8b8b8;
+      border-color: var(--calcite-color-border-2, #b8b8b8);
       box-shadow: 0 4px 16px rgba(0,0,0,0.12);
       transform: translateY(-2px);
   }
@@ -15871,16 +16026,16 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   /* Drag over indicator */
   .drawing-item.drag-over {
-      border-color: #3b82f6;
+      border-color: var(--calcite-color-brand, #3b82f6);
       border-style: dashed;
-      background: linear-gradient(135deg, #e6f2ff 0%, #f0f7ff 100%);
+      background: linear-gradient(135deg, var(--calcite-color-foreground-current, #e6f2ff) 0%, var(--calcite-color-foreground-current, #f0f7ff) 100%);
       transform: scale(1.02);
   }
 
   /* Selected item styling - ENHANCED TILE */
   .drawing-item.selected-drawing {
-      background: #f0f7ff !important;
-      border-color: #3b82f6 !important;
+      background: var(--calcite-color-foreground-current, #f0f7ff) !important;
+      border-color: var(--calcite-color-brand, #3b82f6) !important;
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
       position: relative;
       z-index: 1;
@@ -15947,7 +16102,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   .drawing-item .font-weight-bold {
       font-size: 13px;
-      color: #1f2937;
+      color: var(--calcite-color-text-1, #1f2937);
       line-height: 1.4;
   }
 
@@ -15991,8 +16146,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       border-radius: 6px !important;
       font-weight: 500 !important;
       box-sizing: border-box !important;
-      border: 1px solid #d1d5db !important;
-      background: #fff !important;
+      border: 1px solid var(--calcite-color-border-2, #d1d5db) !important;
+      background: var(--calcite-color-foreground-1, #fff) !important;
   }
 
   /* Ensure icons have consistent spacing */
@@ -16004,20 +16159,20 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   /* Button hover effect */
   .drawing-item .btn:hover {
-      background: #f3f4f6 !important;
-      border-color: #9ca3af !important;
+      background: var(--calcite-color-foreground-2, #f3f4f6) !important;
+      border-color: var(--calcite-color-text-3, #9ca3af) !important;
   }
 
   /* Button active state */
   .drawing-item .btn:active {
-      background: #e5e7eb !important;
+      background: var(--calcite-color-foreground-3, #e5e7eb) !important;
   }
 
   /* Button colors - Clean flat style */
   .drawing-item .btn-danger {
       background: #fef2f2 !important;
       border-color: #fecaca !important;
-      color: #dc2626 !important;
+      color: var(--calcite-color-status-danger, #dc2626) !important;
   }
 
   .drawing-item .btn-danger:hover {
@@ -16026,14 +16181,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   }
 
   .drawing-item .btn-light {
-      background: #fff !important;
-      border-color: #d1d5db !important;
-      color: #374151 !important;
+      background: var(--calcite-color-foreground-1, #fff) !important;
+      border-color: var(--calcite-color-border-2, #d1d5db) !important;
+      color: var(--calcite-color-text-2, #374151) !important;
   }
 
   .drawing-item .btn-light:hover {
-      background: #f3f4f6 !important;
-      border-color: #9ca3af !important;
+      background: var(--calcite-color-foreground-2, #f3f4f6) !important;
+      border-color: var(--calcite-color-text-3, #9ca3af) !important;
   }
 
   /* Responsive button layouts */
@@ -16045,7 +16200,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   /* Edit name input styling */
   .drawing-item .drawing-name-input {
       border-radius: 6px;
-      border: 2px solid #dee2e6;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6);
       padding: 6px 10px;
       font-size: 13px;
       transition: all 0.2s;
@@ -16053,7 +16208,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   }
 
   .drawing-item .drawing-name-input:focus {
-      border-color: #3b82f6;
+      border-color: var(--calcite-color-brand, #3b82f6);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       outline: none;
   }
@@ -16074,8 +16229,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 }
 
 .my-drawings-panel .compact-toolbar {
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--calcite-color-foreground-1, #fff);
+    border-bottom: 1px solid var(--calcite-color-border-3, #e5e7eb);
     padding: 8px 12px;
     overflow: visible;
     box-sizing: border-box;
@@ -16097,7 +16252,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel .compact-toolbar-title {
     font-size: 15px;
     font-weight: 600;
-    color: #1f2937; /* WCAG AA contrast */
+    color: var(--calcite-color-text-1, #1f2937); /* WCAG AA contrast */
 }
 
 .my-drawings-panel .compact-toolbar-header-actions {
@@ -16108,8 +16263,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
 .my-drawings-panel .drawing-count {
     font-size: 11px;
-    color: #4b5563; /* WCAG AA contrast 4.68:1 */
-    background: #f3f4f6;
+    color: var(--calcite-color-text-2, #4b5563); /* WCAG AA contrast 4.68:1 */
+    background: var(--calcite-color-foreground-2, #f3f4f6);
     padding: 2px 8px;
     border-radius: 10px;
     font-weight: 500;
@@ -16122,7 +16277,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     padding: 0 !important;
     border: 1px solid transparent !important;
     background: transparent !important;
-    color: #4b5563 !important;
+    color: var(--calcite-color-text-2, #4b5563) !important;
     border-radius: 4px !important;
     cursor: pointer;
     display: flex !important;
@@ -16133,13 +16288,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 }
 
 .my-drawings-panel .compact-collapse-btn:hover {
-    background: #f3f4f6 !important;
-    color: #1f2937 !important;
+    background: var(--calcite-color-foreground-2, #f3f4f6) !important;
+    color: var(--calcite-color-text-1, #1f2937) !important;
 }
 
 .my-drawings-panel .compact-collapse-btn:focus {
     outline: none !important;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2563eb !important;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--calcite-color-brand, #2563eb) !important;
 }
 
 /* Content area */
@@ -16178,21 +16333,21 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     height: 32px;
     padding: 0 8px;
     font-size: 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--calcite-color-border-2, #d1d5db);
     border-radius: 6px;
-    background: #fff;
-    color: #1f2937;
+    background: var(--calcite-color-foreground-1, #fff);
+    color: var(--calcite-color-text-1, #1f2937);
     cursor: pointer;
     outline: none;
     transition: all 0.15s;
 }
 
 .my-drawings-panel .compact-sort-select:hover {
-    border-color: #9ca3af;
+    border-color: var(--calcite-color-text-3, #9ca3af);
 }
 
 .my-drawings-panel .compact-sort-select:focus {
-    border-color: #2563eb;
+    border-color: var(--calcite-color-brand, #2563eb);
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
@@ -16220,10 +16375,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     height: 32px;
     padding: 0 32px 0 30px;
     font-size: 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--calcite-color-border-2, #d1d5db);
     border-radius: 6px;
-    background: #f9fafb;
-    color: #1f2937;
+    background: var(--calcite-color-foreground-2, #f9fafb);
+    color: var(--calcite-color-text-1, #1f2937);
     outline: none;
     transition: all 0.15s;
     position: relative;
@@ -16231,17 +16386,17 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 }
 
 .my-drawings-panel .compact-filter-input::placeholder {
-    color: #6b7280; /* WCAG AA placeholder contrast */
+    color: var(--calcite-color-text-2, #6b7280); /* WCAG AA placeholder contrast */
 }
 
 .my-drawings-panel .compact-filter-input:hover {
-    border-color: #9ca3af;
-    background: #fff;
+    border-color: var(--calcite-color-text-3, #9ca3af);
+    background: var(--calcite-color-foreground-1, #fff);
 }
 
 .my-drawings-panel .compact-filter-input:focus {
-    border-color: #2563eb;
-    background: #fff;
+    border-color: var(--calcite-color-brand, #2563eb);
+    background: var(--calcite-color-foreground-1, #fff);
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
@@ -16259,19 +16414,19 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    color: #6b7280 !important;
+    color: var(--calcite-color-text-2, #6b7280) !important;
     font-size: 12px;
     z-index: 2 !important;
 }
 
 .my-drawings-panel .compact-filter-clear:hover {
-    background: #e5e7eb !important;
-    color: #1f2937 !important;
+    background: var(--calcite-color-foreground-3, #e5e7eb) !important;
+    color: var(--calcite-color-text-1, #1f2937) !important;
 }
 
 .my-drawings-panel .compact-filter-clear:focus {
     outline: none !important;
-    box-shadow: 0 0 0 2px #2563eb !important;
+    box-shadow: 0 0 0 2px var(--calcite-color-brand, #2563eb) !important;
 }
 
 /* Row 2: Action buttons - grouped for controlled wrapping */
@@ -16287,7 +16442,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 /* File operations row (Import/Export) - own line */
 .my-drawings-panel .compact-file-ops-row {
     padding-bottom: 6px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--calcite-color-foreground-2, #f0f0f0);
     margin-bottom: 2px;
 }
 
@@ -16305,7 +16460,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel .compact-btn-separator {
     width: 1px;
     height: 18px;
-    background: #d1d5db;
+    background: var(--calcite-color-border-2, #d1d5db);
     flex-shrink: 0;
     margin: 0 2px;
 }
@@ -16346,7 +16501,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 /* Focus indicator - WCAG 2.4.7 */
 .my-drawings-panel .compact-action-btn:focus {
     outline: none !important;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2563eb !important;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--calcite-color-brand, #2563eb) !important;
     position: relative;
     z-index: 1;
 }
@@ -16357,8 +16512,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     bottom: calc(100% + 8px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    background: #1f2937 !important;
-    color: #fff !important;
+    background: var(--calcite-color-inverse, #1f2937) !important;
+    color: var(--calcite-color-text-inverse, #fff) !important;
     font-size: 11px !important;
     font-weight: 500 !important;
     padding: 6px 10px !important;
@@ -16380,7 +16535,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     left: 50% !important;
     transform: translateX(-50%) !important;
     border: 6px solid transparent !important;
-    border-top-color: #1f2937 !important;
+    border-top-color: var(--calcite-color-inverse, #1f2937) !important;
 }
 
 /* Show tooltip on hover */
@@ -16406,8 +16561,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     top: calc(100% + 4px);
     left: 0;
     min-width: 160px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
+    background: var(--calcite-color-foreground-1, #fff);
+    border: 1px solid var(--calcite-color-border-3, #e5e7eb);
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     padding: 4px;
@@ -16428,7 +16583,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel .compact-dropdown-header {
     font-size: 10px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--calcite-color-text-2, #6b7280);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 8px 10px 4px;
@@ -16441,7 +16596,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     width: 100%;
     padding: 8px 10px;
     font-size: 12px;
-    color: #1f2937;
+    color: var(--calcite-color-text-1, #1f2937);
     background: transparent;
     border: none;
     border-radius: 4px;
@@ -16451,14 +16606,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 }
 
 .my-drawings-panel .compact-dropdown-menu button:hover:not(:disabled) {
-    background: #f3f4f6;
+    background: var(--calcite-color-foreground-2, #f3f4f6);
 }
 
 /* Focus indicator for dropdown items */
 .my-drawings-panel .compact-dropdown-menu button:focus {
     outline: none;
-    background: #e5e7eb;
-    box-shadow: inset 0 0 0 2px #2563eb;
+    background: var(--calcite-color-foreground-3, #e5e7eb);
+    box-shadow: inset 0 0 0 2px var(--calcite-color-brand, #2563eb);
 }
 
 .my-drawings-panel .compact-dropdown-menu button:disabled {
@@ -16467,7 +16622,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 }
 
 .my-drawings-panel .compact-dropdown-menu button.danger-item {
-    color: #dc2626;
+    color: var(--calcite-color-status-danger, #dc2626);
 }
 
 .my-drawings-panel .compact-dropdown-menu button.danger-item:hover:not(:disabled) {
@@ -16476,7 +16631,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
 .my-drawings-panel .compact-dropdown-divider {
     height: 1px;
-    background: #e5e7eb;
+    background: var(--calcite-color-foreground-3, #e5e7eb);
     margin: 4px 0;
 }
 
@@ -16494,7 +16649,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     }
     
     .my-drawings-panel .compact-tooltip {
-        border: 2px solid #fff;
+        border: 2px solid var(--calcite-color-foreground-1, #fff);
     }
 }
 
@@ -16519,7 +16674,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel textarea:focus-visible,
 .my-drawings-panel [tabindex="0"]:focus-visible {
     outline: none !important;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2563eb !important;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--calcite-color-brand, #2563eb) !important;
     position: relative;
     z-index: 1;
 }
@@ -16530,7 +16685,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel input:focus,
 .my-drawings-panel select:focus,
 .my-drawings-panel textarea:focus {
-    outline: 2px solid #2563eb !important;
+    outline: 2px solid var(--calcite-color-brand, #2563eb) !important;
     outline-offset: 2px !important;
 }
 
@@ -16553,8 +16708,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
-    background: #1f2937;
-    color: #fff;
+    background: var(--calcite-color-inverse, #1f2937);
+    color: var(--calcite-color-text-inverse, #fff);
     font-size: 11px;
     font-weight: 500;
     padding: 6px 10px;
@@ -16576,7 +16731,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #1f2937;
+    border-top-color: var(--calcite-color-inverse, #1f2937);
 }
 
 /* Show tooltip on hover */
@@ -16605,7 +16760,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     right: 100%;
     transform: translateY(-50%);
     border: 6px solid transparent;
-    border-right-color: #1f2937;
+    border-right-color: var(--calcite-color-inverse, #1f2937);
     border-top-color: transparent;
 }
 
@@ -16618,7 +16773,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     top: auto;
     bottom: 100%;
     border: 6px solid transparent;
-    border-bottom-color: #1f2937;
+    border-bottom-color: var(--calcite-color-inverse, #1f2937);
     border-top-color: transparent;
 }
 
@@ -16628,14 +16783,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel .notes-btn:focus,
 .my-drawings-panel .visibility-btn:focus {
     outline: none !important;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2563eb !important;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--calcite-color-brand, #2563eb) !important;
     border-radius: 4px;
 }
 
 /* Focus styles for drawing list items */
 .my-drawings-panel .drawing-item:focus {
     outline: none !important;
-    box-shadow: inset 0 0 0 2px #2563eb !important;
+    box-shadow: inset 0 0 0 2px var(--calcite-color-brand, #2563eb) !important;
 }
 
 /* Focus styles for dropdown menu items */
@@ -16644,8 +16799,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 .my-drawings-panel [role="menu"] button:focus,
 .my-drawings-panel [role="menuitem"]:focus {
     outline: none !important;
-    background: #e5e7eb !important;
-    box-shadow: inset 0 0 0 2px #2563eb !important;
+    background: var(--calcite-color-foreground-3, #e5e7eb) !important;
+    box-shadow: inset 0 0 0 2px var(--calcite-color-brand, #2563eb) !important;
 }
 
 /* High contrast mode support */
@@ -16658,7 +16813,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     
     .my-drawings-panel .a11y-tooltip,
     .accessible-tooltip-wrapper .accessible-tooltip {
-        border: 2px solid #fff;
+        border: 2px solid var(--calcite-color-foreground-1, #fff);
     }
     
     .my-drawings-panel .drawing-item:focus {
@@ -16686,9 +16841,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .drawing-item .mt-3.border,
   .drawing-item .symbol-editor-wrapper {
       border-radius: 12px !important;
-      border: 2px solid #e8e8e8 !important;
+      border: 2px solid var(--calcite-color-border-3, #e8e8e8) !important;
       padding: 16px !important;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+      background: linear-gradient(135deg, var(--calcite-color-foreground-2, #f8f9fa) 0%, var(--calcite-color-foreground-3, #e9ecef) 100%) !important;
       margin-top: 12px !important;
       margin-left: 0 !important;
       margin-right: 0 !important;
@@ -16728,7 +16883,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       padding: 12px 20px !important;
       border-radius: 8px !important;
       background: white !important;
-      border: 2px solid #dee2e6 !important;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6) !important;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
       transition: all 0.2s !important;
       cursor: pointer !important;
@@ -16736,7 +16891,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   .drawing-item [class*="symbol-selector"] button:hover,
   .drawing-item [class*="jimu-symbol-selector"] button:hover {
-      border-color: #3b82f6 !important;
+      border-color: var(--calcite-color-brand, #3b82f6) !important;
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
       transform: translateY(-2px) !important;
   }
@@ -16753,7 +16908,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       background: white !important;
       border-radius: 12px !important;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
-      border: 2px solid #e8e8e8 !important;
+      border: 2px solid var(--calcite-color-border-3, #e8e8e8) !important;
       padding: 16px !important;
       max-width: 90vw !important;
       max-height: 400px !important;
@@ -16790,14 +16945,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       width: 60px !important;
       height: 48px !important;
       border-radius: 8px !important;
-      border: 2px solid #dee2e6 !important;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6) !important;
       cursor: pointer !important;
       padding: 4px !important;
   }
 
   .drawing-item [class*="color-picker"]:hover,
   .drawing-item input[type="color"]:hover {
-      border-color: #3b82f6 !important;
+      border-color: var(--calcite-color-brand, #3b82f6) !important;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
   }
 
@@ -16805,7 +16960,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .drawing-item input[type="number"],
   .drawing-item input[type="range"] {
       border-radius: 8px !important;
-      border: 2px solid #dee2e6 !important;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6) !important;
       padding: 8px 12px !important;
       font-size: 14px !important;
       transition: all 0.2s !important;
@@ -16813,7 +16968,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   .drawing-item input[type="number"]:focus,
   .drawing-item input[type="range"]:focus {
-      border-color: #3b82f6 !important;
+      border-color: var(--calcite-color-brand, #3b82f6) !important;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
       outline: none !important;
   }
@@ -16821,7 +16976,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   /* Range slider styling */
   .drawing-item input[type="range"] {
       height: 8px !important;
-      background: linear-gradient(90deg, #e9ecef 0%, #dee2e6 100%) !important;
+      background: linear-gradient(90deg, var(--calcite-color-foreground-3, #e9ecef) 0%, var(--calcite-color-border-3, #dee2e6) 100%) !important;
       border-radius: 4px !important;
       width: 100% !important;
   }
@@ -16830,7 +16985,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       width: 20px !important;
       height: 20px !important;
       border-radius: 50% !important;
-      background: #3b82f6 !important;
+      background: var(--calcite-color-brand, #3b82f6) !important;
       cursor: pointer !important;
       border: 2px solid white !important;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
@@ -16840,7 +16995,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       width: 20px !important;
       height: 20px !important;
       border-radius: 50% !important;
-      background: #3b82f6 !important;
+      background: var(--calcite-color-brand, #3b82f6) !important;
       cursor: pointer !important;
       border: 2px solid white !important;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
@@ -16850,7 +17005,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .drawing-item select,
   .drawing-item .form-control {
       border-radius: 8px !important;
-      border: 2px solid #dee2e6 !important;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6) !important;
       padding: 8px 12px !important;
       font-size: 14px !important;
       transition: all 0.2s !important;
@@ -16859,7 +17014,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   .drawing-item select:focus,
   .drawing-item .form-control:focus {
-      border-color: #3b82f6 !important;
+      border-color: var(--calcite-color-brand, #3b82f6) !important;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
       outline: none !important;
   }
@@ -16868,7 +17023,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .drawing-item label {
       font-size: 13px !important;
       font-weight: 600 !important;
-      color: #495057 !important;
+      color: var(--calcite-color-text-2, #495057) !important;
       margin-bottom: 6px !important;
       display: block !important;
   }
@@ -16894,9 +17049,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       top: 12px !important;
       right: 12px !important;
       padding: 8px !important;
-      background: #f8f9fa !important;
+      background: var(--calcite-color-foreground-2, #f8f9fa) !important;
       border-radius: 6px !important;
-      border: 1px solid #dee2e6 !important;
+      border: 1px solid var(--calcite-color-border-3, #dee2e6) !important;
       cursor: pointer !important;
       transition: all 0.2s !important;
   }
@@ -16904,8 +17059,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .drawing-item [class*="close-button"]:hover,
   .drawing-item button[aria-label*="close"]:hover,
   .drawing-item button[aria-label*="Close"]:hover {
-      background: #e9ecef !important;
-      border-color: #ced4da !important;
+      background: var(--calcite-color-foreground-3, #e9ecef) !important;
+      border-color: var(--calcite-color-border-3, #ced4da) !important;
   }
 
   /* ======= TEXT STYLE EDITOR IMPROVEMENTS ======= */
@@ -16914,8 +17069,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   .text-editor {
       padding: 16px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-      border: 2px solid #dee2e6;
+      background: linear-gradient(135deg, var(--calcite-color-foreground-2, #f8f9fa) 0%, var(--calcite-color-foreground-3, #e9ecef) 100%) !important;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6);
       margin-top: 12px;
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
       width: 100%;
@@ -16942,13 +17097,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       max-width: 100%;
       width: 100%;
       border-radius: 8px;
-      border: 2px solid #dee2e6;
+      border: 2px solid var(--calcite-color-border-3, #dee2e6);
       transition: all 0.2s;
   }
 
   .text-editor input:focus,
   .text-editor select:focus {
-      border-color: #3b82f6;
+      border-color: var(--calcite-color-brand, #3b82f6);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
@@ -16966,7 +17121,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       font-size: 12px;
       font-weight: 600;
       margin-bottom: 6px;
-      color: #495057;
+      color: var(--calcite-color-text-2, #495057);
   }
 
   /* Color picker and number inputs */
@@ -16986,7 +17141,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   /* Range sliders */
   .text-editor input[type="range"] {
       height: 8px;
-      background: linear-gradient(90deg, #e9ecef 0%, #dee2e6 100%);
+      background: linear-gradient(90deg, var(--calcite-color-foreground-3, #e9ecef) 0%, var(--calcite-color-border-3, #dee2e6) 100%);
       border-radius: 4px;
       width: 100%;
   }
@@ -17139,8 +17294,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     flex-shrink: 0 !important;
     padding: 12px !important;
     padding-bottom: 14px !important;
-    border-bottom: 2px solid #e8e8e8 !important;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border-bottom: 2px solid var(--calcite-color-border-3, #e8e8e8) !important;
+    background: linear-gradient(135deg, var(--calcite-color-foreground-1, #ffffff) 0%, var(--calcite-color-foreground-2, #f8f9fa) 100%) !important;
     gap: 0px !important;
     margin-bottom: 12px !important;
     border-radius: 12px !important;
@@ -17214,11 +17369,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
   /* Symbol editor container - scrollable and constrained */
   .symbol-editor-container {
-      max-height: 400px !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
+      max-height: none !important;
+      overflow: visible !important;
       border-radius: 8px !important;
-      background: white !important;
+      background: var(--calcite-color-foreground-1, #fff) !important;
       padding: 8px !important;
   }
 
@@ -17228,17 +17382,17 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
   }
 
   .symbol-editor-container::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: var(--calcite-color-foreground-2, #f1f1f1);
       border-radius: 4px;
   }
 
   .symbol-editor-container::-webkit-scrollbar-thumb {
-      background: #888;
+      background: var(--calcite-color-text-3, #888);
       border-radius: 4px;
   }
 
   .symbol-editor-container::-webkit-scrollbar-thumb:hover {
-      background: #555;
+      background: var(--calcite-color-text-2, #555);
   }
 `;
 
@@ -17393,7 +17547,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 aria-modal="true"
                 aria-labelledby="permissionDeniedTitle"
                 aria-describedby="permissionDeniedDescription"
-                style={{ backgroundColor: '#fff', height: '100%', boxShadow: 'none' }}
+                style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)', height: '100%', boxShadow: 'none' }}
             >
                 <div className="text-center mb-4">
                     <h5 id="permissionDeniedTitle" tabIndex={-1}>
@@ -17439,7 +17593,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 aria-modal="true"
                 aria-labelledby="consentPromptTitle"
                 aria-describedby="consentPromptDescription"
-                style={{ backgroundColor: '#fff', height: '100%', boxShadow: 'none' }}
+                style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)', height: '100%', boxShadow: 'none' }}
             >
                 <h5 id="consentPromptTitle" className="mb-3" tabIndex={-1}>
                     Storage Permission Required
@@ -17483,7 +17637,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 aria-modal="true"
                 aria-labelledby="loadPromptTitle"
                 aria-describedby="loadPromptDescription"
-                style={{ backgroundColor: '#fff', height: '100%' }}
+                style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)', height: '100%' }}
             >
                 <h5 id="loadPromptTitle" className="mb-3" tabIndex={-1}>
                     Existing Drawings Found
@@ -17565,7 +17719,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             <div
                 className="my-drawings-panel p-2"
                 style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: 'var(--calcite-color-foreground-1, #fff)',
                     display: 'flex',
                     flexDirection: 'column',
                     height: '100%',
@@ -17618,7 +17772,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             htmlFor="compact-sort-select"
                                             style={{
                                                 fontSize: '11px',
-                                                color: '#4b5563',
+                                                color: 'var(--calcite-color-text-2, #4b5563)',
                                                 fontWeight: 500,
                                                 whiteSpace: 'nowrap',
                                                 marginRight: '4px'
@@ -17648,7 +17802,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             Filter drawings
                                         </label>
                                         <span className="compact-filter-icon" aria-hidden="true">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--calcite-color-text-2, #6b7280)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                                             </svg>
                                         </span>
@@ -17963,7 +18117,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                     >
                                         <span style={{
                                             fontSize: '11px',
-                                            color: '#4b5563',
+                                            color: 'var(--calcite-color-text-2, #4b5563)',
                                             fontWeight: 500,
                                             whiteSpace: 'nowrap'
                                         }}>
@@ -17982,11 +18136,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 fontSize: '11px',
                                                 height: '22px',
                                                 padding: '0 18px 0 6px',
-                                                border: '1px solid #d1d5db',
+                                                border: '1px solid var(--calcite-color-border-2, #d1d5db)',
                                                 borderRadius: '4px',
                                                 backgroundColor: 'transparent',
                                                 cursor: 'pointer',
-                                                color: '#4b5563',
+                                                color: 'var(--calcite-color-text-2, #4b5563)',
                                                 fontWeight: 500,
                                                 outline: 'none',
                                                 backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'8\' height=\'5\' viewBox=\'0 0 8 5\'%3e%3cpath fill=\'%234b5563\' d=\'M0 0l4 5 4-5z\'/%3e%3c/svg%3e")',
@@ -17997,8 +18151,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 alignItems: 'center',
                                                 minWidth: '50px'
                                             }}
-                                            onMouseEnter={(e) => e.currentTarget.style.borderColor = '#9ca3af'}
-                                            onMouseLeave={(e) => e.currentTarget.style.borderColor = '#d1d5db'}
+                                            onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--calcite-color-text-3, #9ca3af)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--calcite-color-border-2, #d1d5db)'}
                                         >
                                             {this.state.drawingLabelOption === 'off' ? 'Off' :
                                                 this.state.drawingLabelOption === 'name' ? 'Name' :
@@ -18029,8 +18183,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         return 0;
                                                     })(),
                                                     minWidth: '80px',
-                                                    background: '#fff',
-                                                    border: '1px solid #e5e7eb',
+                                                    background: 'var(--calcite-color-foreground-1, #fff)',
+                                                    border: '1px solid var(--calcite-color-border-3, #e5e7eb)',
                                                     borderRadius: '8px',
                                                     boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
                                                     padding: '4px',
@@ -18051,7 +18205,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         width: '100%',
                                                         padding: '8px 10px',
                                                         fontSize: '12px',
-                                                        color: '#1f2937',
+                                                        color: 'var(--calcite-color-text-1, #1f2937)',
                                                         background: 'transparent',
                                                         border: 'none',
                                                         borderRadius: '4px',
@@ -18059,7 +18213,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         textAlign: 'left',
                                                         fontWeight: this.state.drawingLabelOption === 'off' ? 600 : 400
                                                     }}
-                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
                                                     Off
@@ -18076,7 +18230,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         width: '100%',
                                                         padding: '8px 10px',
                                                         fontSize: '12px',
-                                                        color: '#1f2937',
+                                                        color: 'var(--calcite-color-text-1, #1f2937)',
                                                         background: 'transparent',
                                                         border: 'none',
                                                         borderRadius: '4px',
@@ -18084,7 +18238,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         textAlign: 'left',
                                                         fontWeight: this.state.drawingLabelOption === 'name' ? 600 : 400
                                                     }}
-                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
                                                     Name
@@ -18101,7 +18255,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         width: '100%',
                                                         padding: '8px 10px',
                                                         fontSize: '12px',
-                                                        color: '#1f2937',
+                                                        color: 'var(--calcite-color-text-1, #1f2937)',
                                                         background: 'transparent',
                                                         border: 'none',
                                                         borderRadius: '4px',
@@ -18109,7 +18263,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         textAlign: 'left',
                                                         fontWeight: this.state.drawingLabelOption === 'notes' ? 600 : 400
                                                     }}
-                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
                                                     Notes
@@ -18126,7 +18280,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         width: '100%',
                                                         padding: '8px 10px',
                                                         fontSize: '12px',
-                                                        color: '#1f2937',
+                                                        color: 'var(--calcite-color-text-1, #1f2937)',
                                                         background: 'transparent',
                                                         border: 'none',
                                                         borderRadius: '4px',
@@ -18134,7 +18288,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         textAlign: 'left',
                                                         fontWeight: this.state.drawingLabelOption === 'both' ? 600 : 400
                                                     }}
-                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
                                                     Both
@@ -18157,7 +18311,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         flex: 1,
                         overflowY: 'auto',
                         overflowX: 'hidden',
-                        backgroundColor: '#fff',
+                        backgroundColor: 'var(--calcite-color-foreground-1, #fff)',
                         minHeight: 0
                     }}
                     role="list"
@@ -18173,7 +18327,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             <div style={{
                                 padding: '4px 0 8px 0',
                                 marginBottom: '4px',
-                                backgroundColor: '#fff',
+                                backgroundColor: 'var(--calcite-color-foreground-1, #fff)',
                                 display: 'flex',
                                 flexWrap: 'wrap',
                                 justifyContent: 'space-evenly',
@@ -18193,7 +18347,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '4px',
-                                        color: '#4b5563',
+                                        color: 'var(--calcite-color-text-2, #4b5563)',
                                         fontSize: '11px',
                                         fontWeight: 500,
                                         borderRadius: '4px',
@@ -18243,7 +18397,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '4px',
-                                        color: '#4b5563',
+                                        color: 'var(--calcite-color-text-2, #4b5563)',
                                         fontSize: '11px',
                                         fontWeight: 500,
                                         borderRadius: '4px',
@@ -18292,7 +18446,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '4px',
-                                        color: '#4b5563',
+                                        color: 'var(--calcite-color-text-2, #4b5563)',
                                         fontSize: '11px',
                                         fontWeight: 500,
                                         borderRadius: '4px',
@@ -18349,7 +18503,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '4px',
-                                            color: this.state.allDrawingsLocked ? '#dc3545' : '#4b5563',
+                                            color: this.state.allDrawingsLocked ? 'var(--calcite-color-status-danger, #dc3545)' : 'var(--calcite-color-text-2, #4b5563)',
                                             fontSize: '11px',
                                             fontWeight: 500,
                                             borderRadius: '4px',
@@ -18411,7 +18565,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '4px',
-                                                color: anyMeasurementsVisible ? '#0066cc' : '#4b5563',
+                                                color: anyMeasurementsVisible ? 'var(--calcite-color-brand, #0066cc)' : 'var(--calcite-color-text-2, #4b5563)',
                                                 fontSize: '11px',
                                                 fontWeight: 500,
                                                 borderRadius: '4px',
@@ -18421,7 +18575,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 flexShrink: 0
                                             }}
                                             onFocus={(e) => {
-                                                e.currentTarget.style.boxShadow = '0 0 0 2px #0066cc';
+                                                e.currentTarget.style.boxShadow = '0 0 0 2px var(--calcite-color-brand, #0066cc)';
                                             }}
                                             onBlur={(e) => {
                                                 e.currentTarget.style.boxShadow = 'none';
@@ -18452,7 +18606,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
                         if (drawings.length === 0) {
                             return (
-                                <div className="text-center p-3 border rounded" style={{ backgroundColor: '#fff' }}>
+                                <div className="text-center p-3 border rounded" style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)' }}>
                                     <p className="mb-0">No drawings available. Create a drawing in the Draw tab.</p>
                                 </div>
                             );
@@ -18462,7 +18616,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             return (
                                 <>
                                     {collapseAllButton}
-                                    <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                                    <div style={{ padding: '20px', textAlign: 'center', color: 'var(--calcite-color-text-3, #999)' }}>
                                         <i className="fas fa-search" style={{ fontSize: '24px', marginBottom: '10px' }}></i>
                                         <div>No drawings match "{searchFilter}"</div>
                                         <button
@@ -18470,7 +18624,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             style={{
                                                 marginTop: '10px',
                                                 padding: '8px 16px',
-                                                background: '#007bff',
+                                                background: 'var(--calcite-color-brand, #007bff)',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '4px',
@@ -18542,7 +18696,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 alignItems: 'center',
                                                                 justifyContent: 'center',
                                                                 marginRight: '0',
-                                                                color: '#6c757d',
+                                                                color: 'var(--calcite-color-text-2, #6c757d)',
                                                                 flexShrink: 0
                                                             }}
                                                             onMouseEnter={(e) => {
@@ -18656,12 +18810,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                             ) : (
                                                                 <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.4' }}>
                                                                     <span style={{ fontWeight: 'bold', display: 'inline' }}>
-                                                                        {this.isDrawingLocked(graphic) && <span title="Locked" style={{ display: 'inline-flex', alignItems: 'center', marginRight: '4px', verticalAlign: 'middle' }}><svg width="10" height="10" viewBox="0 0 24 24" fill="#999" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none"></path></svg></span>}
+                                                                        {this.isDrawingLocked(graphic) && <span title="Locked" style={{ display: 'inline-flex', alignItems: 'center', marginRight: '4px', verticalAlign: 'middle' }}><svg width="10" height="10" viewBox="0 0 24 24" fill="var(--calcite-color-text-3, #999)" stroke="var(--calcite-color-text-3, #999)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none"></path></svg></span>}
                                                                         {(graphic.symbol?.type === 'text' && graphic.symbol?.text) ||
                                                                             graphic.attributes?.name ||
                                                                             `Drawing ${index + 1}`}
                                                                     </span>
-                                                                    <span style={{ fontSize: '11px', color: '#6c757d', marginLeft: '8px', display: 'inline' }}>
+                                                                    <span style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #6c757d)', marginLeft: '8px', display: 'inline' }}>
                                                                         {this.getDrawingTypeLabel(graphic)}
                                                                         {graphic.attributes?.createdDate && ` · ${this.formatCreatedDate(graphic.attributes.createdDate)}`}
                                                                     </span>
@@ -18715,12 +18869,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     display: 'flex',
                                                                                     alignItems: 'center',
                                                                                     justifyContent: 'center',
-                                                                                    color: hasLabels ? '#0066cc' : '#6c757d',
+                                                                                    color: hasLabels ? 'var(--calcite-color-brand, #0066cc)' : 'var(--calcite-color-text-2, #6c757d)',
                                                                                     marginLeft: '0'
                                                                                 }}
                                                                                 onMouseEnter={(e) => {
                                                                                     e.currentTarget.style.opacity = '1';
-                                                                                    e.currentTarget.style.borderColor = '#ddd';
+                                                                                    e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                                 }}
                                                                                 onMouseLeave={(e) => {
                                                                                     e.currentTarget.style.opacity = hasLabels ? '0.8' : '0.6';
@@ -18733,7 +18887,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     height="14"
                                                                                     viewBox="0 0 24 24"
                                                                                     fill="none"
-                                                                                    stroke={hasLabels ? '#0066cc' : '#6c757d'}
+                                                                                    stroke={hasLabels ? 'var(--calcite-color-brand, #0066cc)' : 'var(--calcite-color-text-2, #6c757d)'}
                                                                                     strokeWidth="2"
                                                                                     strokeLinecap="round"
                                                                                     strokeLinejoin="round"
@@ -18745,8 +18899,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                         cx="7"
                                                                                         cy="7"
                                                                                         r="1.5"
-                                                                                        fill={hasLabels ? '#0066cc' : 'none'}
-                                                                                        stroke={hasLabels ? '#0066cc' : '#6c757d'}
+                                                                                        fill={hasLabels ? 'var(--calcite-color-brand, #0066cc)' : 'none'}
+                                                                                        stroke={hasLabels ? 'var(--calcite-color-brand, #0066cc)' : 'var(--calcite-color-text-2, #6c757d)'}
                                                                                         strokeWidth="1.5"
                                                                                     />
                                                                                 </svg>
@@ -18781,12 +18935,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                             }
                                                                                             return 0;
                                                                                         })(),
-                                                                                        backgroundColor: '#ffffff',
+                                                                                        backgroundColor: 'var(--calcite-color-foreground-1, #ffffff)',
                                                                                         minWidth: '160px',
                                                                                         boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
                                                                                         zIndex: 999999,
                                                                                         borderRadius: '8px',
-                                                                                        border: '2px solid #dee2e6'
+                                                                                        border: '2px solid var(--calcite-color-border-3, #dee2e6)'
                                                                                     }}
                                                                                     onClick={(e) => e.stopPropagation()}
                                                                                 >
@@ -18807,10 +18961,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                             background: 'transparent',
                                                                                             cursor: 'pointer',
                                                                                             fontSize: '13px',
-                                                                                            color: '#212529',
+                                                                                            color: 'var(--calcite-color-text-1, #212529)',
                                                                                             fontWeight: individualOption === 'default' ? 'bold' : 'normal'
                                                                                         }}
-                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
                                                                                         Default
@@ -18832,10 +18986,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                             background: 'transparent',
                                                                                             cursor: 'pointer',
                                                                                             fontSize: '13px',
-                                                                                            color: '#212529',
+                                                                                            color: 'var(--calcite-color-text-1, #212529)',
                                                                                             fontWeight: individualOption === 'off' ? 'bold' : 'normal'
                                                                                         }}
-                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
                                                                                         Off
@@ -18857,10 +19011,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                             background: 'transparent',
                                                                                             cursor: 'pointer',
                                                                                             fontSize: '13px',
-                                                                                            color: '#212529',
+                                                                                            color: 'var(--calcite-color-text-1, #212529)',
                                                                                             fontWeight: individualOption === 'name' ? 'bold' : 'normal'
                                                                                         }}
-                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
                                                                                         Name
@@ -18882,10 +19036,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                             background: 'transparent',
                                                                                             cursor: 'pointer',
                                                                                             fontSize: '13px',
-                                                                                            color: '#212529',
+                                                                                            color: 'var(--calcite-color-text-1, #212529)',
                                                                                             fontWeight: individualOption === 'notes' ? 'bold' : 'normal'
                                                                                         }}
-                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
                                                                                         Notes
@@ -18907,10 +19061,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                             background: 'transparent',
                                                                                             cursor: 'pointer',
                                                                                             fontSize: '13px',
-                                                                                            color: '#212529',
+                                                                                            color: 'var(--calcite-color-text-1, #212529)',
                                                                                             fontWeight: individualOption === 'both' ? 'bold' : 'normal'
                                                                                         }}
-                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
                                                                                         Both
@@ -18940,11 +19094,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
                                                                         zIndex: 10,
-                                                                        color: graphic.attributes?.notes ? '#0066cc' : '#6c757d'
+                                                                        color: graphic.attributes?.notes ? 'var(--calcite-color-brand, #0066cc)' : 'var(--calcite-color-text-2, #6c757d)'
                                                                     }}
                                                                     onMouseEnter={(e) => {
                                                                         e.currentTarget.style.opacity = '1';
-                                                                        e.currentTarget.style.borderColor = '#ddd';
+                                                                        e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                     }}
                                                                     onMouseLeave={(e) => {
                                                                         e.currentTarget.style.opacity = graphic.attributes?.notes ? '0.8' : '0.6';
@@ -19009,11 +19163,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 alignItems: 'center',
                                                                                 justifyContent: 'center',
                                                                                 zIndex: 10,
-                                                                                color: isActive ? '#0066cc' : '#6c757d',
+                                                                                color: isActive ? 'var(--calcite-color-brand, #0066cc)' : 'var(--calcite-color-text-2, #6c757d)',
                                                                                 outline: 'none'
                                                                             }}
                                                                             onFocus={(e) => {
-                                                                                e.currentTarget.style.boxShadow = '0 0 0 2px #0066cc';
+                                                                                e.currentTarget.style.boxShadow = '0 0 0 2px var(--calcite-color-brand, #0066cc)';
                                                                                 e.currentTarget.style.borderRadius = '4px';
                                                                             }}
                                                                             onBlur={(e) => {
@@ -19021,7 +19175,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                             }}
                                                                             onMouseEnter={(e) => {
                                                                                 e.currentTarget.style.opacity = '1';
-                                                                                e.currentTarget.style.borderColor = '#ddd';
+                                                                                e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                             }}
                                                                             onMouseLeave={(e) => {
                                                                                 e.currentTarget.style.opacity = isActive ? '0.8' : '0.5';
@@ -19074,11 +19228,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
                                                                         zIndex: 10,
-                                                                        color: '#6c757d'
+                                                                        color: 'var(--calcite-color-text-2, #6c757d)'
                                                                     }}
                                                                     onMouseEnter={(e) => {
                                                                         e.currentTarget.style.opacity = '1';
-                                                                        e.currentTarget.style.borderColor = '#ddd';
+                                                                        e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                     }}
                                                                     onMouseLeave={(e) => {
                                                                         e.currentTarget.style.opacity = '0.6';
@@ -19119,11 +19273,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 display: 'flex',
                                                                                 alignItems: 'center',
                                                                                 justifyContent: 'center',
-                                                                                color: isLocked ? '#dc3545' : '#6c757d'
+                                                                                color: isLocked ? 'var(--calcite-color-status-danger, #dc3545)' : 'var(--calcite-color-text-2, #6c757d)'
                                                                             }}
                                                                             onMouseEnter={(e) => {
                                                                                 e.currentTarget.style.opacity = '1';
-                                                                                e.currentTarget.style.borderColor = '#ddd';
+                                                                                e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                             }}
                                                                             onMouseLeave={(e) => {
                                                                                 e.currentTarget.style.opacity = isLocked ? '0.9' : '0.5';
@@ -19147,7 +19301,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     );
                                                                 })()}
                                                                 {/* Separator */}
-                                                                <div style={{ width: '1px', height: '16px', backgroundColor: '#dee2e6', margin: '0 2px' }} aria-hidden="true" />
+                                                                <div style={{ width: '1px', height: '16px', backgroundColor: 'var(--calcite-color-border-3, #dee2e6)', margin: '0 2px' }} aria-hidden="true" />
                                                                 {/* Zoom to Drawing */}
                                                                 <button
                                                                     className="zoom-to-btn"
@@ -19166,11 +19320,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
-                                                                        color: '#6c757d'
+                                                                        color: 'var(--calcite-color-text-2, #6c757d)'
                                                                     }}
                                                                     onMouseEnter={(e) => {
                                                                         e.currentTarget.style.opacity = '1';
-                                                                        e.currentTarget.style.borderColor = '#ddd';
+                                                                        e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                     }}
                                                                     onMouseLeave={(e) => {
                                                                         e.currentTarget.style.opacity = '0.6';
@@ -19203,12 +19357,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
-                                                                        color: '#6c757d'
+                                                                        color: 'var(--calcite-color-text-2, #6c757d)'
                                                                     }}
                                                                     onMouseEnter={(e) => {
                                                                         if (index !== 0) {
                                                                             e.currentTarget.style.opacity = '1';
-                                                                            e.currentTarget.style.borderColor = '#ddd';
+                                                                            e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                         }
                                                                     }}
                                                                     onMouseLeave={(e) => {
@@ -19239,12 +19393,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
-                                                                        color: '#6c757d'
+                                                                        color: 'var(--calcite-color-text-2, #6c757d)'
                                                                     }}
                                                                     onMouseEnter={(e) => {
                                                                         if (index !== this.state.drawings.length - 1) {
                                                                             e.currentTarget.style.opacity = '1';
-                                                                            e.currentTarget.style.borderColor = '#ddd';
+                                                                            e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
                                                                         }
                                                                     }}
                                                                     onMouseLeave={(e) => {
@@ -19326,12 +19480,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 left: '0',
                                                                                 marginTop: this.state.dropdownOpenUpward.has(index) ? '0' : '4px',
                                                                                 marginBottom: this.state.dropdownOpenUpward.has(index) ? '4px' : '0',
-                                                                                backgroundColor: '#ffffff',
+                                                                                backgroundColor: 'var(--calcite-color-foreground-1, #ffffff)',
                                                                                 minWidth: '200px',
                                                                                 boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
                                                                                 zIndex: 999999,
                                                                                 borderRadius: '8px',
-                                                                                border: '2px solid #dee2e6'
+                                                                                border: '2px solid var(--calcite-color-border-3, #dee2e6)'
                                                                             }}
                                                                             onClick={(e) => e.stopPropagation()}
                                                                         >
@@ -19352,10 +19506,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     background: 'transparent',
                                                                                     cursor: 'pointer',
                                                                                     fontSize: '13px',
-                                                                                    color: '#212529',
+                                                                                    color: 'var(--calcite-color-text-1, #212529)',
                                                                                     whiteSpace: 'nowrap'
                                                                                 }}
-                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-map-marked-alt" aria-hidden="true"></i>
@@ -19378,10 +19532,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     background: 'transparent',
                                                                                     cursor: 'pointer',
                                                                                     fontSize: '13px',
-                                                                                    color: '#212529',
+                                                                                    color: 'var(--calcite-color-text-1, #212529)',
                                                                                     whiteSpace: 'nowrap'
                                                                                 }}
-                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-globe" aria-hidden="true"></i>
@@ -19404,10 +19558,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     background: 'transparent',
                                                                                     cursor: 'pointer',
                                                                                     fontSize: '13px',
-                                                                                    color: '#212529',
+                                                                                    color: 'var(--calcite-color-text-1, #212529)',
                                                                                     whiteSpace: 'nowrap'
                                                                                 }}
-                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-layer-group" aria-hidden="true"></i>
@@ -19430,10 +19584,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     background: 'transparent',
                                                                                     cursor: 'pointer',
                                                                                     fontSize: '13px',
-                                                                                    color: '#212529',
+                                                                                    color: 'var(--calcite-color-text-1, #212529)',
                                                                                     whiteSpace: 'nowrap'
                                                                                 }}
-                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-file-code" aria-hidden="true"></i>
@@ -19573,7 +19727,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 marginBottom: 16,
                                 fontSize: 18,
                                 fontWeight: 600,
-                                color: '#1a1a1a'
+                                color: 'var(--calcite-color-text-1, #1a1a1a)'
                             }}
                         >
                             Importing GeoJSON
@@ -19584,7 +19738,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             style={{
                                 width: '100%',
                                 height: '28px',
-                                backgroundColor: '#e0e0e0',
+                                backgroundColor: 'var(--calcite-color-foreground-3, #e0e0e0)',
                                 borderRadius: '14px',
                                 overflow: 'hidden',
                                 marginBottom: 12,
@@ -19595,7 +19749,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 style={{
                                     width: `${this.state.importProgress}%`,
                                     height: '100%',
-                                    backgroundColor: '#0078d4',
+                                    backgroundColor: 'var(--calcite-color-brand, #0078d4)',
                                     transition: 'width 0.3s ease',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -19617,7 +19771,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         transform: 'translate(-50%, -50%)',
                                         fontSize: '13px',
                                         fontWeight: 'bold',
-                                        color: '#666'
+                                        color: 'var(--calcite-color-text-2, #666)'
                                     }}
                                 >
                                     {this.state.importProgress}%
@@ -19626,11 +19780,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         </div>
 
                         {/* Progress Message */}
-                        <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: 'var(--calcite-color-text-2, #666)' }}>
                             {this.state.importProgressMessage}
                         </p>
 
-                        <p style={{ margin: 0, fontSize: '12px', color: '#999', fontStyle: 'italic' }}>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--calcite-color-text-3, #999)', fontStyle: 'italic' }}>
                             Please wait, do not close this window...
                         </p>
                     </div>
@@ -19732,12 +19886,12 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         alignItems: 'center',
                                         marginBottom: 16,
                                         paddingBottom: 12,
-                                        borderBottom: '1px solid #e0e0e0',
+                                        borderBottom: '1px solid var(--calcite-color-border-3, #e0e0e0)',
                                     }}
                                 >
                                     <h3
                                         id="notesDialogTitle"
-                                        style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1a1a1a' }}
+                                        style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--calcite-color-text-1, #1a1a1a)' }}
                                     >
                                         {this.state.notesEditingIndex !== null &&
                                             (this.state.drawings[this.state.notesEditingIndex]?.attributes?.name ||
@@ -19755,7 +19909,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         flex: 1,
                                         minHeight: 150,
                                         padding: 12,
-                                        border: '2px solid #e0e0e0',
+                                        border: '2px solid var(--calcite-color-border-3, #e0e0e0)',
                                         borderRadius: 4,
                                         fontSize: 14,
                                         fontFamily: 'inherit',
@@ -19764,18 +19918,18 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         outline: 'none',
                                         transition: 'border-color 0.2s',
                                         backgroundColor: 'transparent',
-                                        color: '#1a1a1a',
+                                        color: 'var(--calcite-color-text-1, #1a1a1a)',
                                         boxSizing: 'border-box',
                                     }}
                                     aria-label="Drawing notes"
                                     autoFocus
-                                    onFocus={(e) => (e.target.style.borderColor = '#0078d4')}
-                                    onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
+                                    onFocus={(e) => (e.target.style.borderColor = 'var(--calcite-color-brand, #0078d4)')}
+                                    onBlur={(e) => (e.target.style.borderColor = 'var(--calcite-color-border-3, #e0e0e0)')}
                                 />
 
                                 {/* character counter */}
                                 <div
-                                    style={{ textAlign: 'right', fontSize: 12, color: '#666', marginBottom: 20 }}
+                                    style={{ textAlign: 'right', fontSize: 12, color: 'var(--calcite-color-text-2, #666)', marginBottom: 20 }}
                                     aria-live="polite"
                                 >
                                     {this.state.notesEditingText.length}/2000
@@ -19797,7 +19951,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             onClick={this.deleteCurrentNote}
                                             aria-label="Delete note"
                                             title="Delete this note from the drawing"
-                                            style={{ background: '#b3261e', color: '#fff', border: 'none' }}
+                                            style={{ background: 'var(--calcite-color-status-danger, #b3261e)', color: 'var(--calcite-color-foreground-1, #fff)', border: 'none' }}
                                         >
                                             Delete Note
                                         </Button>
@@ -19834,7 +19988,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                     /* 2. Then storage disclaimer */
                     <div
                         className="p-4 text-center"
-                        style={{ backgroundColor: '#fff' }}
+                        style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)' }}
                         role="region"
                         aria-labelledby="storageDisclaimerTitle"
                     >
