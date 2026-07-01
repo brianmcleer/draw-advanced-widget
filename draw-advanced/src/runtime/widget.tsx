@@ -796,7 +796,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					className='drawToolbarDiv'
 					id="symbol-style-heading"
 				>
-					Change symbol style:
+					Change Symbol Style:
 				</h6>
 				<div
 					className="myss border"
@@ -921,7 +921,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					className='drawToolbarDiv'
 					id="text-options-heading"
 				>
-					Change text options:
+					Change Text Options:
 				</h6>
 				<div className="myss">
 					<div
@@ -3148,7 +3148,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		}
 
 		// Nothing selected → send all drawings
-		return mainDrawings.length === 1 ? 'Send Drawing → Identify' : `Send All ${mainDrawings.length} → Identify`;
+		return mainDrawings.length === 1 ? 'Send Drawing → Identify' : `Send All (${mainDrawings.length}) → Identify`;
 	};
 
 	/** Returns tooltip explaining what the Identify button will do */
@@ -8106,7 +8106,8 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		} = this.state;
 
 		const isDrawingActive = pointBtnActive || lineBtnActive || flineBtnActive ||
-			rectBtnActive || polygonBtnActive || fpolygonBtnActive || circleBtnActive || textBtnActive;
+			rectBtnActive || polygonBtnActive || fpolygonBtnActive || circleBtnActive || textBtnActive ||
+			this.state.triangleActive || this.state.curveToolActive;
 
 		if (this.props.config.identifyWidgetId) MutableStoreManager.getInstance().updateStateValue(this.props.config.identifyWidgetId, 'drawActive', isDrawingActive ? 'drawing' : 'not drawing')
 
@@ -8128,12 +8129,12 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 							{this.drawLayer?.graphics.length > 0 ? (
 								<div>
 									<h5 id="mode-heading">Edit Mode</h5>
-									<h6 aria-describedby="mode-heading">Select a Drawing Style to enter Drawing Mode.</h6>
+									<h6 aria-describedby="mode-heading">Select a Drawing Style to Enter Drawing Mode.</h6>
 								</div>
 							) : (
 								<div>
 									<h5 id="mode-heading">No Drawings Yet</h5>
-									<h6 aria-describedby="mode-heading">Select a Drawing Style to get started.</h6>
+									<h6 aria-describedby="mode-heading">Select a Drawing Style to Get Started.</h6>
 								</div>
 							)}
 						</div>
@@ -8227,9 +8228,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 										</Button>
 										{this.state.showCurveMenu && (
 											<div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: 'var(--white, #fff)', border: '1px solid var(--light-300, #ccc)', borderRadius: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.25)', minWidth: 160, overflow: 'hidden' }}>
-												<Button size="sm" type="default" color={this.state.currentTool === 'arc' ? 'primary' : 'default'} active={this.state.currentTool === 'arc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('arc')} title="Click start, a point on the curve, then end. Keeps adding connected arc segments.">Arc segment</Button>
-												<Button size="sm" type="default" color={this.state.currentTool === 'endpointArc' ? 'primary' : 'default'} active={this.state.currentTool === 'endpointArc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('endpointArc')} title="Click start, end, then move out to set the radius.">Endpoint arc</Button>
-												<Button size="sm" type="default" color={this.state.currentTool === 'bezier' ? 'primary' : 'default'} active={this.state.currentTool === 'bezier'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('bezier')} title="Click start, end, control 1, control 2.">Bézier curve</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'arc' ? 'primary' : 'default'} active={this.state.currentTool === 'arc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('arc')} title="Click start, a point on the curve, then end. Keeps adding connected arc segments.">Arc Segment</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'endpointArc' ? 'primary' : 'default'} active={this.state.currentTool === 'endpointArc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('endpointArc')} title="Click start, end, then move out to set the radius.">Endpoint Arc</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'bezier' ? 'primary' : 'default'} active={this.state.currentTool === 'bezier'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('bezier')} title="Click start, end, control 1, control 2.">Bézier Curve</Button>
 											</div>
 										)}
 									</div>
@@ -8730,7 +8731,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 											title="Switch back to clicking features one at a time"
 											aria-label="Switch to individual feature selection"
 										>
-											One at a time
+											One at a Time
 										</button>
 									)}
 								</div>

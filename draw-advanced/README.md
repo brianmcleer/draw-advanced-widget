@@ -60,7 +60,7 @@ npm install --save shpjs jszip
 - **Measurement system:** real-time area, perimeter, length, radius, and coordinate calculations; geodetic or planar based on spatial reference; distance and area units including user-defined custom units; per-segment line measurements; configurable decimal precision and per-metric toggles.
 - **Tooltips:** live length, area, perimeter, radius, and coordinate readouts while drawing, with smart placement and styling.
 - **Snapping:** detects all visible snappable layers (feature, graphics, CSV, GeoJSON, WFS, sublayers) with a 15 pixel tolerance, self-snapping, and temporary disable via Ctrl/Cmd. Optional alignment grid.
-- **Buffers:** add buffers to points, lines, polygons, and circles with configurable distance, unit, and opacity; an outline-only option (transparent fill, solid stroke) and an optional custom buffer color that overrides the source drawing's color. Buffers update when the parent is reshaped and are included in import and export.
+- **Buffers:** add buffers to points, lines, polygons, and circles with configurable distance, unit, and opacity; an outline-only option (transparent fill, solid stroke) and optional custom buffer colors, with independent fill and outline colors, that override the color inherited from the source drawing. Buffers update when the parent is reshaped and are included in import and export.
 - **Line arrows:** add direction arrowheads to straight and freehand lines.
 - **Text tool:** expanded font library, real-time preview, rotation, multi-line support, and outline/halo controls.
 - **Layer management:** toggle the drawing layer in the map layer list and set a custom layer name.
@@ -112,6 +112,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ---
 
 ## Changelog
+
+- 2026-07-01 v4.2.2: Fixed the triangle and true-curve tools not switching the widget into Drawing Mode, which had left the Identify widget enabled during those draws. Buffer custom color now supports independent fill and outline colors, and changing one buffer's color no longer restyles the others. Consistent "Send All (N)" count formatting between the Mailing Labels and Identify buttons. Title-case pass across UI labels: buffer options, Clear All Graphics and its delete confirmation, the drawing-mode messages, and the curve menu items. Security: replaced the settings-import XML parser with a controlled text scan and a key allowlist, resolving a CodeQL DOM-based XSS alert (js/xss-through-dom).
 
 - 2026-06-25 v4.2.0: Outline-only buffer option (transparent fill, solid stroke) toggled per buffer; applies live to selected buffers and to new buffers, and persists across reloads. Optional custom buffer color, chosen at creation, that overrides the color inherited from the source drawing. Buffer geometry is now included in all export formats (GeoJSON, shapefile, KML, and ExB Draw) as its own feature, not just as parent attributes. Settings: developer-configurable buffer defaults (distance, unit, opacity, color) and measurement label templates; XML import/export of the full widget configuration to copy settings between applications; settings panel standardized on Jimu UI with developer tooltips and accessibility (WCAG) improvements.
 
