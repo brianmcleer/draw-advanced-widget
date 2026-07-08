@@ -2685,13 +2685,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                     const line = symbol as any;
                     properties.stroke = line.color?.toHex() || '#000000';
                     properties.stroke_width = line.width || 1;
-                    properties.stroke_opacity = line.color?.a || 1;
+                    properties.stroke_opacity = line.color?.a ?? 1;
                     break;
 
                 case 'simple-fill':
                     const fill = symbol as any;
                     properties.fill = fill.color?.toHex() || '#000000';
-                    properties.fill_opacity = fill.color?.a || 1;
+                    properties.fill_opacity = fill.color?.a ?? 1;
                     if (fill.outline) {
                         properties.stroke = fill.outline.color?.toHex() || '#000000';
                         properties.stroke_width = fill.outline.width || 1;
