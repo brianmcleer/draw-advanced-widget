@@ -6442,7 +6442,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		} catch { /* preview best-effort */ }
 	};
 
-	private _updateCurvePreview = (view: any, cursor: number[]) => { this._renderCurvePreview(view, cursor); };
+	private _updateCurvePreview = (view: any, cursor: number[]) => { this._renderCurvePreview(view, cursor); this._livePreviewMeasure(this._curvePreview); };
 
 	private _finishCurve = async (view: any) => {
 		if (this._curveSegs.length === 0) { this._cancelCurvePath(view); return; }
@@ -6502,7 +6502,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 
 	private _clearCurvePreview = () => {
 		this._hideCursorTip();
-		if (this._curvePreview) { try { this.drawLayer.remove(this._curvePreview); } catch { } this._curvePreview = null; }
+		if (this._curvePreview) { this._clearPreviewMeasure(this._curvePreview); try { this.drawLayer.remove(this._curvePreview); } catch { } this._curvePreview = null; }
 	};
 
 	private _deactivateCurveHandles = () => {
@@ -6607,6 +6607,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			const geom = this._buildTriangle(view, this._triCenter, raw); if (!geom) return;
 			if (!this._triPreview) { this._triPreview = new Graphic({ geometry: geom, symbol: this._triFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true } }); this.drawLayer.add(this._triPreview); }
 			else { this._triPreview.geometry = geom; }
+			this._livePreviewMeasure(this._triPreview);
 			if (this._tooltipsOn()) this._updateCursorTip(view, evt.x, evt.y, this._triTipText(view, raw, geom));
 			else this._hideCursorTip();
 		});
@@ -6646,8 +6647,46 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		else { this._deactivateTriangleTool(); }
 	};
 
-	private _clearTriPreview = () => { this._hideCursorTip(); this._clearSnapIndicator(); if (this._triPreview) { try { this.drawLayer.remove(this._triPreview); } catch { } this._triPreview = null; } };
+	private _clearTriPreview = () => { this._hideCursorTip(); this._clearSnapIndicator(); if (this._triPreview) { this._clearPreviewMeasure(this._triPreview); try { this.drawLayer.remove(this._triPreview); } catch { } this._triPreview = null; } };
 	private _deactivateTriHandles = () => { for (const h of this._triHandles) { try { h.remove(); } catch { } } this._triHandles = []; };
+
+	// ---------------------------------------------------------------------
+	// Live measurement for custom-tool previews (triangle, curves, preset
+	// circle). These tools bypass SketchViewModel.create(), so measure.tsx's
+	// SVM 'create' listener never fires during the draw — only at finish via
+	// svmGraCreate. Feeding the preview graphic through the same imperative
+	// entry point gives it the identical live pipeline (main label + segment
+	// labels) SVM-drawn shapes get.
+	private _livePreviewMeasure = (preview: any) => {
+		try {
+			if (preview && this.measureRef?.current?.isMeasurementEnabled?.()) {
+				this.measureRef.current.updateMeasurementsForGraphic(preview);
+			}
+		} catch { /* no-op */ }
+	};
+
+	// Remove the live labels a preview accumulated BEFORE the preview graphic
+	// itself is removed (finish, cancel, Esc) — otherwise they orphan as
+	// ghosts, since the preview never goes through complete-time cleanup.
+	private _clearPreviewMeasure = (preview: any) => {
+		if (!preview || !this.drawLayer) return;
+		try {
+			if (preview.measure?.graphic) {
+				try { this.drawLayer.remove(preview.measure.graphic); } catch { /* no-op */ }
+				preview.measure = null;
+			}
+			const segs = preview.attributes?.relatedSegmentLabels;
+			if (Array.isArray(segs)) {
+				segs.forEach((sl: any) => { try { if (sl) this.drawLayer.remove(sl); } catch { /* no-op */ } });
+				preview.attributes.relatedSegmentLabels = [];
+			}
+			const mains = preview.attributes?.relatedMeasurementLabels;
+			if (Array.isArray(mains)) {
+				mains.forEach((ml: any) => { try { if (ml) this.drawLayer.remove(ml); } catch { /* no-op */ } });
+				preview.attributes.relatedMeasurementLabels = [];
+			}
+		} catch { /* no-op */ }
+	};
 	private _deactivateTriangleTool = () => {
 		if (this._triClickTimer) { clearTimeout(this._triClickTimer); this._triClickTimer = null; }
 		this._deactivateTriHandles();
@@ -6746,8 +6785,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			this._updateSnapIndicator(view, snapped !== raw ? snapped : null);
 			const geom = this._buildPresetCircle(view, snapped);
 			if (!geom) { this._clearCpPreview(); return; }
-			if (!this._cpPreview) { this._cpPreview = new Graphic({ geometry: geom, symbol: this._cpFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true } }); this.drawLayer.add(this._cpPreview); }
+			if (!this._cpPreview) { this._cpPreview = new Graphic({ geometry: geom, symbol: this._cpFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true, drawMode: 'circle' } }); this.drawLayer.add(this._cpPreview); }
 			else { this._cpPreview.geometry = geom; }
+			this._livePreviewMeasure(this._cpPreview);
 			if (this._tooltipsOn()) {
 				const modeLabel = (this.state.circlePresetMode || 'radius') === 'radius' ? 'Radius' : 'Area';
 				this._updateCursorTip(view, evt.x, evt.y, [[modeLabel, `${this.state.circlePresetValue ?? ''} ${this._cpUnitAbbr()}`]]);
@@ -6781,7 +6821,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		if (this.creationMode !== 'continuous') this.setDrawToolBtnState('');
 	};
 
-	private _clearCpPreview = () => { this._hideCursorTip(); this._clearSnapIndicator(); if (this._cpPreview) { try { this.drawLayer.remove(this._cpPreview); } catch { } this._cpPreview = null; } };
+	private _clearCpPreview = () => { this._hideCursorTip(); this._clearSnapIndicator(); if (this._cpPreview) { this._clearPreviewMeasure(this._cpPreview); try { this.drawLayer.remove(this._cpPreview); } catch { } this._cpPreview = null; } };
 	private _deactivateCpHandles = () => { for (const h of this._cpHandles) { try { h.remove(); } catch { } } this._cpHandles = []; };
 	private _deactivateCirclePreset = () => {
 		if (this._cpClickTimer) { clearTimeout(this._cpClickTimer); this._cpClickTimer = null; }

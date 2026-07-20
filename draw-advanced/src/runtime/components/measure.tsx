@@ -2654,7 +2654,24 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				graphic === sketchViewModel.updateGraphics?.items?.[0];
 			const hasNoStableId = !graphic.attributes?.uniqueId;
 
-			if ((hasNoStableId || isActiveSketchTarget) && !hasSegmentLabels) {
+			// A graphic mid-creation MUST stay on the live path even after live
+			// segment labels exist on it: _addMeasurement dead-ends during create
+			// (the graphic isn't on drawLayer yet), which would freeze the segment
+			// values for the rest of the draw. Detection can't rely on a missing
+			// uniqueId anymore (live assigns it on the first frame), so: match the
+			// SVM's createGraphic where exposed, treat any custom-tool preview
+			// (triangle/curve/preset circle) as live, and fall back to "SVM session
+			// active with nothing in updateGraphics and the graphic not yet
+			// completed" (svmGraCreate stamps isDrawing at complete).
+			const svmAny = sketchViewModel as any;
+			const isActiveCreateTarget =
+				graphic === svmAny.createGraphic ||
+				graphic.attributes?.isPreviewBuffer === true ||
+				(svmAny.state === 'active' &&
+					((svmAny.updateGraphics?.length ?? 0) === 0) &&
+					!graphic.attributes?.isDrawing);
+
+			if (isActiveCreateTarget || hasNoStableId || (isActiveSketchTarget && !hasSegmentLabels)) {
 				//console.log('📊 Calling _addMeasurementLive');
 				_addMeasurementLive(graphic);
 			} else {
@@ -3419,6 +3436,23 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		}
 
 		const isPoint = geometry.type === 'point';
+
+		// 🔧 STABLE IDENTITY: give the graphic its permanent uniqueId on the FIRST
+		// live frame instead of waiting for 'complete' (svmGraCreate keeps a
+		// pre-existing uniqueId, so this IS the id the graphic completes with).
+		// Live labels then carry a resolvable parentGraphicId from frame one, so
+		// every cleanup pass that keys on parent identity — the idempotent sweep
+		// in cleanExistingMeasurements, the panel's orphan passes, save/restore —
+		// stays consistent across the create→complete boundary. It also stops
+		// getGraphicId minting a new throwaway id on every call for in-progress
+		// graphics, which made the per-graphic throttle/queue maps useless mid-create.
+		if (!isPoint) {
+			if (!graphic.attributes) graphic.attributes = {};
+			if (!graphic.attributes.uniqueId) {
+				graphic.attributes.uniqueId = `g_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+			}
+		}
+
 		let text: string;
 
 		try {
@@ -3625,48 +3659,193 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 			}
 		}
 
-		// 🔧 LIVE SEGMENT UPDATE: keep each per-segment length label in sync with the
-		// geometry during an active drag — the same way the main length/area label
-		// above does. The old "no segment handling" rule was about avoiding flicker
-		// from removing/recreating label graphics; instead we mutate the EXISTING
-		// segment label graphics IN PLACE (text + position), which doesn't flicker.
-		// Vertex add/remove (segment count changes) is reconciled by the full rebuild
-		// on 'complete'; here we only refresh the segments that already exist.
+		// 🔧 LIVE SEGMENT UPDATE: keep per-segment length labels in sync with the
+		// geometry in real time — the same way the main length/area label above does.
+		// Existing labels are mutated IN PLACE (text + position + angle), which
+		// doesn't flicker; a NEW segment (vertex placed while drawing, or added
+		// mid-edit) gets its label created on the spot; a removed segment (vertex
+		// undo) drops its label. The full rebuild on 'complete' remains the
+		// reconciler of record for preserved custom symbols/positions. This block
+		// deliberately contains no awaits, so the two live callers (widget.tsx
+		// svmGraCreate and the create/update listeners below) cannot interleave
+		// mid-reconciliation and double-create labels.
 		try {
-			const segLabels = Array.isArray(graphic.attributes?.relatedSegmentLabels)
-				? graphic.attributes.relatedSegmentLabels.filter(Boolean)
-				: [];
-			if (segLabels.length > 0 && shouldCreateSegments(geometry)) {
-				// Build the current segments in the same nested order labels were created.
+			// Freehand tools accumulate hundreds of vertices per second — creating a
+			// label per mousemove would jank the draw. Their segments still appear on
+			// 'complete' exactly as before. Circles are excluded too: a mid-drag
+			// circle ring isn't 61 points yet, so shouldCreateSegments can't block it,
+			// and it would spray a label per arc vertex.
+			const isFreehand =
+				graphic.attributes?.drawMode === 'freepolyline' ||
+				graphic.attributes?.drawMode === 'freepolygon' ||
+				graphic.attributes?.drawMode === 'circle' ||
+				currentTool === 'freepolyline' || currentTool === 'freepolygon' || currentTool === 'circle' ||
+				toolType === 'freepolyline' || toolType === 'freepolygon' || toolType === 'circle';
+
+			if (shouldCreateSegments(geometry) && drawLayer) {
+				if (!graphic.attributes) graphic.attributes = {};
+				if (!Array.isArray(graphic.attributes.relatedSegmentLabels)) graphic.attributes.relatedSegmentLabels = [];
+
+				// 🔧 SELF-HEALING: compact the tracked array to labels ACTUALLY on the
+				// layer before pairing. Delayed cleanup passes from the PREVIOUS
+				// graphic's complete (throttled rebuild, panel refresh, save/restore)
+				// can remove live labels from the layer while this array still
+				// references them — count-based pairing then believes every segment
+				// is labeled and the live display stays dead for the rest of the
+				// draw. Compacting first means anything externally removed is
+				// recreated on the very next frame.
+				const compacted = graphic.attributes.relatedSegmentLabels.filter(
+					(l: any) => l && safeLayerContains(l)
+				);
+				if (compacted.length !== graphic.attributes.relatedSegmentLabels.length) {
+					graphic.attributes.relatedSegmentLabels = compacted;
+				}
+				const segLabels = graphic.attributes.relatedSegmentLabels;
+
+				// Build the current segments in the same nested order labels are created.
+				// 🔧 POLYGON NORMALIZATION: during create the API does NOT keep the ring
+				// consistently closed across 'active' frames (vertex-place frames carry
+				// the duplicated closing point, mousemove frames often don't). Reading
+				// raw rings makes the segment count oscillate ±1 between frames, so the
+				// closing-edge label flickered in/out and index pairing shifted. Strip
+				// the duplicate closing point and append the closing segment ourselves
+				// once the ring has 3+ distinct vertices — stable count every frame,
+				// same pair order the 'complete' rebuild produces from a closed ring.
 				const segments: Array<[number[], number[]]> = [];
+				const isPolygonGeom = geometry.type === 'polygon';
 				for (const path of getCoordinateArrays(geometry)) {
-					if (!Array.isArray(path)) continue;
-					for (let j = 1; j < path.length; j++) segments.push([path[j - 1], path[j]]);
+					if (!Array.isArray(path) || path.length < 2) continue;
+					let pts = path;
+					if (isPolygonGeom) {
+						const first = path[0];
+						const last = path[path.length - 1];
+						const isClosed = Array.isArray(first) && Array.isArray(last) &&
+							first[0] === last[0] && first[1] === last[1];
+						pts = isClosed ? path.slice(0, -1) : path;
+					}
+					for (let j = 1; j < pts.length; j++) segments.push([pts[j - 1], pts[j]]);
+					if (isPolygonGeom && pts.length >= 3) segments.push([pts[pts.length - 1], pts[0]]);
 				}
 				const lengthUnitInfo = availableDistanceUnits.find((u) => u.unit === distanceUnit.unit);
 				const lengthUnitLabel = lengthUnitInfo ? lengthUnitInfo.abbreviation : distanceUnit.unit;
+
+				// 1) Update existing labels IN PLACE, exactly like the main label does
+				// (which renders crisp). We intentionally do NOT clone/reassign the
+				// symbol every frame — reassigning a rotated, halo'd symbol each drag
+				// frame renders unclean; mutating its fields does not. Duplicate/orphan
+				// labels are handled by the idempotent sweep in cleanExistingMeasurements.
 				const n = Math.min(segLabels.length, segments.length);
 				for (let k = 0; k < n; k++) {
 					const segLabel = segLabels[k] as ExtendedGraphic;
-					if (!segLabel || !drawLayer || !safeLayerContains(segLabel)) continue;
+					if (!segLabel || !safeLayerContains(segLabel)) continue;
 					const [p1, p2] = segments[k];
 					const segLen = _calculateSegmentLength(p1, p2, geometry);
 					if (!(segLen > 0)) continue;
 					const segText = `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}`;
-					// Update text IN PLACE, exactly like the main length/area label does
-					// (which renders crisp). The geometry reassignment below forces the
-					// graphic to redraw and pick up the new text. We intentionally do NOT
-					// clone/reassign the symbol every frame — reassigning a rotated, halo'd
-					// symbol each drag frame renders unclean. Duplicate/orphan labels (the
-					// real cause of the earlier "overlapping numbers") are handled by the
-					// idempotent sweep in cleanExistingMeasurements.
 					if (isTextSymbol(segLabel.symbol)) (segLabel.symbol as any).text = segText;
 					if (segLabel.attributes) segLabel.attributes.name = segText;
-					// Position tracks the midpoint unless the user pinned it
+					if (segLabel.attributes?.segmentInfo) {
+						segLabel.attributes.segmentInfo = { point1: p1, point2: p2 };
+					}
+					// Rotated side labels (created with verticalAlignment 'bottom') track
+					// the segment's CURRENT angle; only mutate when the angle changed.
+					if (
+						rotateSegments && !isFreehand &&
+						isTextSymbol(segLabel.symbol) &&
+						(segLabel.symbol as any).verticalAlignment === 'bottom' &&
+						!segLabel.attributes?.customized &&
+						!segLabel.attributes?.hasCustomPosition
+					) {
+						const segAngle = _calculateAngle(p1[0], p1[1], p2[0], p2[1]);
+						if ((segLabel.symbol as any).angle !== segAngle) {
+							const perp = (segAngle * Math.PI / 180) + Math.PI / 2;
+							(segLabel.symbol as any).angle = segAngle;
+							(segLabel.symbol as any).yoffset = Math.sin(perp) * 4;
+							(segLabel.symbol as any).xoffset = Math.cos(perp) * 4 * -1.5;
+						}
+					}
+					// Position tracks the midpoint unless the user pinned it. The geometry
+					// reassignment also forces the graphic to redraw with the new text.
 					if (!segLabel.attributes?.hasCustomPosition) {
 						const mid = _getSegmentMidpoint(p1, p2, geometry);
 						if (mid) segLabel.geometry = mid;
 					}
+				}
+
+				// 2) Create labels for segments that don't have one yet (live during
+				// initial drawing, and for vertices added mid-edit). Mirrors the
+				// creation in _addMeasurement minus the preserved-props lookup —
+				// preserved custom symbols/positions are re-applied by the full
+				// rebuild on 'complete'.
+				if (!isFreehand && segments.length > segLabels.length) {
+					for (let k = segLabels.length; k < segments.length; k++) {
+						const [p1, p2] = segments[k];
+						const segLen = _calculateSegmentLength(p1, p2, geometry);
+						let segMid = _getSegmentMidpoint(p1, p2, geometry);
+						if (!segMid) {
+							// Degenerate (zero-length) segment while the cursor sits on the
+							// last vertex: still create the label to keep index alignment;
+							// it gets real text/position on the next mousemove frame.
+							try {
+								segMid = new Point({ x: p1[0], y: p1[1], spatialReference: (geometry as any).spatialReference });
+							} catch { break; }
+						}
+						const segText = segLen > 0
+							? `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}`
+							: '';
+						const segAngle = _calculateAngle(p1[0], p1[1], p2[0], p2[1]);
+						const segSym = currentTextSymbol.clone();
+						segSym.text = segText;
+						if (rotateSegments) {
+							segSym.angle = segAngle;
+							segSym.verticalAlignment = 'bottom';
+							const perp = (segAngle * Math.PI / 180) + Math.PI / 2;
+							segSym.yoffset = Math.sin(perp) * 4;
+							segSym.xoffset = Math.cos(perp) * 4 * -1.5;
+						}
+						if (!segSym.haloSize) {
+							segSym.haloSize = 2;
+							segSym.haloColor = 'white';
+						}
+						if (segSym.backgroundColor?.a > 0) segSym.backgroundColor.a = 0;
+
+						const segLabel = new Graphic({
+							geometry: segMid,
+							symbol: segSym,
+							visible: true,
+							attributes: {
+								name: segText,
+								description: 'Segment Label',
+								isMeasurementLabel: true,
+								hideFromList: true,
+								drawMode: 'text',
+								measurementType: 'segment',
+								parentGraphicId: graphic.attributes?.uniqueId,
+								lengthUnit: distanceUnit.unit,
+								isSegmentLabel: true,
+								segmentIndex: k,
+								customized: false,
+								lastModified: null,
+								hasCustomPosition: false,
+								customPosition: null,
+								segmentInfo: { point1: p1, point2: p2 }
+							}
+						}) as ExtendedGraphic;
+
+						drawLayer.add(segLabel);
+						segLabel.measureParent = graphic;
+						segLabel.measure = { graphic: graphic };
+						segLabels.push(segLabel);
+					}
+				}
+
+				// 3) Remove labels for segments that no longer exist (vertex undo
+				// while drawing, or vertex deletion mid-edit).
+				if (segLabels.length > segments.length) {
+					const extras = segLabels.splice(segments.length);
+					extras.forEach((ex: any) => {
+						try { if (ex && safeLayerContains(ex)) safeLayerRemove(ex); } catch { /* no-op */ }
+					});
 				}
 			}
 		} catch (segErr) {
@@ -4378,8 +4557,30 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				return;
 			}
 
+			// Cancel (ESC) discards the in-progress graphic, but the live main and
+			// segment labels created during the draw live on drawLayer — remove them
+			// or they'd be orphaned as ghosts. Runs even if measurements were toggled
+			// off mid-draw.
+			if (event.state === 'cancel') {
+				const canceled = event.graphic as ExtendedGraphic | undefined;
+				if (canceled) {
+					try {
+						if (canceled.measure?.graphic && safeLayerContains(canceled.measure.graphic)) {
+							safeLayerRemove(canceled.measure.graphic);
+						}
+						if (Array.isArray(canceled.attributes?.relatedSegmentLabels)) {
+							canceled.attributes.relatedSegmentLabels.forEach((sl: any) => {
+								try { if (sl && safeLayerContains(sl)) safeLayerRemove(sl); } catch { /* no-op */ }
+							});
+							canceled.attributes.relatedSegmentLabels = [];
+						}
+					} catch { /* no-op */ }
+				}
+				return;
+			}
+
 			// CRITICAL: if measurements are disabled *right now*, do nothing
-			if (!measureEnabledRef.current || event.state === 'cancel') {
+			if (!measureEnabledRef.current) {
 				//console.log('❌ Skipping create - measureEnabledRef:', measureEnabledRef.current, 'state:', event.state);
 				return;
 			}
