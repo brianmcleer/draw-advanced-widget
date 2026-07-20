@@ -41,6 +41,7 @@ import Polygon from 'esri/geometry/Polygon';
 import Polyline from 'esri/geometry/Polyline';
 import Multipoint from 'esri/geometry/Multipoint';
 import Point from 'esri/geometry/Point';
+import Circle from 'esri/geometry/Circle';
 import * as geometryEngine from 'esri/geometry/geometryEngine';
 import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
 import * as lengthOperator from 'esri/geometry/operators/lengthOperator';
@@ -223,6 +224,10 @@ interface States {
 	curveHint?: string;        // help text shown while a curve tool is active
 	triangleActive?: boolean;  // custom equilateral-triangle tool active
 	triangleHint?: string;     // help text shown while the triangle tool is active
+	circlePresetEnabled?: boolean; // preset circle size: one click places a circle of an exact radius or area (off by default)
+	circlePresetMode?: 'radius' | 'area';
+	circlePresetValue?: number;
+	circlePresetUnit?: string;
 	flineBtnActive: boolean;
 	rectBtnActive: boolean;
 	polygonBtnActive: boolean;
@@ -622,6 +627,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	private _triPreview: any = null;
 	private _triPrevPopup: boolean | null = null;
 	private _triClickTimer: any = null;
+	// Preset circle size tool (one-click circle of an exact radius or area)
+	private _cpHandles: Array<{ remove: () => void }> = [];
+	private _cpPreview: any = null;
+	private _cpPrevPopup: boolean | null = null;
+	private _cpClickTimer: any = null;
 	private _curveUpdateBackup: Map<string, { json: any; cx: number; cy: number }> = new Map();
 	// Live snap feedback: marker shown at the snapped point + throttle guards so
 	// the async feature query doesn't run on every pointer-move.
@@ -867,6 +877,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 
 				{/* Arrow controls for polylines */}
 				{currentSymbolType === JimuSymbolType.Polyline && this.renderArrowControls()}
+
+				{/* Preset circle size controls for the circle tool */}
+				{this.state.circleBtnActive && this.renderCirclePresetControls()}
 			</div>
 		);
 	}
@@ -1385,6 +1398,101 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		return result;
 	};
 
+	private renderCirclePresetControls() {
+		const presetEnabled = !!this.state.circlePresetEnabled;
+		const presetMode = this.state.circlePresetMode || 'radius';
+
+		return (
+			<div
+				className="circle-preset-controls mt-3"
+				role="region"
+				aria-label="Preset circle size settings"
+			>
+				<div className="d-flex align-items-center drawToolbarDiv">
+					<Label
+						centric
+						id="preset-circle-size-label"
+					>
+						Preset Circle Size
+						<Switch
+							className="ml-2"
+							checked={presetEnabled}
+							onChange={(e) => this._setCirclePresetEnabled((e.target as HTMLInputElement).checked)}
+							aria-labelledby="preset-circle-size-label"
+							aria-describedby="preset-circle-size-description"
+							title={presetEnabled ? "Click to disable the preset circle size" : "Click to place a circle with an exact radius or area with one click"}
+						/>
+						<span id="preset-circle-size-description" className="sr-only">
+							Toggle to place a circle with an exact radius or area with a single click on the map
+						</span>
+					</Label>
+				</div>
+
+				{presetEnabled && (
+					<div className="mt-2">
+						<div className="d-flex align-items-center mb-2 drawToolbarDiv" role="group" aria-label="Preset circle size by">
+							<Label
+								centric
+								className="mb-0"
+								id="preset-circle-mode-label"
+							>
+								Size By:
+								<Select
+									size="sm"
+									className="ml-2"
+									value={presetMode}
+									onChange={(e) => this._setCirclePresetMode((e.target as HTMLSelectElement).value as 'radius' | 'area')}
+									style={{ width: '110px' }}
+									aria-labelledby="preset-circle-mode-label"
+									title={`Currently sizing by ${presetMode === 'radius' ? 'radius' : 'area'}. Select radius or area.`}
+								>
+									<Option value="radius">Radius</Option>
+									<Option value="area">Area</Option>
+								</Select>
+							</Label>
+						</div>
+						<div className="d-flex align-items-center mb-1 drawToolbarDiv" role="group" aria-label="Preset circle size value and unit">
+							<Label
+								centric
+								className="mb-0"
+								id="preset-circle-value-label"
+							>
+								{presetMode === 'radius' ? 'Radius:' : 'Area:'}
+								<NumericInput
+									size="sm"
+									className="ml-2 mr-2"
+									value={this.state.circlePresetValue ?? 100}
+									min={0.01}
+									step={1}
+									onChange={(v: number) => this.setState({ circlePresetValue: v })}
+									style={{ width: '80px' }}
+									aria-labelledby="preset-circle-value-label"
+									title={`Current value: ${this.state.circlePresetValue ?? 100}. Enter the circle ${presetMode === 'radius' ? 'radius' : 'area'}.`}
+								/>
+								<Select
+									size="sm"
+									value={this.state.circlePresetUnit || 'feet'}
+									onChange={(e) => this.setState({ circlePresetUnit: (e.target as HTMLSelectElement).value })}
+									style={{ width: '150px' }}
+									aria-label={`Circle ${presetMode === 'radius' ? 'radius' : 'area'} unit of measurement`}
+									title={`Current unit: ${this.state.circlePresetUnit || 'feet'}. Select the unit of measurement.`}
+								>
+									{(presetMode === 'radius'
+										? [['feet', 'Feet'], ['yards', 'Yards'], ['meters', 'Meters'], ['kilometers', 'Kilometers'], ['miles', 'Miles']]
+										: [['acres', 'Acres'], ['square-feet', 'Square Feet'], ['square-meters', 'Square Meters'], ['hectares', 'Hectares'], ['square-kilometers', 'Square Kilometers'], ['square-miles', 'Square Miles']]
+									).map(([unitValue, unitLabel]) => (
+										<Option key={unitValue} value={unitValue}>{unitLabel}</Option>
+									))}
+								</Select>
+							</Label>
+						</div>
+						<div className="text-center" style={{ fontSize: 13, opacity: 0.85 }}>Click the map to place the circle&nbsp;&nbsp;&bull;&nbsp;&nbsp;Esc to cancel</div>
+					</div>
+				)}
+			</div>
+		);
+	}
+
 	private renderArrowControls() {
 		const { arrowEnabled, arrowPosition } = this.state;
 
@@ -1722,6 +1830,10 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			fpolygonBtnActive: false,
 			circleBtnActive: false,
 			textBtnActive: false,
+			circlePresetEnabled: false,
+			circlePresetMode: 'radius',
+			circlePresetValue: 100,
+			circlePresetUnit: 'feet',
 			showSymPreview: false,
 			currentSymbol: null,
 			currentSymbolType: null,
@@ -4514,6 +4626,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		// Clean up custom curve tool handles
 		this._deactivateCurveTool();
 		this._deactivateTriangleTool();
+		this._deactivateCirclePreset();
 
 		// Clean up SketchViewModel
 		if (this.sketchViewModel) {
@@ -6547,6 +6660,139 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		if (this.state.triangleActive || this.state.triangleHint) this.setState({ triangleActive: false, triangleHint: '', showSymPreview: false, currentSymbolType: null });
 	};
 
+	// ---------------------------------------------------------------------
+	// Preset Circle Size: one click places a circle of an exact radius or
+	// area (like pre-set circle tools in other GIS viewers). Off by default;
+	// toggled from the panel shown while the circle tool is active. Follows
+	// the triangle tool's pattern: custom view handlers build the geometry,
+	// then the graphic is finalized through the same completion path as a
+	// SketchViewModel-created circle.
+	// ---------------------------------------------------------------------
+	private _cpRadiusMeters = (): number | null => {
+		const value = this.state.circlePresetValue;
+		if (typeof value !== 'number' || !isFinite(value) || value <= 0) return null;
+		const unit = this.state.circlePresetUnit || 'feet';
+		if ((this.state.circlePresetMode || 'radius') === 'radius') {
+			const toMeters: { [k: string]: number } = { 'feet': 0.3048, 'yards': 0.9144, 'meters': 1, 'kilometers': 1000, 'miles': 1609.344 };
+			const f = toMeters[unit]; if (!f) return null;
+			return value * f;
+		}
+		const toSqMeters: { [k: string]: number } = { 'acres': 4046.8564224, 'square-feet': 0.09290304, 'square-meters': 1, 'hectares': 10000, 'square-kilometers': 1000000, 'square-miles': 2589988.110336 };
+		const f = toSqMeters[unit]; if (!f) return null;
+		return Math.sqrt((value * f) / Math.PI);
+	};
+
+	private _cpUnitAbbr = (): string => {
+		const unit = this.state.circlePresetUnit || 'feet';
+		const abbr: { [k: string]: string } = { 'feet': 'ft', 'yards': 'yd', 'meters': 'm', 'kilometers': 'km', 'miles': 'mi', 'acres': 'ac', 'square-feet': 'ft²', 'square-meters': 'm²', 'hectares': 'ha', 'square-kilometers': 'km²', 'square-miles': 'mi²' };
+		return abbr[unit] || unit;
+	};
+
+	private _cpFillSymbol = (): any => {
+		try { const base = (this.sketchViewModel?.polygonSymbol as any); if (base?.clone) return base.clone(); } catch { }
+		return new SimpleFillSymbol({ color: [0, 0, 0, 0.15], outline: { color: [0, 0, 0, 1], width: 2 } });
+	};
+
+	// 60 points matches SketchViewModel circles (61-point closed ring), so the
+	// measurement system recognizes the result as a circle and shows its radius.
+	private _buildPresetCircle = (view: any, center: number[]): any => {
+		const radius = this._cpRadiusMeters();
+		if (!radius) return null;
+		try {
+			const sr = view.spatialReference;
+			const pt = new Point({ x: center[0], y: center[1], spatialReference: sr });
+			const geodesic = !!(sr?.isGeographic || sr?.isWebMercator);
+			return new Circle({ center: pt, radius, radiusUnit: 'meters', numberOfPoints: 60, geodesic, spatialReference: sr });
+		} catch (e) { console.warn('Preset circle build warning:', e); return null; }
+	};
+
+	private _setCirclePresetEnabled = (val: boolean) => {
+		this.setState({ circlePresetEnabled: val });
+		if (!this.state.circleBtnActive) return;
+		const view = this.state.currentJimuMapView?.view;
+		if (val) {
+			try { this.sketchViewModel?.cancel(); } catch { }
+			if (view) this._activateCirclePreset(view);
+		} else {
+			this._deactivateCirclePreset();
+			try { this.sketchViewModel?.create('circle'); } catch { }
+		}
+	};
+
+	private _setCirclePresetMode = (mode: 'radius' | 'area') => {
+		this.setState({ circlePresetMode: mode, circlePresetUnit: mode === 'radius' ? 'feet' : 'acres' });
+	};
+
+	private _activateCirclePreset = (view: any) => {
+		this._deactivateCpHandles();
+		if (this._cpPrevPopup === null) this._cpPrevPopup = view.popupEnabled;
+		try { view.popupEnabled = false; } catch { }
+		if (view.container) view.container.style.cursor = 'crosshair';
+		const clickH = view.on('click', (evt: any) => {
+			evt.stopPropagation();
+			const mp = evt.mapPoint; if (!mp) return;
+			const raw: number[] = [mp.x, mp.y];
+			// Defer the single click briefly so a double-click places one circle,
+			// not two (ArcGIS fires click(s) AND double-click). Same pattern as
+			// the triangle tool.
+			if (this._cpClickTimer) { clearTimeout(this._cpClickTimer); this._cpClickTimer = null; }
+			this._cpClickTimer = setTimeout(() => { this._cpClickTimer = null; this._finishPresetCircle(view, raw); }, 220);
+		});
+		const moveH = view.on('pointer-move', (evt: any) => {
+			const mp = view.toMap({ x: evt.x, y: evt.y }); if (!mp) return;
+			const raw: number[] = [mp.x, mp.y];
+			this._refreshFeatCache(view, raw);
+			const snapped = this._snapMapPoint(view, raw);
+			this._updateSnapIndicator(view, snapped !== raw ? snapped : null);
+			const geom = this._buildPresetCircle(view, snapped);
+			if (!geom) { this._clearCpPreview(); return; }
+			if (!this._cpPreview) { this._cpPreview = new Graphic({ geometry: geom, symbol: this._cpFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true } }); this.drawLayer.add(this._cpPreview); }
+			else { this._cpPreview.geometry = geom; }
+			if (this._tooltipsOn()) {
+				const modeLabel = (this.state.circlePresetMode || 'radius') === 'radius' ? 'Radius' : 'Area';
+				this._updateCursorTip(view, evt.x, evt.y, [[modeLabel, `${this.state.circlePresetValue ?? ''} ${this._cpUnitAbbr()}`]]);
+			} else this._hideCursorTip();
+		});
+		const keyH = view.on('key-down', (evt: any) => { if (evt.key === 'Escape') { evt.stopPropagation(); this.setDrawToolBtnState(''); } });
+		const dblH = view.on('double-click', (evt: any) => {
+			evt.stopPropagation();
+			if (this._cpClickTimer) { clearTimeout(this._cpClickTimer); this._cpClickTimer = null; }
+			const mp = evt.mapPoint; if (!mp) return;
+			this._finishPresetCircle(view, [mp.x, mp.y]);
+		});
+		this._cpHandles.push(clickH, moveH, keyH, dblH);
+	};
+
+	private _finishPresetCircle = async (view: any, centerRaw: number[]) => {
+		let graphic: any = null;
+		try {
+			const center = this._snapMapPoint(view, centerRaw);
+			const geom = this._buildPresetCircle(view, center);
+			if (!geom) return;
+			graphic = new Graphic({ geometry: geom, symbol: this._cpFillSymbol() });
+			this.drawLayer.add(graphic);
+		} catch (e) { console.error('Preset circle build failed:', e); return; }
+		try { await this.svmGraCreate({ state: 'complete', graphic }); }
+		catch (e) { console.warn('Preset circle finalize warning:', e); }
+		try { if (this.measureRef?.current?.isMeasurementEnabled?.()) this.measureRef.current.updateMeasurementsForGraphic(graphic); }
+		catch (e) { console.warn('Preset circle measurement warning:', e); }
+		try { window.dispatchEvent(new CustomEvent('drawadv:bufferNewGraphic', { detail: { graphic } })); } catch { }
+		this._clearCpPreview();
+		if (this.creationMode !== 'continuous') this.setDrawToolBtnState('');
+	};
+
+	private _clearCpPreview = () => { this._hideCursorTip(); this._clearSnapIndicator(); if (this._cpPreview) { try { this.drawLayer.remove(this._cpPreview); } catch { } this._cpPreview = null; } };
+	private _deactivateCpHandles = () => { for (const h of this._cpHandles) { try { h.remove(); } catch { } } this._cpHandles = []; };
+	private _deactivateCirclePreset = () => {
+		if (this._cpClickTimer) { clearTimeout(this._cpClickTimer); this._cpClickTimer = null; }
+		this._deactivateCpHandles();
+		this._clearCpPreview();
+		this._clearCursorTip();
+		const view = this.state.currentJimuMapView?.view;
+		if (view) { if (view.container) view.container.style.cursor = 'default'; if (this._cpPrevPopup !== null) { try { view.popupEnabled = this._cpPrevPopup; } catch { } } }
+		this._cpPrevPopup = null;
+	};
+
 	svmGraCreate = async (evt) => {
 		try {
 			// Basic validation
@@ -6713,7 +6959,10 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 						this.sketchViewModel.create('polygon', { mode: 'freehand' });
 						break;
 					case 'circle':
-						this.sketchViewModel.create('circle');
+						// Preset Circle Size keeps its own click capture active in
+						// continuous mode; re-arming the SketchViewModel here would take
+						// over the next click as a drag-to-size circle and ignore the preset.
+						if (!this.state.circlePresetEnabled) this.sketchViewModel.create('circle');
 						break;
 					case 'text':
 						// already applied text symbol above; start a new one
@@ -7651,6 +7900,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		// so the line button and another tool never show active simultaneously.
 		this._deactivateCurveTool();
 		this._deactivateTriangleTool();
+		this._deactivateCirclePreset();
 		// ENHANCED: Clean measurement editing coordination before drawing tool activation
 		if (toolBtn !== '' && this.measureRef?.current?.isEditingMeasurements?.()) {
 			//console.log('Drawing tool activating - cleaning up measurement editing');
@@ -7793,7 +8043,14 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 				case 'circle':
 					cState.currentSymbol = this.sketchViewModel.polygonSymbol;
 					cState.currentSymbolType = JimuSymbolType.Polygon;
-					this.sketchViewModel.create("circle");
+					if (this.state.circlePresetEnabled) {
+						// Preset Circle Size: one click places a circle of an exact
+						// radius or area, so skip the SketchViewModel drag-to-size tool.
+						const presetView = this.state.currentJimuMapView?.view;
+						if (presetView) this._activateCirclePreset(presetView);
+					} else {
+						this.sketchViewModel.create("circle");
+					}
 					cState.circleBtnActive = true;
 					break;
 
