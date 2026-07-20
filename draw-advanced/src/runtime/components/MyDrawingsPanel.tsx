@@ -6683,11 +6683,64 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
     /**
      * Merge: Keep new drawings AND load saved drawings from localStorage.
-     * Since widget.tsx preserves unloaded drawings in localStorage, we just need
-     * to clear the layer and let loadFromLocalStorage restore everything.
+     * The new drawings on the map are almost never in localStorage yet (the
+     * panel's save is debounced and only starts running once it has mounted),
+     * so we must serialize and merge them into storage ourselves before
+     * clearing the layer — otherwise clearing here deletes them for good and
+     * loadFromLocalStorage only brings back the old saved set.
      */
     handleMergeDrawings = () => {
         MyDrawingsPanel._drawingsLoadChoiceTimestamp = new Date().getTime();
+
+        if ((this.props.allowLocalStorage !== false) && this.state.consentGranted === true) {
+            try {
+                const storageKey = this.localStorageKey;
+                const savedRaw = localStorage.getItem(storageKey);
+                const savedParsed = savedRaw ? JSON.parse(savedRaw) : null;
+
+                const savedDrawings = Array.isArray(savedParsed)
+                    ? savedParsed
+                    : (savedParsed?.drawings || []);
+                const savedLabels = Array.isArray(savedParsed)
+                    ? []
+                    : (savedParsed?.measurementLabels || []);
+
+                const currentGraphics = this.props.graphicsLayer
+                    ? this.props.graphicsLayer.graphics.toArray()
+                    : [];
+
+                const newDrawingsJson = currentGraphics
+                    .filter(g => !g.attributes?.isMeasurementLabel &&
+                        !g.attributes?.hideFromList &&
+                        !g.attributes?.isPreviewBuffer &&
+                        !g.attributes?.isBuffer &&
+                        !g.attributes?.isBufferDrawing)
+                    .map(g => g.toJSON());
+
+                const newLabelsJson = currentGraphics
+                    .filter(g => g.attributes?.isMeasurementLabel && !g.attributes?.isPreviewBuffer)
+                    .map(g => g.toJSON());
+
+                // Don't duplicate a drawing that (unusually) is already saved
+                const savedIds = new Set(savedDrawings.map((d: any) => d.attributes?.uniqueId).filter(Boolean));
+                const mergedDrawings = [
+                    ...newDrawingsJson.filter((d: any) => !d.attributes?.uniqueId || !savedIds.has(d.attributes.uniqueId)),
+                    ...savedDrawings
+                ];
+                const mergedLabels = [...newLabelsJson, ...savedLabels];
+
+                const mergedData = {
+                    ...(!Array.isArray(savedParsed) ? savedParsed : {}),
+                    drawings: mergedDrawings,
+                    measurementLabels: mergedLabels,
+                    version: "1.5"
+                };
+
+                localStorage.setItem(storageKey, JSON.stringify(mergedData));
+            } catch (err) {
+                console.error('Error merging new drawings into localStorage:', err);
+            }
+        }
 
         // Clear layer so loadFromLocalStorage's graphics.length === 0 check passes
         if (this.props.graphicsLayer) {
@@ -6695,8 +6748,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         }
 
         // Normal mode: initializeComponents → loadFromLocalStorage loads everything
-        // (localStorage already contains both new drawings and saved drawings
-        //  because widget.tsx's save preserves unloaded prior-session drawings)
+        // now that localStorage contains both the new and previously saved drawings
         this._pendingLoadMode = 'normal';
 
         this.setState({ showLoadPrompt: false, hasNewUnsavedDrawings: false }, () => {
