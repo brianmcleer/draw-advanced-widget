@@ -83,4 +83,4 @@ Licensed under the [Apache License 2.0](LICENSE). Copyright City of Grand Juncti
 
 ## Credits
 
-Created by Brian McLeer (City of Grand Junction, CO) and Jeffrey Thompson (City of Arlington, TX), building on contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekström, and Jérôme Ray. Thanks to the Esri Experience Builder community for feedback and testing.
+Created by Brian McLeer (City of Grand Junction, CO) and Jeffrey Thompson (City of Arlington, TX), building on contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekström, Jérôme Ray, and Nicholas Cramer. Thanks to the Esri Experience Builder community for feedback and testing.
