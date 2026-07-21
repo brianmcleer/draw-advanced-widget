@@ -6785,8 +6785,8 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			this._updateSnapIndicator(view, snapped !== raw ? snapped : null);
 			const geom = this._buildPresetCircle(view, snapped);
 			if (!geom) { this._clearCpPreview(); return; }
-			if (!this._cpPreview) { this._cpPreview = new Graphic({ geometry: geom, symbol: this._cpFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true, drawMode: 'circle' } }); this.drawLayer.add(this._cpPreview); }
-			else { this._cpPreview.geometry = geom; }
+			if (!this._cpPreview) { this._cpPreview = new Graphic({ geometry: geom, symbol: this._cpFillSymbol(), attributes: { hideFromList: true, isPreviewBuffer: true, drawMode: 'circle', circleRadiusMeters: this._cpRadiusMeters() } }); this.drawLayer.add(this._cpPreview); }
+			else { this._cpPreview.geometry = geom; if (this._cpPreview.attributes) this._cpPreview.attributes.circleRadiusMeters = this._cpRadiusMeters(); }
 			this._livePreviewMeasure(this._cpPreview);
 			if (this._tooltipsOn()) {
 				const modeLabel = (this.state.circlePresetMode || 'radius') === 'radius' ? 'Radius' : 'Area';
@@ -6809,7 +6809,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			const center = this._snapMapPoint(view, centerRaw);
 			const geom = this._buildPresetCircle(view, center);
 			if (!geom) return;
-			graphic = new Graphic({ geometry: geom, symbol: this._cpFillSymbol() });
+			// Carry the exact entered radius so measurement labels report the TRUE
+			// circle (see preset-circle accuracy note in measure.tsx) rather than
+			// measuring the 60-point polygon approximation. Persisted with the
+			// graphic's attributes, so saved/reloaded circles keep exact labels.
+			graphic = new Graphic({ geometry: geom, symbol: this._cpFillSymbol(), attributes: { circleRadiusMeters: this._cpRadiusMeters() } });
 			this.drawLayer.add(graphic);
 		} catch (e) { console.error('Preset circle build failed:', e); return; }
 		try { await this.svmGraCreate({ state: 'complete', graphic }); }

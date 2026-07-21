@@ -2113,8 +2113,35 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				}
 
 				case 'polygon': {
-					const area = _calculatePolygonArea(geometry)
-					const perimeter = _calculatePolygonPerimeter(geometry);
+					// 🔧 PRESET CIRCLE ACCURACY: a preset circle is STORED as a 60-point
+					// polygon approximation, and measuring that inscribed 60-gon
+					// under-reports the true circle by fixed geometric ratios — area
+					// ×(30/π)·sin(π/30) = 0.998172 and perimeter ×(60/π)·sin(π/60) =
+					// 0.999543. That is exactly the community report: 1000 ac entered →
+					// "998.17 ac" labeled, 1000 ft radius entered → "999.54 ft" labeled
+					// (radius derives from perimeter/2π). When the graphic carries the
+					// authoritative radius it was built with, label the TRUE circle
+					// analytically instead of measuring the approximation. Drag-drawn
+					// circles have no entered value to honor and stay measured as-is.
+					const authoritativeRadiusM = (graphic as any)?.attributes?.circleRadiusMeters;
+					const useAnalyticCircle =
+						typeof authoritativeRadiusM === 'number' &&
+						isFinite(authoritativeRadiusM) &&
+						authoritativeRadiusM > 0;
+
+					let area: number;
+					let perimeter: number;
+					let analyticRadius: number | null = null;
+					if (useAnalyticCircle) {
+						const distInfo = availableDistanceUnits.find(u => u.unit === currentDistanceUnit);
+						const aInfo = areaUnits.find(u => u.unit === currentAreaUnit);
+						analyticRadius = authoritativeRadiusM * ((distInfo as any)?.conversion ?? 1);
+						perimeter = 2 * Math.PI * analyticRadius;
+						area = Math.PI * authoritativeRadiusM * authoritativeRadiusM * ((aInfo as any)?.conversion ?? 1);
+					} else {
+						area = _calculatePolygonArea(geometry);
+						perimeter = _calculatePolygonPerimeter(geometry);
+					}
 
 					const areaUnitInfo = areaUnits.find(u => u.unit === currentAreaUnit);
 					const areaUnitLabel = areaUnitInfo ? areaUnitInfo.abbreviation : currentAreaUnit;
@@ -2139,7 +2166,9 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 						.replace(/{{lengthUnit}}/g, perimeterUnitLabel);
 
 					if (geometry.rings[0].length === 61 && radiusOn) {
-						const radius = Math.abs(perimeter / (2 * Math.PI)); // Ensure positive radius
+						const radius = analyticRadius !== null
+							? analyticRadius
+							: Math.abs(perimeter / (2 * Math.PI)); // Ensure positive radius
 						result += `\nRadius: ${_round(radius, otherRound).toLocaleString()} ${perimeterUnitInfo.abbreviation}`;
 					}
 
@@ -3489,7 +3518,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 
 			} else {
 				//calculates measurements and returns text
-				text = _getMeasureText(geometry, null);
+				text = _getMeasureText(geometry, null, null, null, graphic);
 			}
 
 			if (!text || text.trim() === '') {
@@ -4080,7 +4109,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					}
 					text = `${xyCoords}${srWkid}${wgsCoords}`;
 				} else {
-					text = _getMeasureText(geometry, parent);
+					text = _getMeasureText(geometry, parent, null, null, graphic);
 				}
 
 				if (!text || text.trim() === '') {
@@ -4468,6 +4497,19 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				console.warn('📊 Early return: No graphic or is measurement label');
 				return;
 			}
+
+			// 🔧 PRESET CIRCLE ACCURACY: circleRadiusMeters is the authoritative
+			// entered radius and drives analytic labels. A scale or reshape changes
+			// the actual circle, so the stored radius must be invalidated — labels
+			// then fall back to measuring the geometry. Move and rotate preserve
+			// the radius and keep exact labels.
+			try {
+				const tType = (event as any).toolEventInfo?.type as string | undefined;
+				if (tType && (graphic as ExtendedGraphic).attributes?.circleRadiusMeters != null &&
+					(tType.startsWith('scale') || tType.startsWith('reshape') || tType.startsWith('vertex'))) {
+					delete (graphic as ExtendedGraphic).attributes.circleRadiusMeters;
+				}
+			} catch { /* no-op */ }
 
 			// Check if this graphic has existing measurements (current or historical)
 			const hasExistingMeasurements =
