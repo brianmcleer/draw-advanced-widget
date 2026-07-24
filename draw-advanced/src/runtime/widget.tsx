@@ -214,6 +214,20 @@ const fsBoldIcon = require('./assets/bold.svg');
 const fItalicIcon = require('./assets/italic.svg');
 const fUnderlineIcon = require('./assets/underline.svg');
 
+// ── ExB 1.21 / ArcGIS Maps SDK 5.x map-interaction compatibility ──────────────
+// 1.21 moved the map to the <arcgis-map> web component. MapView.highlightOptions
+// was removed in favour of the MapView.highlights collection (the entry named
+// "default" is what layerView.highlight() uses). This helper writes the highlight
+// on 5.x while staying backward-compatible with JSAPI 4.x (older ExB).
+function daSetViewHighlight (view: any, opts: any): void {
+  if (!view) return
+  if ('highlights' in view) {
+    view.highlights = [{ name: 'default', ...opts }]
+  } else if ('highlightOptions' in view) {
+    view.highlightOptions = opts // legacy (ExB <= 1.20 / JSAPI 4.x)
+  }
+}
+
 interface States {
 	currentJimuMapView: JimuMapView;
 	graphics?: any[];
@@ -4356,11 +4370,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					}
 
 					// Restore highlight appearance
-					view.highlightOptions = {
+					daSetViewHighlight(view, {
 						color: [0, 255, 255, 1],
 						fillOpacity: 0.0,
 						haloOpacity: 0.8
-					};
+					});
 
 					// Restore layer-level highlight styling
 					view.map.layers.forEach(layer => {
@@ -4405,14 +4419,14 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					if (view.popup && "autoCloseEnabled" in view.popup) {
 						view.popup.autoCloseEnabled = false;
 					}
-					view.popup.visible = false;
+					if (view.popup) view.popup.visible = false;
 
 					// Make highlights invisible
-					view.highlightOptions = {
+					daSetViewHighlight(view, {
 						color: [0, 0, 0, 0],
 						fillOpacity: 0,
 						haloOpacity: 0
-					};
+					});
 				}
 			}
 
@@ -4444,11 +4458,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 						}
 
 						// Restore highlight appearance
-						view.highlightOptions = {
+						daSetViewHighlight(view, {
 							color: [0, 255, 255, 1],
 							fillOpacity: 0.0,
 							haloOpacity: 0.8
-						};
+						});
 					}
 					// Disable popups when entering drawing mode
 					else if (!wasDrawingActive && isDrawingActive && view.popupEnabled) {
@@ -4458,14 +4472,14 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 						if (view.popup && "autoCloseEnabled" in view.popup) {
 							view.popup.autoCloseEnabled = false;
 						}
-						view.popup.visible = false;
+						if (view.popup) view.popup.visible = false;
 
 						// Make highlights invisible
-						view.highlightOptions = {
+						daSetViewHighlight(view, {
 							color: [0, 0, 0, 0],
 							fillOpacity: 0,
 							haloOpacity: 0
-						};
+						});
 					}
 				}
 			}
@@ -4582,11 +4596,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 				}
 
 				// Restore highlight options to default
-				view.highlightOptions = {
+				daSetViewHighlight(view, {
 					color: [0, 255, 255, 1],
 					fillOpacity: 0.0,
 					haloOpacity: 0.8
-				};
+				});
 
 				// Restore layer-level highlight styling
 				view.map.layers.forEach(layer => {
@@ -4702,9 +4716,9 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 				// Disable popups and interactions
 				view.popupEnabled = false;
 				if (view.popup && "autoCloseEnabled" in view.popup) view.popup.autoCloseEnabled = false;
-				view.popup.visible = false;
+				if (view.popup) view.popup.visible = false;
 
-				view.highlightOptions = { color: [0, 0, 0, 0], fillOpacity: 0, haloOpacity: 0 };
+				daSetViewHighlight(view, { color: [0, 0, 0, 0], fillOpacity: 0, haloOpacity: 0 });
 				//console.log('Disabled popups on widget initialization (controlled widget or drawing active)');
 			} else {
 				// For uncontrolled widgets with no active drawing tools, leave popups enabled
@@ -8142,11 +8156,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					}
 
 					// Restore highlight appearance
-					view.highlightOptions = {
+					daSetViewHighlight(view, {
 						color: [0, 255, 255, 1],
 						fillOpacity: 0.0,
 						haloOpacity: 0.8
-					};
+					});
 
 					// Restore layer-level highlight styling
 					view.map.layers.forEach(layer => {
@@ -8178,14 +8192,14 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					if (view.popup && "autoCloseEnabled" in view.popup) {
 						view.popup.autoCloseEnabled = false;
 					}
-					view.popup.visible = false;
+					if (view.popup) view.popup.visible = false;
 
 					// Make highlights invisible
-					view.highlightOptions = {
+					daSetViewHighlight(view, {
 						color: [0, 0, 0, 0],
 						fillOpacity: 0,
 						haloOpacity: 0
-					};
+					});
 				}
 			}
 		}
