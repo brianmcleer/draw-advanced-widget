@@ -1,6 +1,6 @@
-﻿import { React, defaultMessages as jimuCoreMessages } from 'jimu-core';
+import { React, defaultMessages as jimuCoreMessages } from 'jimu-core';
 import { AllWidgetSettingProps } from 'jimu-for-builder';
-import { IMConfig, DrawMode, StorageScope } from '../config';
+import { IMConfig, Config, DrawMode, StorageScope } from '../config';
 import defaultMessages from './translations/default';
 import { MapWidgetSelector, SettingSection, SettingRow } from 'jimu-ui/advanced/setting-components';
 import { Select, Option, defaultMessages as jimuUIDefaultMessages, Checkbox, TextInput, TextArea, Label, Button, Alert, Switch, NumericInput, Tooltip } from 'jimu-ui'
@@ -17,6 +17,12 @@ interface Unit {
     label: string;
     abbreviation: string;
     conversion: number;
+}
+
+const toMutableUnits = (value: any): Unit[] => {
+    if (!value) return []
+    if (typeof value.asMutable === 'function') return value.asMutable({ deep: true }) as Unit[]
+    return Array.isArray(value) ? [...value] as Unit[] : []
 }
 
 interface SettingState {
@@ -58,7 +64,7 @@ const defaultAreaUnits: Unit[] = [
     { unit: 'square-yards', label: 'Square Yards', abbreviation: 'yd\xb2', conversion: 1.19599 }
 ];
 
-const DRAW_TOOLS = [
+const DRAW_TOOLS: Array<{ key: keyof Config; label: string; icon: string; desc: string }> = [
     { key: 'enablePointTool', label: 'Point', icon: '\u25CF', desc: 'Place single point markers.' },
     { key: 'enablePolylineTool', label: 'Polyline', icon: '\u2571', desc: 'Draw multi-segment lines by clicking vertices.' },
     { key: 'enableFreePolylineTool', label: 'Freehand Line', icon: '\u223F', desc: 'Draw freehand lines by dragging.' },
@@ -98,7 +104,18 @@ const s = {
 // Component
 // ============================================================================
 
-export default class Setting extends React.PureComponent<AllWidgetSettingProps<IMConfig>, SettingState> {
+type SettingProps = AllWidgetSettingProps<IMConfig> & {
+    id: string;
+    useMapWidgetIds?: string[];
+    useDataSources?: any[];
+    [key: string]: any;
+};
+
+export default class Setting extends React.PureComponent<SettingProps, SettingState> {
+    declare props: SettingProps;
+    declare state: SettingState;
+    declare setState: any;
+    declare forceUpdate: any;
     constructor(props) {
         super(props)
         this.state = {
@@ -106,8 +123,8 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
             areaSidePopper: false,
             defaultDistanceUnit: this.props.config.defaultDistance,
             defaultAreaUnit: this.props.config.defaultArea,
-            availableDistanceUnits: [...defaultDistanceUnits, ...((this.props.config.userDistances?.asMutable?.() || this.props.config.userDistances || []) as unknown as Unit[])],
-            availableAreaUnits: [...defaultAreaUnits, ...((this.props.config.userAreas?.asMutable?.() || this.props.config.userAreas || []) as unknown as Unit[])],
+            availableDistanceUnits: [...defaultDistanceUnits, ...toMutableUnits(this.props.config.userDistances)],
+            availableAreaUnits: [...defaultAreaUnits, ...toMutableUnits(this.props.config.userAreas)],
             detectedWidgets: [],
             scanning: false,
             scanMessage: '',
@@ -131,7 +148,7 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
             : id
     }
 
-    onPropertyChange = (name, value) => {
+    onPropertyChange = (name: keyof Config, value: any) => {
         const { config } = this.props
         if (value === config[name]) return
         this.props.onSettingChange({ id: this.props.id, config: config.set(name, value) })
@@ -141,19 +158,19 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
         this.props.onSettingChange({ id: this.props.id, useMapWidgetIds: useMapWidgetsId });
     }
 
-    setConfig = (key: string, value: any) => {
+    setConfig = (key: keyof Config, value: any) => {
         this.props.onSettingChange({ id: this.props.id, config: this.props.config.set(key, value) })
     }
 
-    setConfigBatch = (updates: Record<string, any>) => {
+    setConfigBatch = (updates: Partial<Config>) => {
         let cfg = this.props.config;
-        for (const [key, value] of Object.entries(updates)) {
-            cfg = cfg.set(key, value) as any;
+        for (const [key, value] of Object.entries(updates) as Array<[keyof Config, Config[keyof Config]]>) {
+            cfg = cfg.set(key, value as any) as any;
         }
         this.props.onSettingChange({ id: this.props.id, config: cfg });
     }
 
-    toggleConfig = (key: string) => {
+    toggleConfig = (key: keyof Config) => {
         this.setConfig(key, !this.props.config[key])
     }
 
@@ -281,13 +298,13 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
 
         let cfg = this.props.config
         for (const [key, value] of Object.entries(parsed)) {
-            cfg = cfg.set(key, value) as any
+            cfg = cfg.set(key as keyof Config, value as any) as any
         }
         this.props.onSettingChange({ id: this.props.id, config: cfg })
 
         // Refresh local state derived from config so the unit pickers reflect the import.
-        const importedUserDistances = ((cfg.userDistances as any)?.asMutable?.() || cfg.userDistances || []) as unknown as Unit[]
-        const importedUserAreas = ((cfg.userAreas as any)?.asMutable?.() || cfg.userAreas || []) as unknown as Unit[]
+        const importedUserDistances = toMutableUnits(cfg.userDistances)
+        const importedUserAreas = toMutableUnits(cfg.userAreas)
         this.setState({
             importError: '',
             importSuccess: true,
@@ -329,12 +346,12 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
 
     handleAddUnit = (newUnit: Unit, type: 'linear' | 'area') => {
         if (type === 'linear') {
-            const userDistances = (this.props.config.userDistances?.asMutable?.() || []) as unknown as Unit[]
+            const userDistances = toMutableUnits(this.props.config.userDistances)
             const updatedDistances = [...userDistances, newUnit]
             this.props.onSettingChange({ id: this.props.id, config: this.props.config.set('userDistances', updatedDistances) })
             this.setState({ availableDistanceUnits: [...defaultDistanceUnits, ...updatedDistances], defaultDistanceUnit: null })
         } else {
-            const userAreas = (this.props.config.userAreas?.asMutable?.() || []) as unknown as Unit[]
+            const userAreas = toMutableUnits(this.props.config.userAreas)
             const updatedAreas = [...userAreas, newUnit]
             this.props.onSettingChange({ id: this.props.id, config: this.props.config.set('userAreas', updatedAreas) })
             this.setState({ availableAreaUnits: [...defaultAreaUnits, ...updatedAreas], defaultAreaUnit: null })
@@ -343,14 +360,14 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
 
     handleChangeUnit = (newUnit: Unit, type: 'linear' | 'area') => {
         if (type === 'linear') {
-            const userDistances = (this.props.config.userDistances?.asMutable?.() || []) as unknown as Unit[]
+            const userDistances = toMutableUnits(this.props.config.userDistances)
             const updatedDistances = [...userDistances]
             const index = updatedDistances.findIndex(existing => existing.unit === newUnit.unit)
             if (index !== -1) updatedDistances[index] = newUnit
             this.props.onSettingChange({ id: this.props.id, config: this.props.config.set('userDistances', updatedDistances) })
             this.setState({ availableDistanceUnits: [...defaultDistanceUnits, ...updatedDistances], defaultDistanceUnit: null })
         } else {
-            const userAreas = (this.props.config.userAreas?.asMutable?.() || []) as unknown as Unit[]
+            const userAreas = toMutableUnits(this.props.config.userAreas)
             const updatedAreas = [...userAreas]
             const index = updatedAreas.findIndex(existing => existing.unit === newUnit.unit)
             if (index !== -1) updatedAreas[index] = newUnit
@@ -361,12 +378,12 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
 
     handleDeleteUnit = (unit: Unit, type: 'linear' | 'area') => {
         if (type === 'linear') {
-            const userDistances = (this.props.config.userDistances?.asMutable?.() || []) as unknown as Unit[]
+            const userDistances = toMutableUnits(this.props.config.userDistances)
             const updatedDistances = userDistances.filter(u => u.unit !== unit.unit)
             this.props.onSettingChange({ id: this.props.id, config: this.props.config.set('userDistances', updatedDistances) })
             this.setState({ availableDistanceUnits: [...defaultDistanceUnits, ...updatedDistances], defaultDistanceUnit: null })
         } else {
-            const userAreas = (this.props.config.userAreas?.asMutable?.() || []) as unknown as Unit[]
+            const userAreas = toMutableUnits(this.props.config.userAreas)
             const updatedAreas = userAreas.filter(u => u.unit !== unit.unit)
             this.props.onSettingChange({ id: this.props.id, config: this.props.config.set('userAreas', updatedAreas) })
             this.setState({ availableAreaUnits: [...defaultAreaUnits, ...updatedAreas], defaultAreaUnit: null })
@@ -433,7 +450,7 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
     };
 
     /** Default-ON Switch (enabled unless explicitly false) */
-    renderToggle = (key: string, label: string, description?: string) => {
+    renderToggle = (key: keyof Config, label: string, description?: string) => {
         const checked = this.props.config[key] !== false;
         const descId = `draw-setting-${key}-desc`;
         const control = (
@@ -459,7 +476,7 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
     }
 
     /** Default-OFF Switch (opt-in, off unless explicitly true) */
-    renderOptInToggle = (key: string, label: string, description?: string) => {
+    renderOptInToggle = (key: keyof Config, label: string, description?: string) => {
         const checked = this.props.config[key] === true;
         const descId = `draw-setting-${key}-desc`;
         const control = (
@@ -485,7 +502,7 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
     }
 
     /** Checkbox with inline label. defaultOn=true means feature is on unless config says false. */
-    renderCheck = (key: string, label: string, defaultOn: boolean = true, tip?: string) => {
+    renderCheck = (key: keyof Config, label: string, defaultOn: boolean = true, tip?: string) => {
         const checked = defaultOn ? this.props.config[key] !== false : this.props.config[key] === true;
         const row = (
             <div style={s.checkRow} title={tip || label}>
@@ -502,8 +519,8 @@ export default class Setting extends React.PureComponent<AllWidgetSettingProps<I
 
     render() {
         const { useMapWidgetIds, config } = this.props
-        const userDistances = (config.userDistances?.asMutable?.() || config.userDistances || []) as unknown as Unit[]
-        const userAreas = (config.userAreas?.asMutable?.() || config.userAreas || []) as unknown as Unit[]
+        const userDistances = toMutableUnits(config.userDistances)
+        const userAreas = toMutableUnits(config.userAreas)
 
         const enabledToolCount = DRAW_TOOLS.filter(t => config[t.key] !== false).length;
         const myDrawingsEnabled = config.enableMyDrawings !== false;

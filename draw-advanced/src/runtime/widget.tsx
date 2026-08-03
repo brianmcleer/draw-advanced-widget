@@ -1,4 +1,4 @@
-﻿import { React, AllWidgetProps, jsx, WidgetState, getAppStore, appActions, MutableStoreManager } from 'jimu-core';
+import { React, AllWidgetProps, jsx, WidgetState, getAppStore, appActions, MutableStoreManager } from 'jimu-core';
 import { IMConfig, DrawMode, StorageScope } from '../config';
 import {
 	Icon, Button, TextInput, NumericInput, Switch, TextAlignValue, Popper, Checkbox,
@@ -48,6 +48,15 @@ import * as lengthOperator from 'esri/geometry/operators/lengthOperator';
 import * as geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
 import * as areaOperator from 'esri/geometry/operators/areaOperator';
 import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
+
+// EB 1.21's editor occasionally loses ArcGIS static factory members even though
+// they exist at runtime. These casts restore editor typing without changing JS.
+const PolygonCompat = Polygon as typeof Polygon & {
+	fromJSON: (json: any) => Polygon;
+	fromExtent: (extent: any) => Polygon;
+};
+const PolylineCompat = Polyline as typeof Polyline & { fromJSON: (json: any) => Polyline };
+
 
 // geometryEngine is sync, pure-JS in JSAPI 4.x — no WASM required.
 // Buffer operations still use manualBufferGeometry as a fallback.
@@ -106,7 +115,7 @@ const _wPathBuf = (path: number[][], d: number, sr: any): any => {
 	const ea = Math.atan2(path[n - 1][1] - path[n - 2][1], path[n - 1][0] - path[n - 2][0]);
 	const sa = Math.atan2(path[0][1] - path[1][1], path[0][0] - path[1][0]);
 	const ring = [...L, ..._wArcPts(path[n - 1][0], path[n - 1][1], d, ea + Math.PI / 2), ...[...R].reverse(), ..._wArcPts(path[0][0], path[0][1], d, sa + Math.PI / 2), L[0]];
-	return Polygon.fromJSON({ rings: [ring], spatialReference: sr?.toJSON ? sr.toJSON() : sr });
+	return PolygonCompat.fromJSON({ rings: [ring], spatialReference: sr?.toJSON ? sr.toJSON() : sr });
 };
 /**
  * Polygon offset buffer (manual, no geometryEngine).
@@ -164,7 +173,7 @@ const _wPolyBuf = (rings: number[][][], distM: number, sr: any): any => {
 		result.push(result[0]);
 		return result;
 	};
-	return Polygon.fromJSON({ rings: rings.map(r => offsetRing(r)), spatialReference: sr?.toJSON ? sr.toJSON() : sr });
+	return PolygonCompat.fromJSON({ rings: rings.map(r => offsetRing(r)), spatialReference: sr?.toJSON ? sr.toJSON() : sr });
 };
 const manualBufferGeometry = (geom: any, distM: number, sr: any): any => {
 	if (!geom) return null;
@@ -185,13 +194,13 @@ const manualBufferGeometry = (geom: any, distM: number, sr: any): any => {
 		if (p.length > 0) return _wPathBuf(p[0], distM, sr);
 	}
 	if (hasXY || geom.type === 'point') {
-		return Polygon.fromJSON({ rings: [_wCircle(geom.x, geom.y, distM, isGeo)], spatialReference: sr?.toJSON ? sr.toJSON() : sr });
+		return PolygonCompat.fromJSON({ rings: [_wCircle(geom.x, geom.y, distM, isGeo)], spatialReference: sr?.toJSON ? sr.toJSON() : sr });
 	}
 	const ext = geom.extent;
 	if (ext) {
 		console.warn('manualBufferGeometry falling back to bounding-circle:', geom);
 		const cx = (ext.xmin + ext.xmax) / 2, cy = (ext.ymin + ext.ymax) / 2;
-		return Polygon.fromJSON({ rings: [_wCircle(cx, cy, Math.max(ext.width, ext.height) / 2 + distM, isGeo)], spatialReference: sr?.toJSON ? sr.toJSON() : sr });
+		return PolygonCompat.fromJSON({ rings: [_wCircle(cx, cy, Math.max(ext.width, ext.height) / 2 + distM, isGeo)], spatialReference: sr?.toJSON ? sr.toJSON() : sr });
 	}
 	return null;
 };
@@ -470,7 +479,19 @@ export const ScrollableContainer: React.FC<ScrollIndicatorProps> = ({
 	);
 };
 
-export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>, States> {
+type WidgetProps = AllWidgetProps<IMConfig> & {
+	id: string;
+	widgetId?: string;
+	useMapWidgetIds?: string[];
+	useDataSources?: any[];
+	[key: string]: any;
+};
+
+export default class Widget extends React.PureComponent<WidgetProps, States> {
+	declare props: WidgetProps;
+	declare state: States;
+	declare setState: any;
+	declare forceUpdate: any;
 	textPreviewSpan: React.RefObject<HTMLSpanElement> = React.createRef();
 	sketchViewModel: SketchViewModel;
 	drawLayer: GraphicsLayer = null;
@@ -2841,7 +2862,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 
 			if (geomType === 'polygon') {
 				const polygons = geometries.map(g => {
-					if (g.type === 'extent') return Polygon.fromExtent(g as any);
+					if (g.type === 'extent') return PolygonCompat.fromExtent(g as any);
 					return g as any;
 				});
 				// True polygon union (geometryEngine.union → falls back to ring-concat if unavailable)
@@ -3547,7 +3568,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			const allPolygons = geometries.every(g => g.type === 'polygon' || g.type === 'extent');
 			if (allPolygons) {
 				const polys = geometries.map(g =>
-					g.type === 'extent' ? Polygon.fromExtent(g as any) : g
+					g.type === 'extent' ? PolygonCompat.fromExtent(g as any) : g
 				);
 				// True polygon union (geometryEngine.union → falls back to ring-concat if unavailable)
 				return unionPolygonsRobust(polys);
@@ -3571,7 +3592,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 					combinedExtent = combinedExtent ? combinedExtent.union(ext) : ext.clone();
 				}
 			}
-			return combinedExtent ? Polygon.fromExtent(combinedExtent) : null;
+			return combinedExtent ? PolygonCompat.fromExtent(combinedExtent) : null;
 		} catch (err) {
 			console.warn('Error combining geometries for mailing labels:', err);
 			// Last resort: use first geometry
@@ -6105,7 +6126,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 	// Geodesic length of a single a->b segment, in the given unit.
 	private _segMeasure = (view: any, ax: number, ay: number, bx: number, by: number, unit: string): number | null => {
 		try {
-			const poly = Polyline.fromJSON({ paths: [[[ax, ay], [bx, by]]], spatialReference: view.spatialReference });
+			const poly = PolylineCompat.fromJSON({ paths: [[[ax, ay], [bx, by]]], spatialReference: view.spatialReference });
 			return this._lenOp(poly, unit);
 		} catch { return null; }
 	};
@@ -6422,11 +6443,11 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		const hasCurve = path.some(el => !Array.isArray(el) && typeof el === 'object');
 		try {
 			return hasCurve
-				? Polyline.fromJSON({ curvePaths: [path], spatialReference: sr })
-				: Polyline.fromJSON({ paths: [path], spatialReference: sr });
+				? PolylineCompat.fromJSON({ curvePaths: [path], spatialReference: sr })
+				: PolylineCompat.fromJSON({ paths: [path], spatialReference: sr });
 		} catch (e) {
 			console.warn('curve geometry build warning:', e);
-			try { return Polyline.fromJSON({ paths: [path.filter(Array.isArray)], spatialReference: sr }); } catch { return null; }
+			try { return PolylineCompat.fromJSON({ paths: [path.filter(Array.isArray)], spatialReference: sr }); } catch { return null; }
 		}
 	};
 
@@ -6454,8 +6475,8 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		try {
 			const hasCurve = path.some(el => !Array.isArray(el) && typeof el === 'object');
 			const geom = hasCurve
-				? Polyline.fromJSON({ curvePaths: [path], spatialReference: sr })
-				: Polyline.fromJSON({ paths: [path], spatialReference: sr });
+				? PolylineCompat.fromJSON({ curvePaths: [path], spatialReference: sr })
+				: PolylineCompat.fromJSON({ paths: [path], spatialReference: sr });
 			graphic = new Graphic({ geometry: geom, symbol: this._curveLineSymbol() });
 			this.drawLayer.add(graphic);
 		} catch (e) { console.error('Curve build failed:', e); this._resetCurvePath(); return; }
@@ -6567,7 +6588,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		const cross = (pts[1][0] - pts[0][0]) * (pts[2][1] - pts[0][1]) - (pts[2][0] - pts[0][0]) * (pts[1][1] - pts[0][1]);
 		if (cross > 0) pts.reverse();
 		pts.push([pts[0][0], pts[0][1]]);
-		try { return Polygon.fromJSON({ rings: [pts], spatialReference: sr }); }
+		try { return PolygonCompat.fromJSON({ rings: [pts], spatialReference: sr }); }
 		catch (e) { console.warn('triangle build warning:', e); return null; }
 	};
 
@@ -7063,7 +7084,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 			let dx = 0, dy = 0;
 			const c = geom.extent?.center;
 			if (c && isFinite(backup.cx) && isFinite(backup.cy)) { dx = c.x - backup.cx; dy = c.y - backup.cy; }
-			graphic.geometry = Polyline.fromJSON(this._translateCurveJSON(backup.json, dx, dy));
+			graphic.geometry = PolylineCompat.fromJSON(this._translateCurveJSON(backup.json, dx, dy));
 			try { if (this.measureRef?.current?.isMeasurementEnabled?.()) this.measureRef.current.updateMeasurementsForGraphic(graphic); } catch { }
 		} catch (e) { console.warn('curve restore warning:', e); }
 	};
@@ -7451,14 +7472,20 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 		});
 	}
 
-	drawClearBtnClick = () => {
+	drawClearBtnClick = (forceClearAll: boolean = false) => {
 		if (!this.sketchViewModel || !this.sketchViewModel.view) {
 			console.warn('SketchViewModel not available for clear operation');
 			return;
 		}
 
 		try {
-			if (this.state.graphics && this.state.graphics.length) {
+			// The same toolbar button handles both "Clear Selected Graphic" and
+			// "Clear All Graphics". Selection state can remain populated briefly
+			// after the label switches back to clear-all, so the clear-all buttons
+			// explicitly pass forceClearAll=true.
+			const clearAllRequested = forceClearAll || this.state.clearBtnTitle === this.nls('drawClear');
+
+			if (!clearAllRequested && this.state.graphics && this.state.graphics.length) {
 				// Remove any associated measurements, buffers, and attached buffers before deleting the drawing
 				this.state.graphics.forEach((gra: Graphic) => {
 					try {
@@ -7547,18 +7574,39 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 				//console.log(`✅ Widget: Cleared all geometry watchers`);
 			}
 
-			// Clear the drawing layer
+			// End any active update before removing the layer contents. Otherwise an
+			// edited graphic held by SketchViewModel can survive or be re-added.
+			try {
+				this.sketchViewModel.cancel();
+			} catch (error) {
+				console.warn('Error canceling active sketch before clear all:', error);
+			}
+			try {
+				this.sketchViewModel.updateGraphics?.removeAll?.();
+			} catch (error) {
+				console.warn('Error clearing SketchViewModel selection:', error);
+			}
+
+			// Clear the drawing layer.
 			try {
 				this.drawLayer.removeAll();
 			} catch (error) {
 				console.warn('Error clearing draw layer:', error);
 			}
 
-			// BUGFIX: Removed this.sketchViewModel.cancel() to prevent button state mismatch
-			// This was causing the draw tools to become inactive while buttons remained visually selected
+			// Persist and synchronize the empty drawing collection so graphics do not
+			// return from local storage or the My Drawings panel after the clear.
+			this.handleDrawingsUpdate([]);
+			this.myDrawingsRef?.current?.ingestDrawings?.([]);
 
-			// Close the confirmation dialog
-			this.setState({ confirmDelete: false });
+			// Reset selection and toolbar state after a full clear.
+			this.setDrawToolBtnState('');
+			this.setState({
+				confirmDelete: false,
+				graphics: null,
+				clearBtnTitle: this.nls('drawClear'),
+				rotationMode: false
+			});
 
 			//console.log(`✅ Widget: Clear all completed with buffer cleanup`);
 
@@ -9670,7 +9718,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 										size="sm"
 										type="danger"
 										active={clearBtnActive}
-										onClick={this.drawClearBtnClick}
+										onClick={() => this.drawClearBtnClick(true)}
 										title={clearBtnTitle}
 										aria-label="Confirm: Delete all drawings permanently"
 									>
@@ -9694,7 +9742,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 									active={clearBtnActive}
 									onClick={() => {
 										if (this.props.config.confirmBeforeClear === false) {
-											this.drawClearBtnClick();
+											this.drawClearBtnClick(true);
 										} else {
 											this.setState({ confirmDelete: true });
 										}
@@ -9712,7 +9760,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
 								size="sm"
 								type="danger"
 								active={clearBtnActive}
-								onClick={this.drawClearBtnClick}
+								onClick={() => this.drawClearBtnClick(false)}
 								title={clearBtnTitle}
 								aria-label={`Clear: ${clearBtnTitle}`}
 							>

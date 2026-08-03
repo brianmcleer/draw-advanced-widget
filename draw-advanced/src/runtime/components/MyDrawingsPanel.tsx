@@ -22,15 +22,30 @@ import Polyline from "esri/geometry/Polyline";
 import Multipoint from "esri/geometry/Multipoint";
 import Extent from "esri/geometry/Extent";
 import SpatialReference from "esri/geometry/SpatialReference";
+
+const PolygonCompat = Polygon as typeof Polygon & {
+    fromJSON: (json: any) => Polygon;
+    fromExtent: (extent: any) => Polygon;
+};
+const GraphicCompat = Graphic as typeof Graphic & { fromJSON: (json: any) => Graphic };
 import * as webMercatorUtils from "esri/geometry/support/webMercatorUtils";
 import * as geometryEngine from 'esri/geometry/geometryEngine';
 import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
-import proj4 from 'proj4';
+const proj4Module: any = require('proj4');
+const proj4: any = proj4Module.default || proj4Module;
 import shpwrite from '@mapbox/shp-write';
-import JSZip from 'jszip';
-import type { FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
+const JSZipModule: any = require('jszip');
+const JSZip: any = JSZipModule.default || JSZipModule;
+type GeoJsonProperties = { [name: string]: any } | null;
+type Geometry = { type: string;[name: string]: any };
+type FeatureCollection<G = Geometry, P = GeoJsonProperties> = {
+    type: 'FeatureCollection';
+    features: Array<{ type: 'Feature'; geometry: G; properties: P;[name: string]: any }>;
+    [name: string]: any;
+};
 // shapefile import removed — using shpjs instead for built-in proj4 reprojection support
-import ReactDOM from 'react-dom';
+const ReactDOMModule: any = require('react-dom');
+const ReactDOM: any = ReactDOMModule.default || ReactDOMModule;
 
 // Optional: Import icons for text alignment if available
 const hAlignLeft = require('jimu-icons/svg/outlined/editor/text-left.svg');
@@ -88,7 +103,7 @@ const _MDP_UNIT_TO_METERS: Record<string, number> = {
 const _mdpToMeters = (dist: number, unit: string): number =>
     dist * (_MDP_UNIT_TO_METERS[(unit || '').toLowerCase().replace(/-/g, '')] ?? 1);
 const _mdpMakePoly = (rings: number[][][], sr: any): any =>
-    Polygon.fromJSON({ rings, spatialReference: sr?.toJSON ? sr.toJSON() : sr });
+    PolygonCompat.fromJSON({ rings, spatialReference: sr?.toJSON ? sr.toJSON() : sr });
 
 const _mdpCircleRing = (cx: number, cy: number, r: number, isGeo: boolean): number[][] => {
     const N = 72; const ring: number[][] = [];
@@ -301,7 +316,7 @@ function debounce<T extends (...args: any[]) => any>(
     func: T,
     wait: number
 ): (...args: Parameters<T>) => void {
-    let timeout: NodeJS.Timeout | null = null;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
 
     const debouncedFn = function (...args: Parameters<T>) {
         if (timeout) clearTimeout(timeout);
@@ -476,6 +491,8 @@ const asExtendedGraphic = (graphic: any): ExtendedGraphic => {
 };
 
 interface MyDrawingsPanelProps {
+    key?: string | number;
+    ref?: React.Ref<MyDrawingsPanel>;
     graphicsLayer: GraphicsLayer;
     jimuMapView: JimuMapView;
     allowLocalStorage?: boolean;
@@ -633,6 +650,13 @@ interface MyDrawingsPanelState {
     lockedDrawings: Set<string>;  // Set of uniqueIds of locked drawings
     allDrawingsLocked: boolean;
 }
+export interface MyDrawingsPanel {
+    props: MyDrawingsPanelProps;
+    state: MyDrawingsPanelState;
+    setState: (state: any, callback?: () => void) => void;
+    forceUpdate: (callback?: () => void) => void;
+}
+
 export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, MyDrawingsPanelState> {
 
     // ========================================================================
@@ -8221,7 +8245,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         for (let index = drawingsData.length - 1; index >= 0; index--) {
                             const item = drawingsData[index];
                             try {
-                                const graphic = asExtendedGraphic(Graphic.fromJSON(item));
+                                const graphic = asExtendedGraphic(GraphicCompat.fromJSON(item));
 
                                 if (!graphic.attributes) {
                                     graphic.attributes = {};
@@ -8311,7 +8335,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         // Then, restore measurement labels and re-establish relationships WITH customization support
                         measurementLabelsData.forEach((item, index) => {
                             try {
-                                const labelGraphic = asExtendedGraphic(Graphic.fromJSON(item));
+                                const labelGraphic = asExtendedGraphic(GraphicCompat.fromJSON(item));
 
                                 if (!labelGraphic.attributes) {
                                     labelGraphic.attributes = {};
@@ -8978,7 +9002,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
             // Clone the graphic
             const graphicJson = graphicToCopy.toJSON();
-            const newGraphic = Graphic.fromJSON(graphicJson) as ExtendedGraphic;
+            const newGraphic = GraphicCompat.fromJSON(graphicJson) as ExtendedGraphic;
 
             // Modify attributes for the new copy
             if (!newGraphic.attributes) {
@@ -10600,21 +10624,22 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             //console.log('🔄 Parsing shapefile to GeoJSON...');
 
             // Dynamic import of shpjs to avoid bundling issues
-            const shp = await import('shpjs');
+            const shpModule: any = await import('shpjs');
+            const shp: any = shpModule.default || shpModule;
 
             // Parse the shapefile
             let geoJSON: any;
 
             if (dbfFile) {
                 // If we have a DBF file, combine it with the SHP
-                const combined = await shp.default.combine([
-                    shp.default.parseShp(shpFile, prjFile || undefined),
-                    shp.default.parseDbf(dbfFile)
+                const combined = await shp.combine([
+                    shp.parseShp(shpFile, prjFile || undefined),
+                    shp.parseDbf(dbfFile)
                 ]);
                 geoJSON = combined;
             } else {
                 // Just parse the SHP file
-                geoJSON = await shp.default.parseShp(shpFile, prjFile || undefined);
+                geoJSON = await shp.parseShp(shpFile, prjFile || undefined);
             }
 
             // Ensure it's a FeatureCollection
@@ -11662,7 +11687,6 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             let parseBuffer = arrayBuffer; // Default: use original ZIP
 
             try {
-                const JSZip = (await import('jszip')).default;
                 const zip = await JSZip.loadAsync(arrayBuffer);
 
                 // Find and extract the PRJ file
@@ -11687,8 +11711,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
             // Step 2: Parse the shapefile with shpjs using the PRJ-stripped ZIP.
             // Without a .prj file, shpjs returns raw coordinates as-is.
-            const shp = await import('shpjs');
-            let geoJSON = await shp.default(parseBuffer);
+            const shpModule: any = await import('shpjs');
+            const shp: any = shpModule.default || shpModule;
+            let geoJSON = await shp(parseBuffer);
 
             // Normalize to single FeatureCollection
             if (Array.isArray(geoJSON)) {
@@ -12638,7 +12663,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             drawingsData.forEach((item, index) => {
                 try {
                     // Convert JSON to Graphic using ArcGIS API
-                    const graphic = Graphic.fromJSON(item) as ExtendedGraphic;
+                    const graphic = GraphicCompat.fromJSON(item) as ExtendedGraphic;
 
                     if (!graphic.attributes) {
                         graphic.attributes = {};
@@ -12694,7 +12719,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             // Restore measurement labels (if any)
             measurementLabelsData.forEach((item, index) => {
                 try {
-                    const labelGraphic = Graphic.fromJSON(item) as ExtendedGraphic;
+                    const labelGraphic = GraphicCompat.fromJSON(item) as ExtendedGraphic;
 
                     if (!labelGraphic.attributes) {
                         labelGraphic.attributes = {};
@@ -13399,7 +13424,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             }
 
             // STEP 2: Clean up measurement labels for all selected drawings FIRST
-            const selectedIndices = Array.from(selectedGraphics);
+            const selectedIndices = Array.from(selectedGraphics as Set<number>);
             //console.log(`🧹 Cleaning up measurement labels for ${selectedIndices.length} graphics`);
 
             selectedIndices.forEach(index => {
@@ -13541,7 +13566,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         }
 
         // Gather selected graphics
-        const selectedIndices = Array.from(selectedGraphics).sort((a, b) => a - b);
+        const selectedIndices = Array.from(selectedGraphics as Set<number>).sort((a, b) => a - b);
         const selectedDrawings = selectedIndices.map(i => drawings[i]).filter(Boolean);
 
         // Classify geometry types
@@ -13594,7 +13619,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 // Union polygons (handles extent→polygon too)
                 const polygons = geometries.map(g => {
                     if (g.type === 'extent') {
-                        return Polygon.fromExtent(g as any);
+                        return PolygonCompat.fromExtent(g as any);
                     }
                     return g as any;
                 });

@@ -17,13 +17,17 @@
   "contributors": [
     "Robert Scheitlin",
     "Adrien Hoff",
-    "Mattias Ekstr\u00f6m",
-    "J\u00e9r\u00f4me Ray"
+    "Mattias Ekström",
+    "Jérôme Ray"
   ],
   "homepage": "https://community.esri.com/t5/experience-builder-custom-widgets/advanced-draw-widget-improvements-import-export/ba-p/1618579",
   "dependencies": {
     "@mapbox/shp-write": "^0.4.3",
     "jszip": "^3.10.1",
+    "proj4": "^2.20.9",
     "shpjs": "^6.2.0"
+  },
+  "devDependencies": {
+    "@types/proj4": "^2.19.0"
   }
 }

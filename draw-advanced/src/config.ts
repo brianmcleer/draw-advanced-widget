@@ -1,4 +1,17 @@
-﻿import { ImmutableObject } from 'seamless-immutable';
+// Type-only compatibility shape for Experience Builder immutable config objects.
+// Avoids Visual Studio resolving seamless-immutable through the EB 1.21 pnpm layout.
+export type ImmutableObject<T> = T & {
+    set: <K extends keyof T>(key: K, value: T[K]) => ImmutableObject<T>
+    without: (...keys: Array<keyof T>) => ImmutableObject<T>
+    asMutable: (options?: { deep?: boolean }) => T
+}
+
+export interface UnitConfig {
+    unit: string
+    label?: string
+    abbreviation?: string
+    conversion?: number
+}
 
 export interface Config {
     creationMode: DrawMode;
@@ -14,9 +27,9 @@ export interface Config {
     title: string
     listMode: boolean
     changeListMode: boolean
-    userDistances: [Object]
+    userDistances: UnitConfig[]
     defaultDistance: number
-    userAreas: [Object]
+    userAreas: UnitConfig[]
     defaultArea: number
     // Storage scope for drawings persistence
     storageScope: StorageScope

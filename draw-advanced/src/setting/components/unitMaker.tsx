@@ -1,6 +1,5 @@
 import { React } from 'jimu-core'
-import { TextInput, NumericInput, Label, Button } from 'jimu-ui'
-import { CollapsablePanel } from 'jimu-ui/advanced/setting-components'
+import { TextInput, NumericInput, Label, Button, CollapsablePanel } from 'jimu-ui'
 
 const { useState, useEffect } = React
 

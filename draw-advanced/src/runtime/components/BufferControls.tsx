@@ -1,4 +1,4 @@
-﻿import { React } from 'jimu-core';
+import { React } from 'jimu-core';
 import { Label, NumericInput, Select, Option, Button, Checkbox } from 'jimu-ui';
 import { ColorPicker } from 'jimu-ui/basic/color-picker';
 import { CollapsableCheckbox } from 'jimu-ui/advanced/setting-components';
@@ -6,6 +6,8 @@ import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import Graphic from 'esri/Graphic';
 import Point from 'esri/geometry/Point';
 import Polygon from 'esri/geometry/Polygon';
+
+const PolygonCompat = Polygon as typeof Polygon & { fromJSON: (json: any) => Polygon };
 // jimu-arcgis types used via prop typing only
 import SimpleFillSymbol from 'esri/symbols/SimpleFillSymbol';
 import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
@@ -50,7 +52,7 @@ const toMeters = (dist: number, unit: string): number =>
     dist * (UNIT_TO_METERS[(unit || '').toLowerCase().replace(/-/g, '')] ?? 1);
 
 const makePoly = (rings: number[][][], sr: any): any =>
-    Polygon.fromJSON({ rings, spatialReference: sr?.toJSON ? sr.toJSON() : sr });
+    PolygonCompat.fromJSON({ rings, spatialReference: sr?.toJSON ? sr.toJSON() : sr });
 
 /** Circular polygon. */
 const circleRing = (cx: number, cy: number, r: number, isGeo: boolean, N = 72): number[][] => {
@@ -352,7 +354,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
 
     // Accessibility: Status announcement for screen readers
     const [statusMessage, setStatusMessage] = React.useState<string>('');
-    const statusTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    const statusTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const geometryWatchers = React.useRef<Map<string, any>>(new Map());
     // The most recently created/edited buffer's parent graphic. Used as the

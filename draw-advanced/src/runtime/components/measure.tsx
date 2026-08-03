@@ -6,7 +6,11 @@ import { EditOutlined } from 'jimu-icons/outlined/editor/edit'
 import Graphic from "esri/Graphic";
 import Point from 'esri/geometry/Point';
 import Polyline from 'esri/geometry/Polyline';
+
+const PolylineCompat = Polyline as typeof Polyline & { fromJSON: (json: any) => Polyline };
 import SpatialReference from 'esri/geometry/SpatialReference';
+
+const SpatialReferenceCompat = SpatialReference as typeof SpatialReference & { WGS84: SpatialReference };
 import * as projectOperator from 'esri/geometry/operators/projectOperator';
 import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
 import * as geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
@@ -2238,7 +2242,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					const seg = path[s];
 					const end = segEnd(seg);
 					if (!prev || !end) { prev = end; continue; }
-					const sub = Polyline.fromJSON({ curvePaths: [[prev, seg]], spatialReference: sr });
+					const sub = PolylineCompat.fromJSON({ curvePaths: [[prev, seg]], spatialReference: sr });
 					const segLen = _calculatePolylineLength(sub);
 					// arc midpoint = middle vertex of the densified sub-curve
 					const dense: any = _asMeasurableLine(sub);
@@ -3502,7 +3506,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 						await projectOperator.load();
 					}
 
-					const [projected] = projectOperator.executeMany([labelPoint], SpatialReference.WGS84) as any[];
+					const [projected] = projectOperator.executeMany([labelPoint], SpatialReferenceCompat.WGS84) as any[];
 
 					if (projected && latLong) {
 						wgsCoords = `\nLat: ${projected.y.toFixed(pointRound)}\nLon: ${projected.x.toFixed(pointRound)}`;
@@ -4099,7 +4103,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					let wgsCoords = '';
 					try {
 						if (!projectOperator.isLoaded()) await projectOperator.load();
-						const [projected] = projectOperator.executeMany([labelPoint], SpatialReference.WGS84) as any[];
+						const [projected] = projectOperator.executeMany([labelPoint], SpatialReferenceCompat.WGS84) as any[];
 						if (projected && latLong) {
 							wgsCoords = `\nLat: ${projected.y.toFixed(pointRound)}\nLon: ${projected.x.toFixed(pointRound)}`;
 							if (wkid) wgsCoords = `${wgsCoords}\nWKID: 4326`;
