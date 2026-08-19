@@ -5363,14 +5363,24 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
     }
 
     repositionSymbolPopper = () => {
+        const drawingList = document.querySelector('.drawing-list');
+        if (!drawingList) return;
+
         const poppers = document.querySelectorAll('.jimu-popper') as NodeListOf<HTMLElement>;
         poppers.forEach(popper => {
             if (popper.offsetParent === null) return; // Skip hidden poppers
 
-            const drawingList = document.querySelector('.drawing-list');
-            if (!drawingList) return;
-
+            // Only ever touch the SymbolSelector's own dropdown popper. On mobile,
+            // Experience Builder renders WIDGET PANELS inside .jimu-popper
+            // containers too — this widget's own bottom sheet and other widgets'
+            // panels. Repositioning one of those yanks the entire panel to the
+            // center of the screen (reported on iOS when opening My Drawings).
+            if (popper.contains(drawingList)) return; // this widget's own panel
+            if (popper.querySelector('.drawing-list, .jimu-widget, [data-widgetid], .widget-content')) return; // any widget panel
+            // A popper as tall as the viewport is a sheet or panel, not a dropdown.
             const popperRect = popper.getBoundingClientRect();
+            if (popperRect.height >= window.innerHeight * 0.8) return;
+
             const containerRect = drawingList.getBoundingClientRect();
 
             // Check if popper extends below the container
@@ -10600,7 +10610,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             let shpFileName = '';
 
             // Extract files
-            for (const [filename, file] of Object.entries(zip.files)) {
+            for (const [filename, file] of Object.entries(zip.files) as Array<[string, any]>) {
                 const lowerName = filename.toLowerCase();
 
                 if (lowerName.endsWith('.shp') && !lowerName.includes('__macosx')) {
@@ -11691,7 +11701,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
                 // Find and extract the PRJ file
                 let prjFilename: string | null = null;
-                for (const [filename, zipEntry] of Object.entries(zip.files)) {
+                for (const [filename, zipEntry] of Object.entries(zip.files) as Array<[string, any]>) {
                     if (filename.toLowerCase().endsWith('.prj') && !zipEntry.dir
                         && !filename.toLowerCase().includes('__macosx')) {
                         prjWkt = await zipEntry.async('text');
@@ -17002,10 +17012,25 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
       z-index: 99999 !important;
   }
 
-  /* Ensure popper centers relative to the viewport on small screens */
+  /* Ensure the symbol-selector popper centers relative to the viewport on
+     small screens. CRITICAL: this must NEVER match a bare .jimu-popper —
+     Experience Builder renders WIDGET PANELS inside .jimu-popper containers
+     on mobile, so an unscoped rule here fixed-centers the entire Draw panel
+     (and other widgets' panels) in the middle of the screen on iOS. The two
+     rules are intentionally separate: a selector list containing :has() is
+     dropped wholesale by browsers without :has() support, which would kill
+     the fallback rule too. */
   @media (max-width: 600px) {
-      [class*="symbol-selector__popper"],
-      .jimu-popper {
+      [class*="symbol-selector__popper"] {
+          position: fixed !important;
+          top: 50% !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%) !important;
+          margin: 0 !important;
+          width: 90vw !important;
+          max-width: 400px !important;
+      }
+      .jimu-popper:has([class*="symbol-selector"]) {
           position: fixed !important;
           top: 50% !important;
           left: 50% !important;
