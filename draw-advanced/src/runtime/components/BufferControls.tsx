@@ -1,4 +1,5 @@
-import { React } from 'jimu-core';
+import { React, hooks } from 'jimu-core';
+import defaultMessages from '../translations/default';
 import { Label, NumericInput, Select, Option, Button, Checkbox } from 'jimu-ui';
 import { ColorPicker } from 'jimu-ui/basic/color-picker';
 import { CollapsableCheckbox } from 'jimu-ui/advanced/setting-components';
@@ -339,6 +340,7 @@ interface BufferControlsProps {
 const asExtended = (g: any) => g as ExtendedGraphic;
 
 export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, sketchViewModel, defaultDistance, defaultUnit, defaultOpacity, defaultColor, defaultOutlineColor }) => {
+    const t = hooks.useTranslation(defaultMessages);
     // OFF by default
     const [bufferEnabled, setBufferEnabled] = React.useState<boolean>(false);
     const [bufferDistance, setBufferDistance] = React.useState<number>(typeof defaultDistance === 'number' ? defaultDistance : 100);
@@ -1045,7 +1047,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                         try {
                             await createOrUpdateBufferFor(g, bufferDistance, bufferUnit);
                             triggerSave();
-                            announceStatus(`Buffer automatically created: ${bufferDistance} ${formatUnit(bufferDistance, bufferUnit)}`);
+                            announceStatus(t('bufferMsgAutoCreated', { distance: bufferDistance, unit: formatUnit(bufferDistance, bufferUnit) }));
                         } catch (e) { console.error('Auto buffer on create failed', e); }
                     }, 100);
                 }
@@ -1065,7 +1067,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                 try {
                     await createOrUpdateBufferFor(g, bufferDistance, bufferUnit);
                     triggerSave();
-                    announceStatus(`Buffer automatically created: ${bufferDistance} ${formatUnit(bufferDistance, bufferUnit)}`);
+                    announceStatus(t('bufferMsgAutoCreated', { distance: bufferDistance, unit: formatUnit(bufferDistance, bufferUnit) }));
                 } catch (err) { console.error('Auto buffer (custom tool) failed', err); }
             }, 100);
         };
@@ -1076,12 +1078,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
     // --- button handlers (selected only) ---
     const handleUpdateBuffer = async () => {
         if (!bufferEnabled) {
-            announceStatus('Buffer feature is disabled. Enable buffer to use this action.');
+            announceStatus(t('bufferMsgDisabled'));
             return;
         }
         const selected = getSelectedMainGraphics();
         if (selected.length === 0) {
-            announceStatus('No graphics selected. Select graphics on the map to create or update buffers.');
+            announceStatus(t('bufferMsgNoSelectionUpdate'));
             return;
         }
         for (const g of selected) {
@@ -1095,7 +1097,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             }
         }
         saveSettings({ distance: bufferDistance, unit: bufferUnit });
-        announceStatus(`Buffer updated: ${bufferDistance} ${formatUnit(bufferDistance, bufferUnit)} applied to ${selected.length} graphic${selected.length !== 1 ? 's' : ''}`);
+        announceStatus(t('bufferMsgUpdated', { distance: bufferDistance, unit: formatUnit(bufferDistance, bufferUnit), count: selected.length }));
     };
 
     // Buffers to apply style controls to: the selected drawings' buffers, or
@@ -1117,12 +1119,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
 
     const handleUpdateOpacity = () => {
         if (!bufferEnabled) {
-            announceStatus('Buffer feature is disabled. Enable buffer to use this action.');
+            announceStatus(t('bufferMsgDisabled'));
             return;
         }
         const selected = getBufferStyleTargets();
         if (selected.length === 0) {
-            announceStatus('No buffers to update. Draw a buffer first, or select a drawing with a buffer.');
+            announceStatus(t('bufferMsgNoBuffersToUpdate'));
             return;
         }
         let updatedCount = 0;
@@ -1138,7 +1140,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
         });
         saveSettings({ opacity: bufferOpacity, outlineOnly: bufferOutlineOnly, useCustomColor: bufferUseCustomColor, color: bufferColor, outlineColor: bufferOutlineColor });
         triggerSave();
-        announceStatus(`Style updated for ${updatedCount} buffer${updatedCount !== 1 ? 's' : ''}`);
+        announceStatus(t('bufferMsgStyleUpdated', { count: updatedCount }));
     };
 
     // Apply explicit style overrides to selected buffers immediately. Values are
@@ -1179,8 +1181,8 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             customOutlineColor: val ? bufferOutlineColor : null
         });
         announceStatus(val
-            ? `Custom buffer color enabled${count ? ` for ${count} selected buffer${count !== 1 ? 's' : ''}` : ''}`
-            : `Custom buffer color disabled${count ? ` for ${count} selected buffer${count !== 1 ? 's' : ''}` : ''}`);
+            ? t('bufferMsgCustomColorOn', { count: count || 0 })
+            : t('bufferMsgCustomColorOff', { count: count || 0 }));
     };
 
     // Change the custom FILL color; re-style selected buffers when active.
@@ -1203,18 +1205,18 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
 
     const handleLabelBuffer = () => {
         if (!bufferEnabled) {
-            announceStatus('Buffer feature is disabled. Enable buffer to use this action.');
+            announceStatus(t('bufferMsgDisabled'));
             return;
         }
         const layer = getDrawLayer();
         if (!layer) {
-            announceStatus('Drawing layer not available.');
+            announceStatus(t('bufferMsgNoLayer'));
             return;
         }
 
         const selected = getSelectedMainGraphics();
         if (selected.length === 0) {
-            announceStatus('No graphics selected. Select graphics with buffers to add labels.');
+            announceStatus(t('bufferMsgNoSelectionLabel'));
             return;
         }
         let labeledCount = 0;
@@ -1243,13 +1245,13 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             }
         });
         triggerSave();
-        announceStatus(`Labels added to ${labeledCount} buffer${labeledCount !== 1 ? 's' : ''}`);
+        announceStatus(t('bufferMsgLabelsAdded', { count: labeledCount }));
     };
 
     const handleRemoveBuffer = () => {
         const selected = getSelectedMainGraphics();
         if (selected.length === 0) {
-            announceStatus('No graphics selected. Select graphics to remove their buffers.');
+            announceStatus(t('bufferMsgNoSelectionRemove'));
             return;
         }
         let removedCount = 0;
@@ -1266,7 +1268,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
     // Handle checkbox state change with screen reader announcement
     const handleBufferEnabledChange = (val: boolean) => {
         setBufferEnabled(val);
-        announceStatus(val ? 'Buffer feature enabled. Configure distance, unit, and opacity below.' : 'Buffer feature disabled.');
+        announceStatus(val ? t('bufferMsgEnabled') : t('bufferMsgDisabledShort'));
     };
 
     // --- UI ---
@@ -1274,7 +1276,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
         <div
             className='drawToolbarDiv'
             role="region"
-            aria-label="Buffer Controls Panel"
+            aria-label={t('bufferBufferControlsPanel')}
             aria-describedby={descriptionId}
         >
             {/* Hidden description for screen readers */}
@@ -1297,17 +1299,17 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             </div>
 
             <div
-                title="Enable or disable buffer creation for map graphics. When enabled, buffers will be automatically created around new drawings."
+                title={t('bufferEnableOrDisableBufferCreation')}
             >
                 <CollapsableCheckbox
                     className='w-100'
-                    label='Enable Buffer'
+                    label={t('bufferEnableBuffer')}
                     checked={bufferEnabled}
                     onCheckedChange={handleBufferEnabledChange}
                     disableActionForUnchecked
                     openForCheck
                     closeForUncheck
-                    aria-label="Enable Buffer - Checkbox to toggle buffer creation feature"
+                    aria-label={t('bufferEnableBufferCheckboxToToggle')}
                     aria-describedby={descriptionId}
                     aria-expanded={bufferEnabled}
                     aria-controls={`${componentId}-content`}
@@ -1316,7 +1318,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                         id={`${componentId}-content`}
                         className='ml-3 my-1'
                         role="group"
-                        aria-label="Buffer Configuration Options"
+                        aria-label={t('bufferBufferConfigurationOptions')}
                     >
                         {/* Distance Input Row */}
                         <div
@@ -1329,7 +1331,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 for={distanceInputId}
                                 className='mr-2 mb-0 d-flex align-items-center'
                                 style={{ width: '70px', flexShrink: 0 }}
-                                title="Buffer distance - the radius of the buffer zone around graphics"
+                                title={t('bufferBufferDistanceTheRadiusOf')}
                             >
                                 Distance:
                             </Label>
@@ -1349,12 +1351,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 style={{ width: '80px' }}
                                 min={0.1}
                                 step={0.1}
-                                aria-label={`Buffer distance in ${bufferUnit}`}
+                                aria-label={t('bufferDistanceIn', { unit: bufferUnit })}
                                 aria-describedby={distanceDescId}
                                 aria-valuemin={0.1}
                                 aria-valuenow={bufferDistance}
                                 aria-required="true"
-                                title={`Current buffer distance: ${bufferDistance} ${bufferUnit}. Enter the distance value for the buffer zone. Minimum: 0.1`}
+                                title={t('bufferDistanceTitle', { distance: bufferDistance, unit: bufferUnit })}
                             />
                             {/* Hidden description for unit select */}
                             <span id={unitDescId} className="sr-only" style={{ position: 'absolute', left: '-9999px' }}>
@@ -1368,38 +1370,38 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                     const u = (e.target as HTMLSelectElement).value;
                                     setBufferUnit(u);
                                     saveSettings({ unit: u });
-                                    announceStatus(`Buffer unit changed to ${u}`);
+                                    announceStatus(t('bufferMsgUnitChanged', { unit: u }));
                                 }}
                                 style={{ width: '110px' }}
-                                aria-label="Buffer distance unit of measurement"
+                                aria-label={t('bufferBufferDistanceUnitOfMeasurement')}
                                 aria-describedby={unitDescId}
-                                title={`Current unit: ${bufferUnit}. Select the unit of measurement for the buffer distance.`}
+                                title={t('bufferUnitTitle', { unit: bufferUnit })}
                             >
                                 <Option
                                     value='feet'
-                                    aria-label="Feet - Imperial unit of measurement"
-                                    title="Feet - Standard imperial unit for short distances"
+                                    aria-label={t('bufferFeetImperialUnitOfMeasurement')}
+                                    title={t('bufferFeetStandardImperialUnitFor')}
                                 >
                                     Feet
                                 </Option>
                                 <Option
                                     value='meters'
-                                    aria-label="Meters - Metric unit of measurement"
-                                    title="Meters - Standard metric unit for short distances"
+                                    aria-label={t('bufferMetersMetricUnitOfMeasurement')}
+                                    title={t('bufferMetersStandardMetricUnitFor')}
                                 >
                                     Meters
                                 </Option>
                                 <Option
                                     value='miles'
-                                    aria-label="Miles - Imperial unit for longer distances"
-                                    title="Miles - Imperial unit for longer distances (5,280 feet)"
+                                    aria-label={t('bufferMilesImperialUnitForLonger')}
+                                    title={t('bufferMilesImperialUnitForLonger2')}
                                 >
                                     Miles
                                 </Option>
                                 <Option
                                     value='kilometers'
-                                    aria-label="Kilometers - Metric unit for longer distances"
-                                    title="Kilometers - Metric unit for longer distances (1,000 meters)"
+                                    aria-label={t('bufferKilometersMetricUnitForLonger')}
+                                    title={t('bufferKilometersMetricUnitForLonger2')}
                                 >
                                     Kilometers
                                 </Option>
@@ -1417,7 +1419,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 for={opacityInputId}
                                 className='mr-2 mb-0 d-flex align-items-center'
                                 style={{ width: '70px', flexShrink: 0 }}
-                                title="Buffer opacity - controls the transparency of the buffer visualization"
+                                title={t('bufferBufferOpacityControlsTheTransparency')}
                             >
                                 Opacity:
                             </Label>
@@ -1438,18 +1440,18 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 min={1}
                                 max={100}
                                 step={1}
-                                aria-label="Buffer opacity percentage"
+                                aria-label={t('bufferBufferOpacityPercentage')}
                                 aria-describedby={opacityDescId}
                                 aria-valuemin={1}
                                 aria-valuemax={100}
                                 aria-valuenow={bufferOpacity}
                                 aria-required="true"
-                                title={`Current opacity: ${bufferOpacity}%. Enter a value between 1 and 100. Higher values make the buffer more visible on the map.`}
+                                title={t('bufferOpacityTitle', { opacity: bufferOpacity })}
                             />
                             <span
                                 className='text-muted'
                                 aria-hidden="true"
-                                title="Percent symbol - opacity is measured as a percentage"
+                                title={t('bufferPercentSymbolOpacityIsMeasured')}
                             >
                                 %
                             </span>
@@ -1458,12 +1460,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                         {/* Outline-only toggle */}
                         <div
                             className='d-flex align-items-center mb-2'
-                            title="Outline only - show just the buffer outline with no fill"
+                            title={t('bufferOutlineOnlyShowJustThe')}
                         >
                             <Checkbox
                                 checked={bufferOutlineOnly}
                                 onChange={(e: any) => handleOutlineOnlyChange(!!e?.target?.checked)}
-                                aria-label="Outline only - show buffers as an outline with no fill"
+                                aria-label={t('bufferOutlineOnlyShowBuffersAs')}
                             />
                             <Label
                                 className='ml-2 mb-0'
@@ -1477,12 +1479,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                         {/* Custom buffer color toggle + picker */}
                         <div
                             className='d-flex align-items-center mb-2'
-                            title="Custom buffer color - use a chosen color instead of inheriting the drawing's color"
+                            title={t('bufferCustomBufferColorUseA')}
                         >
                             <Checkbox
                                 checked={bufferUseCustomColor}
                                 onChange={(e: any) => handleUseCustomColorChange(!!e?.target?.checked)}
-                                aria-label="Custom buffer color - override the color inherited from the drawing"
+                                aria-label={t('bufferCustomBufferColorOverrideThe')}
                             />
                             <Label
                                 className='ml-2 mb-0 mr-2'
@@ -1494,7 +1496,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                             {bufferUseCustomColor && (
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                        <span style={{ fontSize: '12px' }}>Fill</span>
+                                        <span style={{ fontSize: '12px' }}>{t('bufferFill')}</span>
                                         <ColorPicker
                                             style={{ padding: 0 }}
                                             width={24}
@@ -1507,7 +1509,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                         />
                                     </span>
                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                        <span style={{ fontSize: '12px' }}>Outline</span>
+                                        <span style={{ fontSize: '12px' }}>{t('bufferOutline')}</span>
                                         <ColorPicker
                                             style={{ padding: 0 }}
                                             width={24}
@@ -1527,7 +1529,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                         <div
                             className='d-flex gap-2 mt-1'
                             role="toolbar"
-                            aria-label="Buffer action buttons"
+                            aria-label={t('bufferBufferActionButtons')}
                             aria-describedby={`${componentId}-toolbar-desc`}
                         >
                             {/* Hidden toolbar description */}
@@ -1545,7 +1547,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 onClick={handleUpdateBuffer}
                                 className='flex-fill'
                                 style={{ minWidth: 0 }}
-                                title='Update Buffer - Creates new buffers or updates existing buffer geometry for all currently selected graphics using the distance and unit values configured above'
+                                title={t('bufferUpdateBufferCreatesNewBuffers')}
                                 aria-label={`Update Buffer - Apply ${bufferDistance} ${bufferUnit} buffer to selected graphics`}
                                 aria-describedby={`${componentId}-update-desc`}
                                 disabled={!bufferEnabled}
@@ -1568,7 +1570,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 onClick={handleUpdateOpacity}
                                 className='flex-fill'
                                 style={{ minWidth: 0 }}
-                                title='Update Style - Applies the current opacity and outline-only settings to all buffers on selected graphics without changing their size or shape'
+                                title={t('bufferUpdateStyleAppliesTheCurrent')}
                                 aria-label={`Update Style - Set buffer opacity to ${bufferOpacity}% and outline-only ${bufferOutlineOnly ? 'on' : 'off'} for selected graphics`}
                                 aria-describedby={`${componentId}-opacity-btn-desc`}
                                 disabled={!bufferEnabled}
@@ -1591,8 +1593,8 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 onClick={handleLabelBuffer}
                                 className='flex-fill'
                                 style={{ minWidth: 0 }}
-                                title='Label Buffer - Adds text labels showing the buffer distance to all buffers on selected graphics. Labels include a leader line connecting to the buffer.'
-                                aria-label="Label Buffer - Add distance labels to buffers on selected graphics"
+                                title={t('bufferLabelBufferAddsTextLabels')}
+                                aria-label={t('bufferLabelBufferAddDistanceLabels')}
                                 aria-describedby={`${componentId}-label-desc`}
                                 disabled={!bufferEnabled}
                                 aria-disabled={!bufferEnabled}
@@ -1614,8 +1616,8 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                                 onClick={handleRemoveBuffer}
                                 className='flex-fill'
                                 style={{ minWidth: 0 }}
-                                title='Remove Buffer - Permanently removes all buffer zones and their labels from the currently selected graphics'
-                                aria-label="Remove Buffer - Delete buffers and labels from selected graphics"
+                                title={t('bufferRemoveBufferPermanentlyRemovesAll')}
+                                aria-label={t('bufferRemoveBufferDeleteBuffersAnd')}
                                 aria-describedby={`${componentId}-remove-desc`}
                             >
                                 Remove Buffer
@@ -1636,7 +1638,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                             className="sr-only"
                             style={{ position: 'absolute', left: '-9999px' }}
                             role="note"
-                            aria-label="Keyboard navigation instructions"
+                            aria-label={t('bufferKeyboardNavigationInstructions')}
                         >
                             Use Tab to navigate between controls.
                             Use arrow keys to adjust numeric values.

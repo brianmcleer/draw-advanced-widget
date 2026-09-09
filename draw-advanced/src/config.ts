@@ -13,6 +13,9 @@ export interface UnitConfig {
     conversion?: number
 }
 
+// NOTE: when adding a key here, also add it to KNOWN_CONFIG_KEYS (and, for a
+// default-on boolean, DEFAULT_ON_BOOLEAN_KEYS) in setting/setting.tsx so the
+// settings XML import/export stays complete.
 export interface Config {
     creationMode: DrawMode;
     turnOffOnClose: boolean;
@@ -69,6 +72,9 @@ export interface Config {
     enableCopyFromMap?: boolean
     enableSymbolEditor?: boolean
     enableMeasurements?: boolean
+    // Measurement sub-options (default true when undefined)
+    rememberMeasurementPreferences?: boolean   // persist each user's units/display toggles in their browser
+    allowMultipleUnits?: boolean               // let users show additional units alongside the primary unit
     enableSnapping?: boolean
     enableBuffer?: boolean
     // Developer-configurable buffer defaults (initial values; users can still change at runtime)

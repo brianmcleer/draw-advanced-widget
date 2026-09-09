@@ -1,4 +1,5 @@
-﻿import { React } from 'jimu-core';
+﻿import { React, hooks } from 'jimu-core';
+import defaultMessages from '../translations/default';
 import {
     Button,
     TextInput,
@@ -39,6 +40,7 @@ interface Props {
 const generateId = (base: string): string => `${base}-${Math.random().toString(36).substr(2, 9)}`;
 
 export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymbol, show, onClose, graphic }) => {
+    const t = hooks.useTranslation(defaultMessages);
     const originalDisplayTextRef = React.useRef<string>('');
     const isClosingRef = React.useRef<boolean>(false);
     const [symbol, setSymbol] = React.useState<TextSymbol | null>(null);
@@ -686,7 +688,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             ref={editorRef}
             id={ids.editorPanel}
             className="text-style-editor w-100"
-            aria-label="Text Style Editor"
+            aria-label={t('textStyleTextStyleEditor')}
             aria-describedby={`${ids.editorPanel}-desc`}
             style={{ boxSizing: 'border-box' }}
         >
@@ -723,8 +725,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     tabIndex={0}
                     onClick={handleApplyClose}
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleApplyClose(); } }}
-                    aria-label="Apply all text style changes and close the editor"
-                    title="Apply all changes and close this editor (Escape)"
+                    aria-label={t('textStyleApplyAllTextStyleChanges')}
+                    title={t('textStyleApplyAllChangesAndClose')}
                     style={{
                         display: 'block',
                         width: '100%',
@@ -772,7 +774,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         type="text"
                         className="form-control"
                         value={text}
-                        placeholder="Your Text Here"
+                        placeholder={t('textStyleYourTextHere')}
                         onChange={e => {
                             const rawValue = e.target.value;
                             updateText(rawValue);
@@ -790,13 +792,13 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 }, 0);
                             }
                         }}
-                        aria-label="Label text input"
+                        aria-label={t('textStyleLabelTextInput')}
                         aria-describedby={`${ids.labelTextDesc} ${ids.labelTextHint}`}
                         aria-required="false"
                         autoComplete="off"
                         autoCorrect="off"
                         spellCheck={false}
-                        title="Enter the text content for your map label. Spaces are preserved."
+                        title={t('textStyleEnterTheTextContentFor')}
                         style={{
                             width: '100%',
                             padding: '6px 8px',
@@ -841,22 +843,22 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         value={fontFamily}
                         onChange={e => updateFontFamily(e.target.value)}
                         className="flex-grow-1"
-                        aria-label={`Font family selector, currently ${fontFamily}`}
+                        aria-label={t('textStyleFontFamilySelectorCurrentlyFontfamily', { fontFamily: fontFamily })}
                         aria-describedby={ids.fontFamilyDesc}
-                        title="Select font family for the label text"
+                        title={t('textStyleSelectFontFamilyForThe')}
                         style={{ fontSize: '12px' }}
                     >
-                        <Option value="Alegreya" aria-label="Alegreya font">Alegreya</Option>
-                        <Option value="Arial" aria-label="Arial font">Arial</Option>
-                        <Option value="Avenir Next LT Pro" aria-label="Avenir Next font">Avenir Next</Option>
-                        <Option value="Josefin Slab" aria-label="Josefin Slab font">Josefin Slab</Option>
-                        <Option value="Merriweather" aria-label="Merriweather font">Merriweather</Option>
-                        <Option value="Montserrat" aria-label="Montserrat font">Montserrat</Option>
-                        <Option value="Noto Sans" aria-label="Noto Sans font">Noto Sans</Option>
-                        <Option value="Noto Serif" aria-label="Noto Serif font">Noto Serif</Option>
-                        <Option value="Playfair Display" aria-label="Playfair Display font">Playfair Display</Option>
-                        <Option value="Roboto" aria-label="Roboto font">Roboto</Option>
-                        <Option value="Ubuntu" aria-label="Ubuntu font">Ubuntu</Option>
+                        <Option value="Alegreya" aria-label={t('textStyleAlegreyaFont')}>{t('textStyleAlegreya')}</Option>
+                        <Option value="Arial" aria-label={t('textStyleArialFont')}>{t('textStyleArial')}</Option>
+                        <Option value="Avenir Next LT Pro" aria-label={t('textStyleAvenirNextFont')}>{t('textStyleAvenirNext')}</Option>
+                        <Option value="Josefin Slab" aria-label={t('textStyleJosefinSlabFont')}>{t('textStyleJosefinSlab')}</Option>
+                        <Option value="Merriweather" aria-label={t('textStyleMerriweatherFont')}>{t('textStyleMerriweather')}</Option>
+                        <Option value="Montserrat" aria-label={t('textStyleMontserratFont')}>{t('textStyleMontserrat')}</Option>
+                        <Option value="Noto Sans" aria-label={t('textStyleNotoSansFont')}>{t('textStyleNotoSans')}</Option>
+                        <Option value="Noto Serif" aria-label={t('textStyleNotoSerifFont')}>{t('textStyleNotoSerif')}</Option>
+                        <Option value="Playfair Display" aria-label={t('textStylePlayfairDisplayFont')}>{t('textStylePlayfairDisplay')}</Option>
+                        <Option value="Roboto" aria-label={t('textStyleRobotoFont')}>{t('textStyleRoboto')}</Option>
+                        <Option value="Ubuntu" aria-label={t('textStyleUbuntuFont')}>{t('textStyleUbuntu')}</Option>
                     </Select>
                 </div>
             </fieldset>
@@ -877,13 +879,13 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         </span>
                         <ColorPicker
                             className="fontcolorpicker"
-                            title={`Font color: ${fontColor}. Click to change the text color.`}
+                            title={t('textStyleFontColorFontcolorClickTo', { fontColor: fontColor })}
                             style={{ padding: '0' }}
                             width={24}
                             height={24}
                             color={fontColor || 'rgba(0,0,0,1)'}
                             onChange={updateFontColor}
-                            aria-label={`Font color picker, current color ${fontColor}`}
+                            aria-label={t('textStyleFontColorPickerCurrentColor', { fontColor: fontColor })}
                             aria-describedby={ids.fontColorDesc}
                             aria-haspopup="dialog"
                         />
@@ -904,12 +906,12 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             max={120}
                             showHandlers={true}
                             onChange={updateFontSize}
-                            aria-label={`Font size in points, current value ${fontSize}`}
+                            aria-label={t('textStyleFontSizeInPointsCurrent', { fontSize: fontSize })}
                             aria-describedby={ids.fontSizeDesc}
                             aria-valuemin={1}
                             aria-valuemax={120}
                             aria-valuenow={fontSize}
-                            title={`Font size: ${fontSize}pt. Use arrow keys or type to adjust (1-120).`}
+                            title={t('textStyleFontSizeFontsizePtUse', { fontSize: fontSize })}
                         />
                     </div>
 
@@ -924,7 +926,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     {/* Font Style Buttons - Bold, Italic, Underline */}
                     <div
                         role="group"
-                        aria-label="Font style options: bold, italic, and underline toggles"
+                        aria-label={t('textStyleFontStyleOptionsBoldItalic')}
                         id={ids.fontStyleGroup}
                     >
                         <span id={ids.fontStyleDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
@@ -1004,12 +1006,12 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             step={5}
                             showHandlers={true}
                             onChange={value => updateFontOpacity(value / 100)}
-                            aria-label={`Font opacity percentage, current value ${Math.round(fontOpacity * 100)} percent`}
+                            aria-label={t('textStyleFontOpacityPercentageCurrentValue', { round: Math.round(fontOpacity * 100) })}
                             aria-describedby={ids.opacityDesc}
                             aria-valuemin={0}
                             aria-valuemax={100}
                             aria-valuenow={Math.round(fontOpacity * 100)}
-                            title={`Opacity: ${Math.round(fontOpacity * 100)}%. Adjust transparency from 0% (invisible) to 100% (solid).`}
+                            title={t('textStyleOpacityRoundAdjustTransparencyFrom', { round: Math.round(fontOpacity * 100) })}
                         />
                     </div>
 
@@ -1033,12 +1035,12 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             min={-360}
                             max={360}
                             onChange={updateFontRotation}
-                            aria-label={`Text rotation in degrees, current value ${fontRotation} degrees`}
+                            aria-label={t('textStyleTextRotationInDegreesCurrent', { fontRotation: fontRotation })}
                             aria-describedby={ids.rotationDesc}
                             aria-valuemin={-360}
                             aria-valuemax={360}
                             aria-valuenow={fontRotation}
-                            title={`Rotation: ${fontRotation}°. Adjust angle from -360° to 360°. Positive rotates clockwise.`}
+                            title={t('textStyleRotationFontrotationAdjustAngleFrom', { fontRotation: fontRotation })}
                         />
                     </div>
                 </div>
@@ -1053,7 +1055,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     {/* Horizontal Alignment */}
                     <div
                         role="radiogroup"
-                        aria-label="Horizontal text alignment"
+                        aria-label={t('textStyleHorizontalTextAlignment')}
                         aria-describedby={ids.hAlignDesc}
                         id={ids.hAlignGroup}
                     >
@@ -1114,7 +1116,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     {/* Vertical Alignment */}
                     <div
                         role="radiogroup"
-                        aria-label="Vertical text alignment"
+                        aria-label={t('textStyleVerticalTextAlignment')}
                         aria-describedby={ids.vAlignDesc}
                         id={ids.vAlignGroup}
                     >
@@ -1204,13 +1206,13 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             zIndex: 10
                         }}
                         role="group"
-                        aria-label="Halo style details"
+                        aria-label={t('textStyleHaloStyleDetails')}
                     >
                         <span id={ids.haloColorDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
                             Halo color. Current: {fontHaloColor}.
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '6px' }}>
-                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>Color:</label>
+                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>{t('textStyleColor')}</label>
                             <div style={{ border: '1px solid var(--calcite-color-text-3, #9ca3af)', borderRadius: '3px', padding: '1px', lineHeight: 0 }}>
                                 <ColorPicker
                                     id={ids.haloColorPicker}
@@ -1219,10 +1221,10 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                     height={22}
                                     color={fontHaloColor}
                                     onChange={updateFontHaloColor}
-                                    aria-label={`Halo color picker, current ${fontHaloColor}`}
+                                    aria-label={t('textStyleHaloColorPickerCurrentFonthalocolor', { fontHaloColor: fontHaloColor })}
                                     aria-describedby={ids.haloColorDesc}
                                     aria-haspopup="dialog"
-                                    title={`Halo color: ${fontHaloColor}`}
+                                    title={t('textStyleHaloColorFonthalocolor', { fontHaloColor: fontHaloColor })}
                                 />
                             </div>
                         </div>
@@ -1231,7 +1233,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             Halo size: {fontHaloSize}px.
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '4px' }}>
-                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>Size:</label>
+                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>{t('textStyleSize')}</label>
                             <NumericInput
                                 id={ids.haloSizeInput}
                                 size="sm"
@@ -1241,12 +1243,12 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 max={20}
                                 showHandlers={true}
                                 onChange={updateFontHaloSize}
-                                aria-label={`Halo size ${fontHaloSize}px`}
+                                aria-label={t('textStyleHaloSizeFonthalosizePx', { fontHaloSize: fontHaloSize })}
                                 aria-describedby={ids.haloSizeDesc}
                                 aria-valuemin={1}
                                 aria-valuemax={20}
                                 aria-valuenow={fontHaloSize}
-                                title={`Halo size: ${fontHaloSize}px`}
+                                title={t('textStyleHaloSizeFonthalosizePx2', { fontHaloSize: fontHaloSize })}
                             />
                         </div>
 
@@ -1254,7 +1256,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             Halo opacity: {Math.round(fontHaloOpacity * 100)}%.
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '4px' }}>
-                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>Opacity:</label>
+                            <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>{t('textStyleOpacity')}</label>
                             <NumericInput
                                 id={ids.haloOpacityInput}
                                 size="sm"
@@ -1265,12 +1267,12 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 step={5}
                                 showHandlers={true}
                                 onChange={value => updateFontHaloOpacity(value / 100)}
-                                aria-label={`Halo opacity ${Math.round(fontHaloOpacity * 100)}%`}
+                                aria-label={t('textStyleHaloOpacityRound', { round: Math.round(fontHaloOpacity * 100) })}
                                 aria-describedby={ids.haloOpacityDesc}
                                 aria-valuemin={0}
                                 aria-valuemax={100}
                                 aria-valuenow={Math.round(fontHaloOpacity * 100)}
-                                title={`Halo opacity: ${Math.round(fontHaloOpacity * 100)}%`}
+                                title={t('textStyleHaloOpacityRound2', { round: Math.round(fontHaloOpacity * 100) })}
                             />
                         </div>
                         {/* Done button to close float */}
@@ -1279,8 +1281,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             tabIndex={0}
                             onClick={() => setHaloDetailsOpen(false)}
                             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setHaloDetailsOpen(false); } }}
-                            aria-label="Close halo settings"
-                            title="Close halo settings"
+                            aria-label={t('textStyleCloseHaloSettings')}
+                            title={t('textStyleCloseHaloSettings')}
                             style={{
                                 marginLeft: 'auto',
                                 padding: '3px 12px',
@@ -1328,7 +1330,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         />
                     </div>
 
-                    <div className="d-flex align-items-center" style={{ gap: '6px' }} role="group" aria-label="Text halo effect controls">
+                    <div className="d-flex align-items-center" style={{ gap: '6px' }} role="group" aria-label={t('textStyleTextHaloEffectControls')}>
                         <label
                             htmlFor={ids.haloToggle}
                             style={labelStyle}
@@ -1355,8 +1357,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 tabIndex={0}
                                 onClick={() => setHaloDetailsOpen(true)}
                                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setHaloDetailsOpen(true); } }}
-                                aria-label="Edit halo settings"
-                                title="Edit halo settings"
+                                aria-label={t('textStyleEditHaloSettings')}
+                                title={t('textStyleEditHaloSettings')}
                                 style={{
                                     padding: '1px 6px',
                                     fontSize: '10px',

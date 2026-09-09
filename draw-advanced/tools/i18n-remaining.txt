@@ -1,0 +1,79 @@
+Remaining hardcoded English after automated extraction (hand-convert to ICU; see BufferControls for the pattern)
+
+src/runtime/widget.tsx: 0 replacements {'attr': 0, 'ternary': 0, 'template': 0, 'text': 0}, 0 new keys, 24 skipped templates
+  SKIP line 1471 (template): Currently sizing by ${presetMode === 'radius' ? 'radius' : 'area'}. Select radiu
+  SKIP line 1494 (template): Current value: ${this.state.circlePresetValue ?? 100}. Enter the circle ${preset
+  SKIP line 1501 (template): Circle ${presetMode === 'radius' ? 'radius' : 'area'} unit of measurement
+  SKIP line 1502 (template): Current unit: ${this.state.circlePresetUnit || 'feet'}. Select the unit of measu
+  SKIP line 8539 (template): Draw point marker${pointBtnActive ? ' - currently active' : ''}
+  SKIP line 8555 (template): Draw line${lineBtnActive ? ' - currently active' : ''}
+  SKIP line 8599 (template): Draw freehand line${flineBtnActive ? ' - currently active' : ''}
+  SKIP line 8614 (template): Add text annotation${textBtnActive ? ' - currently active' : ''}
+  SKIP line 8635 (template): Draw rectangle${rectBtnActive ? ' - currently active' : ''}
+  SKIP line 8650 (template): Draw polygon${polygonBtnActive ? ' - currently active' : ''}
+  SKIP line 8665 (template): Draw freehand polygon${fpolygonBtnActive ? ' - currently active' : ''}
+  SKIP line 8680 (template): Draw circle${circleBtnActive ? ' - currently active' : ''}
+  SKIP line 8695 (template): Draw triangle${this.state.triangleActive ? ' - currently active' : ''}
+  SKIP line 9690 (template): Undo last drawing action${!canUndo ? ' - no actions to undo' : ''}
+  SKIP line 9702 (template): Redo drawing action${!canRedo ? ' - no actions to redo' : ''}
+  SKIP line 9757 (template): Clear all drawings${!drawGLLengthcheck ? ' - no drawings to clear' : ''}
+  SKIP line 10007 (template): Bold text${this.state.fsBoldBtnActive ? ' - currently active' : ''}
+  SKIP line 10018 (template): Italic text${this.state.fsItalicBtnActive ? ' - currently active' : ''}
+  SKIP line 10029 (template): Underline text${this.state.fsUnderlineBtnActive ? ' - currently active' : ''}
+  SKIP line 10214 (template): Text background color picker${this.state.fontBackgroundColor === 'rgba(0,0,0,0)'
+  SKIP line 10254 (template): Halo color picker${!this.state.fontHaloEnabled ? ' - disabled' : ''}
+  SKIP line 10268 (template): Halo size in pixels${!this.state.fontHaloEnabled ? ' - disabled' : ''}, current 
+  SKIP line 10298 (template): Halo opacity slider${!this.state.fontHaloEnabled ? ' - disabled' : ''}, current 
+  SKIP line 10311 (template): Halo opacity percentage${!this.state.fontHaloEnabled ? ' - disabled' : ''}
+src/runtime/components/MyDrawingsPanel.tsx: 0 replacements {'attr': 0, 'ternary': 0, 'template': 0, 'text': 0}, 0 new keys, 2 skipped templates
+  SKIP line 18797 (template): ${this.state.collapsedDrawings.has(index) ? 'Expand' : 'Collapse'} drawing
+  SKIP line 19327 (template): ${graphic.visible !== false ? 'Hide' : 'Show'} drawing
+src/runtime/components/measure.tsx: 0 replacements {'attr': 0, 'ternary': 0, 'template': 0, 'text': 0}, 0 new keys, 19 skipped templates
+  SKIP line 5131 (template): Halo effect is ${measurementHaloEnabled ? 'enabled' : 'disabled'}. Toggle to ${m
+  SKIP line 5220 (template): Bold formatting is ${measurementTextSymbol?.font?.weight === 'bold' ? 'enabled' 
+  SKIP line 5240 (template): Italic formatting is ${measurementTextSymbol?.font?.style === 'italic' ? 'enable
+  SKIP line 5260 (template): Underline formatting is ${measurementTextSymbol?.font?.decoration === 'underline
+  SKIP line 5434 (template): Additional linear units: ${additionalDistanceUnits.length ? additionalDistanceUn
+  SKIP line 5452 (template): ${on ? 'Hide' : 'Show'} ${unit.label} (${unit.abbreviation})
+  SKIP line 5517 (template): Additional area units: ${additionalAreaUnits.length ? additionalAreaUnits.map(n 
+  SKIP line 5535 (template): ${on ? 'Hide' : 'Show'} ${unit.label} (${unit.abbreviation})
+  SKIP line 5569 (template): XY coordinates ${xy ? 'enabled' : 'disabled'}. Display projected X and Y coordin
+  SKIP line 5584 (template): Latitude/Longitude ${latLong ? 'enabled' : 'disabled'}. Display geographic latit
+  SKIP line 5600 (template): Well-Known ID ${wkid ? 'enabled' : 'disabled'}. Display the spatial reference sy
+  SKIP line 5654 (template): Total length measurement ${lengthOn ? 'enabled' : 'disabled'}. Display the total
+  SKIP line 5669 (template): Individual line segment measurements ${segmentsOn ? 'enabled' : 'disabled'}. Dis
+  SKIP line 5688 (template): Rotate segment labels ${rotateSegments ? 'enabled' : 'disabled'}. When enabled, 
+  SKIP line 5753 (template): Area measurement ${areaOn ? 'enabled' : 'disabled'}. Display the total area of t
+  SKIP line 5768 (template): Perimeter measurement ${perimeterOn ? 'enabled' : 'disabled'}. Display the total
+  SKIP line 5784 (template): Radius measurement ${radiusOn ? 'enabled' : 'disabled'}. Display the circle radi
+  SKIP line 5803 (template): Individual segment measurements ${segmentsOn ? 'enabled' : 'disabled'}. Display 
+  SKIP line 5825 (template): Rotate segment labels ${rotateSegments ? 'enabled' : 'disabled'}. When enabled, 
+src/runtime/components/TextStyleEditor.tsx: 0 replacements {'attr': 0, 'ternary': 0, 'template': 0, 'text': 0}, 0 new keys, 24 skipped templates
+  SKIP line 943 (template): Bold text, currently ${fontWeight === 'bold' ? 'enabled' : 'disabled'}. Press to
+  SKIP line 944 (template): Bold (${fontWeight === 'bold' ? 'On' : 'Off'}). Click to ${fontWeight === 'bold'
+  SKIP line 955 (template): Italic text, currently ${fontStyle === 'italic' ? 'enabled' : 'disabled'}. Press
+  SKIP line 956 (template): Italic (${fontStyle === 'italic' ? 'On' : 'Off'}). Click to ${fontStyle === 'ita
+  SKIP line 967 (template): Underline text, currently ${fontDecoration === 'underline' ? 'enabled' : 'disabl
+  SKIP line 968 (template): Underline (${fontDecoration === 'underline' ? 'On' : 'Off'}). Click to ${fontDec
+  SKIP line 1072 (template): Align left${horizontalAlignment === 'left' ? ', selected' : ''}
+  SKIP line 1073 (template): Align Left${horizontalAlignment === 'left' ? ' (Current)' : ''}. Position text t
+  SKIP line 1085 (template): Align center${horizontalAlignment === 'center' ? ', selected' : ''}
+  SKIP line 1086 (template): Align Center${horizontalAlignment === 'center' ? ' (Current)' : ''}. Position te
+  SKIP line 1098 (template): Align right${horizontalAlignment === 'right' ? ', selected' : ''}
+  SKIP line 1099 (template): Align Right${horizontalAlignment === 'right' ? ' (Current)' : ''}. Position text
+  SKIP line 1133 (template): Align to baseline${verticalAlignment === 'baseline' ? ', selected' : ''}
+  SKIP line 1134 (template): Baseline Alignment${verticalAlignment === 'baseline' ? ' (Current)' : ''}. Align
+  SKIP line 1146 (template): Align to top${verticalAlignment === 'top' ? ', selected' : ''}
+  SKIP line 1147 (template): Top Alignment${verticalAlignment === 'top' ? ' (Current)' : ''}. Position text a
+  SKIP line 1159 (template): Align to middle${verticalAlignment === 'middle' ? ', selected' : ''}
+  SKIP line 1160 (template): Middle Alignment${verticalAlignment === 'middle' ? ' (Current)' : ''}. Center te
+  SKIP line 1172 (template): Align to bottom${verticalAlignment === 'bottom' ? ', selected' : ''}
+  SKIP line 1173 (template): Bottom Alignment${verticalAlignment === 'bottom' ? ' (Current)' : ''}. Position 
+  SKIP line 1326 (template): Background color picker, currently ${fontBackgroundColor === 'rgba(0,0,0,0)' ? '
+  SKIP line 1329 (template): Background color: ${fontBackgroundColor === 'rgba(0,0,0,0)' ? 'None (transparent
+  SKIP line 1349 (template): Toggle text halo effect, currently ${fontHaloEnabled ? 'enabled' : 'disabled'}
+  SKIP line 1352 (template): Halo Effect: ${fontHaloEnabled ? 'On' : 'Off'}
+src/runtime/components/SnappingControls.tsx: 0 replacements {'attr': 0, 'ternary': 0, 'template': 0, 'text': 0}, 0 new keys, 1 skipped templates
+  SKIP line 1092 (template): Major line interval slider. Current value: ${gridMajorLineInterval}. Every ${gri
+
+Also: status/announce/alert strings assigned in code (search: announceStatus(, alert(, Error, setState({ ...Error/Message)) are not touched by the tool.

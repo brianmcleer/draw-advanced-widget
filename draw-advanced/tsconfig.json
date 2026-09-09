@@ -6,10 +6,7 @@
     "moduleResolution": "Node",
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
-    "baseUrl": "../../..",
-    "paths": {
-      "jimu-*": ["jimu-*"]
-    },
+    "types": [],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -18,5 +15,6 @@
     "strict": false,
     "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "tests"]
 }

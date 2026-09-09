@@ -1,4 +1,5 @@
-﻿import { React } from 'jimu-core';
+﻿import { React, hooks } from 'jimu-core';
+import defaultMessages from '../translations/default';
 import { ImmutableObject } from 'jimu-core';
 import { CollapsableCheckbox, Alert, Switch, Label, Select, Option, Slider, NumericInput } from 'jimu-ui';
 import { ColorPicker } from 'jimu-ui/basic/color-picker';
@@ -27,6 +28,7 @@ const srOnlyStyles: React.CSSProperties = {
 };
 
 export const SnappingControls = (props: SnappingControlsProps): React.ReactElement => {
+    const t = hooks.useTranslation(defaultMessages);
     const [enabled, setEnabled] = React.useState(false);
     const [snapSourcesCount, setSnapSourcesCount] = React.useState(0);
     const [error, setError] = React.useState<string | null>(null);
@@ -546,7 +548,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         <div
             className='drawToolbarDiv'
             role="region"
-            aria-label="Snapping and Grid Controls"
+            aria-label={t('snapSnappingAndGridControls')}
         >
             {/* Live region for screen reader announcements */}
             <div
@@ -565,7 +567,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                     : 'Click to enable snapping. Snapping helps you draw precisely by automatically aligning to nearby features.'}
             >
                 <CollapsableCheckbox
-                    label={enabled ? 'Disable Snapping' : 'Enable Snapping'}
+                    label={enabled ? t('snapDisableSnapping') : t('snapEnableSnapping')}
                     checked={enabled}
                     onCheckedChange={handleToggle}
                     disableActionForUnchecked
@@ -580,16 +582,16 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                         id={ids.snappingPanel}
                         className='ml-3 my-1'
                         role="group"
-                        aria-label="Snapping options and settings"
+                        aria-label={t('snapSnappingOptionsAndSettings')}
                     >
                         {/* Instructions list with accessibility */}
                         <ul
                             id={ids.snappingInstructions}
                             className='text-dark m-0 pl-3 small'
-                            aria-label="Snapping keyboard shortcuts and instructions"
+                            aria-label={t('snapSnappingKeyboardShortcutsAndInstructions')}
                         >
                             <li>
-                                Hold <strong><kbd>Ctrl</kbd></strong> (Windows) or <strong><kbd>Cmd</kbd></strong> (Mac) to temporarily disable snapping while drawing.
+                                Hold <strong><kbd>{t('snapCtrl')}</kbd></strong> (Windows) or <strong><kbd>{t('snapCmd')}</kbd></strong> (Mac) to temporarily disable snapping while drawing.
                             </li>
                             <li>
                                 Snap to feature vertices, edges, and intersections while drawing for precise alignment.
@@ -604,7 +606,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                 aria-busy="true"
                                 aria-live="polite"
                             >
-                                <span style={srOnlyStyles}>Loading:</span>
+                                <span style={srOnlyStyles}>{t('snapLoading')}</span>
                                 Configuring snapping...
                             </p>
                         )}
@@ -640,7 +642,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                             <div
                                 className='w-100 mt-3'
                                 role="note"
-                                aria-label="Grid controls availability notice"
+                                aria-label={t('snapGridControlsAvailabilityNotice')}
                             >
                                 <Alert
                                     type='info'
@@ -656,7 +658,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                             <div
                                 className='mt-3'
                                 role="region"
-                                aria-label="Grid overlay controls"
+                                aria-label={t('snapGridOverlayControls')}
                             >
                                 {/* Wrapper with tooltip for Grid CollapsableCheckbox */}
                                 <div
@@ -671,7 +673,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                         disableActionForUnchecked
                                         openForCheck
                                         closeForUncheck
-                                        label={gridEnabled ? 'Disable Grid' : 'Enable Grid'}
+                                        label={gridEnabled ? t('snapDisableGrid') : t('snapEnableGrid')}
                                         aria-expanded={gridEnabled}
                                         aria-controls={ids.gridPanel}
                                     >
@@ -679,7 +681,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                             id={ids.gridPanel}
                                             className='ml-3 my-1'
                                             role="group"
-                                            aria-label="Grid configuration options"
+                                            aria-label={t('snapGridConfigurationOptions')}
                                         >
                                             {/* Grid status for screen readers */}
                                             <div
@@ -699,7 +701,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                 <div
                                                     className='d-flex flex-column'
                                                     role="form"
-                                                    aria-label="Grid settings form"
+                                                    aria-label={t('snapGridSettingsForm')}
                                                 >
                                                     {/* Grid Theme Selection */}
                                                     <div className='mb-2'>
@@ -726,11 +728,11 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                 }}
                                                                 aria-labelledby={ids.gridThemeLabel}
                                                                 aria-describedby={ids.gridThemeDesc}
-                                                                title="Select a color theme for the grid overlay. Light works best on dark backgrounds, dark on light backgrounds, or choose custom to pick your own color."
+                                                                title={t('snapSelectAColorThemeFor')}
                                                             >
-                                                                <Option value='light'>Light</Option>
-                                                                <Option value='dark'>Dark</Option>
-                                                                <Option value='custom'>Custom</Option>
+                                                                <Option value='light'>{t('snapLight')}</Option>
+                                                                <Option value='dark'>{t('snapDark')}</Option>
+                                                                <Option value='custom'>{t('snapCustom')}</Option>
                                                             </Select>
                                                         </label>
                                                         <span
@@ -755,7 +757,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                 >
                                                                     Grid Color:
                                                                 </span>
-                                                                <div title="Select a custom color for the grid lines. Click to open the color picker dialog.">
+                                                                <div title={t('snapSelectACustomColorFor')}>
                                                                     <ColorPicker
                                                                         color={gridColor}
                                                                         onChange={(color) => {
@@ -847,10 +849,10 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                 }}
                                                                 aria-labelledby={ids.gridSpacingModeLabel}
                                                                 aria-describedby={ids.gridSpacingModeDesc}
-                                                                title="Choose whether grid spacing is defined in screen pixels or real-world map units (feet, meters, yards)."
+                                                                title={t('snapChooseWhetherGridSpacingIs')}
                                                             >
-                                                                <Option value='pixels'>Pixels (screen)</Option>
-                                                                <Option value='mapUnits'>Map Units (linear)</Option>
+                                                                <Option value='pixels'>{t('snapPixelsScreen')}</Option>
+                                                                <Option value='mapUnits'>{t('snapMapUnitsLinear')}</Option>
                                                             </Select>
                                                         </label>
                                                         <span
@@ -881,7 +883,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                 >
                                                                     <div
                                                                         className='flex-grow-1 mr-2'
-                                                                        title={`Grid spacing slider. Current value: ${gridSpacing} pixels. Drag to adjust the distance between grid lines from 10 to 200 pixels.`}
+                                                                        title={t('snapGridSpacingSliderCurrentValue', { gridSpacing: gridSpacing })}
                                                                     >
                                                                         <Slider
                                                                             id={ids.gridSpacingSlider}
@@ -894,7 +896,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                             min={10}
                                                                             max={200}
                                                                             step={5}
-                                                                            aria-label={`Grid spacing: ${gridSpacing} pixels`}
+                                                                            aria-label={t('snapGridSpacingGridspacingPixels', { gridSpacing: gridSpacing })}
                                                                             aria-valuemin={10}
                                                                             aria-valuemax={200}
                                                                             aria-valuenow={gridSpacing}
@@ -914,9 +916,9 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                         max={200}
                                                                         step={5}
                                                                         style={{ width: '70px' }}
-                                                                        aria-label="Grid spacing in pixels"
+                                                                        aria-label={t('snapGridSpacingInPixels')}
                                                                         aria-describedby={ids.gridSpacingDesc}
-                                                                        title="Enter grid spacing value in pixels (10-200). The spacing determines the distance between grid lines."
+                                                                        title={t('snapEnterGridSpacingValueIn')}
                                                                     />
                                                                 </div>
                                                             </label>
@@ -952,11 +954,11 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                         announce(`Grid unit changed to ${newUnit}`, 'polite');
                                                                     }}
                                                                     aria-labelledby={ids.gridMapUnitLabel}
-                                                                    title="Select the map unit for grid spacing."
+                                                                    title={t('snapSelectTheMapUnitFor')}
                                                                 >
-                                                                    <Option value='feet'>Feet</Option>
-                                                                    <Option value='meters'>Meters</Option>
-                                                                    <Option value='yards'>Yards</Option>
+                                                                    <Option value='feet'>{t('feet')}</Option>
+                                                                    <Option value='meters'>{t('meters')}</Option>
+                                                                    <Option value='yards'>{t('yards')}</Option>
                                                                 </Select>
                                                             </label>
 
@@ -986,9 +988,9 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                     step={gridMapUnit === 'meters' ? 10 : gridMapUnit === 'feet' ? 25 : 10}
                                                                     style={{ width: '100%' }}
                                                                     showHandlers={true}
-                                                                    aria-label={`Grid spacing in ${gridMapUnit}`}
+                                                                    aria-label={t('snapGridSpacingInGridmapunit', { gridMapUnit: gridMapUnit })}
                                                                     aria-describedby={ids.gridMapUnitValueDesc}
-                                                                    title={`Enter grid spacing in ${gridMapUnit}. The grid lines will be spaced this distance apart in real-world measurements.`}
+                                                                    title={t('snapEnterGridSpacingInGridmapunit', { gridMapUnit: gridMapUnit })}
                                                                 />
                                                             </label>
 
@@ -1018,7 +1020,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                             >
                                                                 <div
                                                                     className='flex-grow-1 mr-2'
-                                                                    title={`Grid rotation slider. Current value: ${gridRotation} degrees. Drag to rotate the grid from 0 to 360 degrees.`}
+                                                                    title={t('snapGridRotationSliderCurrentValue', { gridRotation: gridRotation })}
                                                                 >
                                                                     <Slider
                                                                         id={ids.gridRotationSlider}
@@ -1034,7 +1036,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                         min={0}
                                                                         max={360}
                                                                         step={5}
-                                                                        aria-label={`Grid rotation: ${gridRotation} degrees`}
+                                                                        aria-label={t('snapGridRotationGridrotationDegrees', { gridRotation: gridRotation })}
                                                                         aria-valuemin={0}
                                                                         aria-valuemax={360}
                                                                         aria-valuenow={gridRotation}
@@ -1057,9 +1059,9 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                     max={360}
                                                                     step={5}
                                                                     style={{ width: '70px' }}
-                                                                    aria-label="Grid rotation in degrees"
+                                                                    aria-label={t('snapGridRotationInDegrees')}
                                                                     aria-describedby={ids.gridRotationDesc}
-                                                                    title="Enter grid rotation value in degrees (0-360). The grid will rotate around its center point."
+                                                                    title={t('snapEnterGridRotationValueIn')}
                                                                 />
                                                             </div>
                                                         </label>
@@ -1100,7 +1102,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                         min={1}
                                                                         max={10}
                                                                         step={1}
-                                                                        aria-label={`Major line interval: every ${gridMajorLineInterval} lines`}
+                                                                        aria-label={t('snapMajorLineIntervalEveryGridmajorlineinterval', { gridMajorLineInterval: gridMajorLineInterval })}
                                                                         aria-valuemin={1}
                                                                         aria-valuemax={10}
                                                                         aria-valuenow={gridMajorLineInterval}
@@ -1120,9 +1122,9 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                     max={10}
                                                                     step={1}
                                                                     style={{ width: '70px' }}
-                                                                    aria-label="Major line interval"
+                                                                    aria-label={t('snapMajorLineInterval')}
                                                                     aria-describedby={ids.gridMajorLineDesc}
-                                                                    title="Enter how often major (thicker) lines appear. For example, 5 means every 5th line is a major line."
+                                                                    title={t('snapEnterHowOftenMajorThicker')}
                                                                 />
                                                             </div>
                                                         </label>
@@ -1136,7 +1138,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                         className='d-flex flex-column mt-2'
                                                         style={{ border: 'none', padding: 0, margin: 0 }}
                                                     >
-                                                        <legend style={srOnlyStyles}>Grid behavior options</legend>
+                                                        <legend style={srOnlyStyles}>{t('snapGridBehaviorOptions')}</legend>
 
                                                         {/* Dynamic Scaling Toggle — hidden in map-units mode (forced off) */}
                                                         {gridSpacingMode !== 'mapUnits' && (
@@ -1162,7 +1164,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                         aria-checked={gridDynamicScale}
                                                                         aria-describedby={ids.gridDynamicScaleDesc}
                                                                     />
-                                                                    <span style={{ fontSize: '12px' }}>Dynamic Scaling</span>
+                                                                    <span style={{ fontSize: '12px' }}>{t('snapDynamicScaling')}</span>
                                                                 </label>
                                                                 <span id={ids.gridDynamicScaleDesc} style={srOnlyStyles}>
                                                                     When enabled, the grid automatically adjusts its display based on the current zoom level to maintain optimal visibility.
@@ -1193,7 +1195,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                     aria-checked={gridSnapEnabled}
                                                                     aria-describedby={ids.gridSnapDesc}
                                                                 />
-                                                                <span style={{ fontSize: '12px' }}>Snap to Grid</span>
+                                                                <span style={{ fontSize: '12px' }}>{t('snapSnapToGrid')}</span>
                                                             </label>
                                                             <span id={ids.gridSnapDesc} style={srOnlyStyles}>
                                                                 When enabled, your drawing cursor will automatically snap to grid intersection points for precise alignment.
@@ -1223,7 +1225,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                                                     aria-checked={gridRotateWithMap}
                                                                     aria-describedby={ids.gridRotateMapDesc}
                                                                 />
-                                                                <span style={{ fontSize: '12px' }}>Rotate with Map</span>
+                                                                <span style={{ fontSize: '12px' }}>{t('snapRotateWithMap')}</span>
                                                             </label>
                                                             <span id={ids.gridRotateMapDesc} style={srOnlyStyles}>
                                                                 When enabled, the grid will rotate together with the map when the map view is rotated.
