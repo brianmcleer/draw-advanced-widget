@@ -3921,6 +3921,11 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 graphicToDelete.drawingLabel = null;
             }
 
+            // 🔧 STEP 1.6: Remove the selection halo while the parent still owns it.
+            // Once the parent leaves the layer its `_selectionOverlay` back-pointer is
+            // gone and the halo would be left stranded on the map.
+            this.removePointTextOverlay(graphicToDelete);
+
             // 🔧 STEP 2: Remove geometry watchers to prevent buffer recreation
             const parentId = graphicToDelete.attributes?.uniqueId;
             if (parentId && this._positionWatchers) {
