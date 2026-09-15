@@ -7981,14 +7981,23 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		const activeGra: Graphic = this.sketchViewModel?.updateGraphics?.getItemAt(0);
 
 		if (activeGra && activeGra.geometry?.type === 'point' && activeGra.symbol?.type === 'text' && !activeGra.attributes?.isMeasurementLabel) {
-			// Update the SketchViewModel's live graphic (what user sees while editing)
-			activeGra.symbol = ts;
+			// Assign a copy, not `ts` itself. `ts` is the single editor-state symbol that
+			// the text and style handlers mutate in place, so handing out the live
+			// instance lets two graphics share one symbol, and an edit to either then
+			// rewrites the other. The result is invisible until the affected graphic
+			// repaints, so it surfaces on a later click or on print.
+			//
+			// applyLineWidth() rather than .clone(): it returns a fresh symbol via
+			// toJSON/fromJSON and keeps lineWidth at 9999. Plain .clone() round-trips
+			// through the accessors, which caps lineWidth back to the default and
+			// re-enables the auto-wrap this widget deliberately disables.
+			activeGra.symbol = this.applyLineWidth(ts, 9999);
 
 			// Also update the matching backing graphic in the draw layer by uniqueId
 			const uid = activeGra.attributes?.uniqueId;
 			if (uid && this.drawLayer?.graphics) {
 				const layerGra = this.drawLayer.graphics.find((g: Graphic) => g.attributes?.uniqueId === uid);
-				if (layerGra) layerGra.symbol = ts;
+				if (layerGra) layerGra.symbol = this.applyLineWidth(ts, 9999);
 			}
 		}
 	};
