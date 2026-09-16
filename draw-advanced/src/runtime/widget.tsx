@@ -1731,20 +1731,26 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		this._selectionEpoch++;
 	};
 
+	// Remove every selection halo from the draw layer.
+	//
+	// Halos are found by their own `isSelectionOverlay` attribute rather than by the
+	// parent graphic's `_selectionOverlay` back-pointer. That back-pointer only exists
+	// while the parent is still on the layer, so a halo whose parent has been deleted
+	// is otherwise unreachable and is left stranded on the map. The attribute is set at
+	// creation and travels with the halo itself.
 	private clearAllSelectionOverlays = () => {
 		if (!this.drawLayer) return;
 		try {
+			// toArray() is a snapshot, so removing while iterating it is safe.
 			this.drawLayer.graphics.toArray().forEach((g: any) => {
-				if (g && g._selectionOverlay) {
-					try {
-						if (g._selectionOverlay.layer === this.drawLayer) {
-							this.drawLayer.remove(g._selectionOverlay);
-						}
-					} catch { }
-					g._selectionOverlay = null;
+				if (g?.attributes?.isSelectionOverlay) {
+					try { this.drawLayer.remove(g); } catch { }
 				}
+				if (g?._selectionOverlay) g._selectionOverlay = null;
 			});
-		} catch { }
+		} catch (e) {
+			console.warn('Error clearing selection overlays:', e);
+		}
 	};
 
 	private removeAttachedBuffer = (parentGraphic: any) => {
@@ -4886,25 +4892,6 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 
 			// --- Helper Functions ----------------------------------------------------------
 
-			// Remove ALL selection overlay graphics and null pointers on base graphics
-			const clearAllSelectionOverlaysLocal = () => {
-				if (!this.drawLayer) return;
-				try {
-					this.drawLayer.graphics.toArray().forEach((g: any) => {
-						if (g && g._selectionOverlay) {
-							try {
-								if (g._selectionOverlay.layer === this.drawLayer) {
-									this.drawLayer.remove(g._selectionOverlay);
-								}
-							} catch { }
-							g._selectionOverlay = null;
-						}
-					});
-				} catch (e) {
-					console.warn('clearAllSelectionOverlaysLocal failed:', e);
-				}
-			};
-
 			// Enhanced measurement label detection
 			const isMeasurementLabelGraphic = (graphic: any): boolean => {
 				if (!graphic || !graphic.symbol) return false;
@@ -5099,7 +5086,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						this._selectionEpoch++;
 
 						// Clear previous halos BEFORE selecting the new one
-						clearAllSelectionOverlaysLocal();
+						this.clearAllSelectionOverlays();
 
 						// Handle the selection
 						const uid = (clickedGraphic as any).attributes?.uniqueId;
@@ -5162,7 +5149,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						this._selectionEpoch++;
 
 						// Clear halos and selection states
-						clearAllSelectionOverlaysLocal();
+						this.clearAllSelectionOverlays();
 
 						if (this.state.selectedGraphicIndex !== null) {
 							this.setState({ selectedGraphicIndex: null, selectedGraphics: new Set() });
@@ -5355,17 +5342,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		} catch (e) {
 			console.warn('Error canceling SketchVM during clear selection:', e);
 		}
-		try {
-			this.drawLayer.graphics.toArray().forEach(g => {
-				const ext: any = g;
-				if (ext._selectionOverlay) {
-					try { this.drawLayer.remove(ext._selectionOverlay); } catch { }
-					ext._selectionOverlay = null;
-				}
-			});
-		} catch (e) {
-			console.warn('Error clearing selection overlays:', e);
-		}
+		this.clearAllSelectionOverlays();
 	};
 
 
