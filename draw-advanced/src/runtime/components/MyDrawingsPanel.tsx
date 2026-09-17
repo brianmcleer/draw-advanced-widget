@@ -32,6 +32,7 @@ const GraphicCompat = Graphic as typeof Graphic & { fromJSON: (json: any) => Gra
 import * as webMercatorUtils from "esri/geometry/support/webMercatorUtils";
 import * as geometryEngine from 'esri/geometry/geometryEngine';
 import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
+import * as projectOperator from 'esri/geometry/operators/projectOperator';
 const proj4Module: any = require('proj4');
 const proj4: any = proj4Module.default || proj4Module;
 import shpwrite from '@mapbox/shp-write';
@@ -1506,10 +1507,46 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 if (result) return result;
             }
 
-            // proj4 fallback — accurate for any EPSG code, no WASM needed
+            // Primary path: the Maps SDK projection engine. It knows every spatial reference the
+            // map can be in (State Plane, UTM, custom WKT), which proj4 below does not: proj4 ships
+            // with only 4326, 4269 and 3857 defined, so `EPSG:2232` threw and the import fell
+            // through to a linear approximation that placed features miles off.
             if (targetWkid && targetWkid !== 4326) {
                 try {
-                    const transform = proj4('EPSG:4326', `EPSG:${targetWkid}`);
+                    const asGeometry = (g: any): any => {
+                        if (!g) return null;
+                        if (typeof g.clone === 'function') return g; // already a Geometry instance
+                        const sr = g.spatialReference ?? { wkid: 4326 };
+                        switch (g.type) {
+                            case 'point': return new Point({ x: g.x ?? g.longitude, y: g.y ?? g.latitude, spatialReference: sr });
+                            case 'polyline': return new Polyline({ paths: g.paths, spatialReference: sr });
+                            case 'polygon': return new Polygon({ rings: g.rings, spatialReference: sr });
+                            case 'multipoint': return new Multipoint({ points: g.points, spatialReference: sr });
+                            default: return null;
+                        }
+                    };
+                    const source = asGeometry(wgs84Geometry);
+                    if (source) {
+                        if (typeof projectOperator.isLoaded === 'function' && !projectOperator.isLoaded()) {
+                            await projectOperator.load();
+                        }
+                        const projected = projectOperator.execute(source, targetSR as any);
+                        if (projected) return projected;
+                    }
+                } catch (sdkProjectError) {
+                    console.warn('projectOperator failed, trying proj4:', sdkProjectError);
+                }
+
+                // proj4 fallback: EPSG code when proj4 knows it, otherwise the SR's WKT string
+                try {
+                    const wkt: string | undefined = (targetSR as any)?.wkt || (targetSR as any)?.wkt2;
+                    let transform: any;
+                    try {
+                        transform = proj4('EPSG:4326', `EPSG:${targetWkid}`);
+                    } catch (epsgError) {
+                        if (!wkt) throw epsgError;
+                        transform = proj4('EPSG:4326', wkt);
+                    }
                     const projectCoord = (lon: number, lat: number) => {
                         const [x, y] = transform.forward([lon, lat]);
                         return { x, y };
@@ -1546,7 +1583,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 }
             }
 
-            // Last resort: mathematical approximation (handles UTM, Web Mercator, State Plane)
+            // Last resort: mathematical approximation. Only roughly right for UTM and Web
+            // Mercator; say so, because a silently misplaced import is worse than a warning.
+            console.error(`Could not project imported geometry to WKID ${targetWkid}; using an approximate transform. Check feature placement.`);
             return this.manualProjectionFromWGS84(wgs84Geometry, targetSR);
 
         } catch (error) {
@@ -5507,11 +5546,6 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         // Reset the measurement styles initialization flag
         this.measurementStylesInitialized = false;
 
-        // Clean up watch handle
-        if (this.state.graphicsWatchHandle) {
-            this.state.graphicsWatchHandle.remove();
-        }
-
         // Clean up position watchers
         if (this._positionWatchers) {
             Object.values(this._positionWatchers).forEach(watcher => {
@@ -5520,29 +5554,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             this._positionWatchers = {};
         }
 
-        // Clean up graphics watch handles
-        if (this._graphicsWatchHandles) {
-            this._graphicsWatchHandles.forEach(handle => {
-                if (handle) handle.remove();
-            });
-            this._graphicsWatchHandles = [];
-        }
-
-        // 🔧 MEMORY FIX: tear down listeners registered in setupInteractionManager,
-        // setupMapQualityManager, and the SVM watch/on calls in this component.
-        // Each of these previously leaked on every widget remount or map view switch.
-        if (this._interactionHandles) {
-            this._interactionHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
-            this._interactionHandles = [];
-        }
-        if (this._mapQualityHandles) {
-            this._mapQualityHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
-            this._mapQualityHandles = [];
-        }
-        if (this._svmListenerHandles) {
-            this._svmListenerHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
-            this._svmListenerHandles = [];
-        }
+        // Tear down the graphics watch, interaction, map-quality and SVM listeners
+        this.teardownListenerHandles();
 
         // Clean up buffer geometry watchers (one per attached buffer). Without this
         // they survive unmount and the closures keep the panel, layer, and graphic
@@ -7026,6 +7039,36 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
 
 
+    /**
+     * Remove every view / graphics / SketchViewModel listener this component registered.
+     * Called from componentWillUnmount and at the top of initializeComponents, which can run
+     * several times per mount (consent granted, load prompt answered, map view changed).
+     * Without this each run stacked another full set of handlers, so refreshDrawingsFromLayer
+     * and the interaction handlers fired N times per event.
+     */
+    private teardownListenerHandles = () => {
+        if (this.state.graphicsWatchHandle) {
+            try { this.state.graphicsWatchHandle.remove(); } catch { /* no-op */ }
+            this.state.graphicsWatchHandle = null;
+        }
+        if (this._graphicsWatchHandles) {
+            this._graphicsWatchHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
+            this._graphicsWatchHandles = [];
+        }
+        if (this._interactionHandles) {
+            this._interactionHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
+            this._interactionHandles = [];
+        }
+        if (this._mapQualityHandles) {
+            this._mapQualityHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
+            this._mapQualityHandles = [];
+        }
+        if (this._svmListenerHandles) {
+            this._svmListenerHandles.forEach(h => { try { h?.remove(); } catch { /* no-op */ } });
+            this._svmListenerHandles = [];
+        }
+    };
+
     initializeComponents = () => {
         //console.log('🚀 initializeComponents called');
         // console.log('📊 Props check:', {
@@ -7038,6 +7081,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             //console.log('❌ Missing required props, exiting');
             return;
         }
+
+        // Start from a clean slate so a second run does not double every listener
+        this.teardownListenerHandles();
 
         // 🔧 CRITICAL FIX: Use SketchViewModel from props if provided
         // This ensures measure.tsx's listeners work when MyDrawings tab is active
@@ -8169,7 +8215,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         const storageKey = this.localStorageKey;
         //console.log(`📂 Loading drawings from localStorage key: ${storageKey}`);
 
-        const savedData = localStorage.getItem(storageKey);
+        // Private windows and iframes with third-party storage blocked throw here
+        let savedData: string | null = null;
+        try {
+            savedData = localStorage.getItem(storageKey);
+        } catch (e) {
+            console.warn('Local storage is not available; skipping drawings restore', e);
+            return;
+        }
         if (!savedData) {
             //console.log(`📂 No saved drawings found for key: ${storageKey}`);
             return;
@@ -11593,6 +11646,18 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         if (result) return result;
                     }
 
+                    // Maps SDK projection engine: handles State Plane, UTM and WKT-only sources,
+                    // which proj4 (only 4326/4269/3857 built in) cannot
+                    try {
+                        if (typeof projectOperator.isLoaded === 'function' && !projectOperator.isLoaded()) {
+                            await projectOperator.load();
+                        }
+                        const projected = projectOperator.execute(geometry, targetSR as any);
+                        if (projected) return projected;
+                    } catch (sdkProjectError) {
+                        console.warn('projectOperator failed, trying proj4:', sdkProjectError);
+                    }
+
                     // proj4 fallback (statically imported — always available, CSP-safe)
                     if (sourceWkid && !sourceWkt) {
                         try {
@@ -13644,13 +13709,24 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                     }
                     return g as any;
                 });
-                const geometryEngine = null /* dynamic import removed */;
-                // Combine rings from all polygons into a single multi-ring polygon
-                const allRings: number[][][] = [];
-                for (const poly of polygons) {
-                    if (poly.rings) for (const ring of poly.rings) allRings.push(ring);
+                // Union the polygons with geometryEngine so overlaps merge instead of cancelling.
+                // Concatenating rings drew every overlap as a hole (even-odd fill) and gave wrong
+                // area labels; this matches unionPolygonsRobust in widget.tsx.
+                try {
+                    const engine: any = (geometryEngine as any).default || geometryEngine;
+                    const unioned = typeof engine?.union === 'function' ? engine.union(polygons) : null;
+                    mergedGeometry = Array.isArray(unioned) ? (unioned[0] ?? null) : (unioned ?? null);
+                } catch (unionError) {
+                    console.warn('Merge: geometryEngine.union failed, falling back to ring concatenation', unionError);
+                    mergedGeometry = null;
                 }
-                mergedGeometry = new Polygon({ rings: allRings, spatialReference: polygons[0].spatialReference });
+                if (!mergedGeometry) {
+                    const allRings: number[][][] = [];
+                    for (const poly of polygons) {
+                        if (poly.rings) for (const ring of poly.rings) allRings.push(ring);
+                    }
+                    mergedGeometry = new Polygon({ rings: allRings, spatialReference: polygons[0].spatialReference });
+                }
             } else if (geomType === 'polyline') {
                 // Combine all paths into a single polyline
                 const allPaths: number[][][] = [];
@@ -14221,7 +14297,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 // Nudge the view to force refresh
                 if (this.props.jimuMapView?.view) {
                     const currentCenter = this.props.jimuMapView.view.center.clone();
-                    this.props.jimuMapView.view.goTo(currentCenter, { duration: 0 });
+                    // Rejects with view:goto-interrupted if the user is panning; not an error here
+                    Promise.resolve(this.props.jimuMapView.view.goTo(currentCenter, { duration: 0 })).catch(() => { /* no-op */ });
                 }
 
                 // Re-enable editing

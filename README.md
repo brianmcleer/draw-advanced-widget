@@ -23,13 +23,15 @@ There are two ways to get it. Both end with you placing a `draw-advanced` folder
 2. Under the latest release, download the `draw-advanced.zip` asset.
 3. Extract it. You will get a `draw-advanced` folder.
 
+   The zip is the widget only. The Visual Studio type shims in the repo (`draw-advanced/src/exb-editor-shims*.d.ts`) are left out on purpose: their ambient `declare module` blocks are not file-scoped and would rewrite the react, jimu and esri types for every other widget in your `your-extensions` folder.
+
 ### Option 2: Clone or download the repo
 
 ```bash
 git clone https://github.com/brianmcleer/draw-advanced-widget.git
 ```
 
-Or use the green **Code** button above and choose **Download ZIP**. The `draw-advanced` folder is inside.
+Or use the green **Code** button above and choose **Download ZIP**. The `draw-advanced` folder is inside. If you go this route, delete `draw-advanced/src/exb-editor-shims.d.ts` before building (see the note under Option 1); nothing else depends on it.
 
 ## Installation
 
@@ -41,13 +43,14 @@ Or use the green **Code** button above and choose **Download ZIP**. The `draw-ad
 
    Keep `manifest.json` directly inside `draw-advanced/`, not nested a second level deep. Nesting is the usual cause of the widget not registering.
 
-2. From the Experience Builder **client** directory, run the standard install:
+2. From the Experience Builder **client** directory, run the standard install for your version:
 
    ```bash
-   npm install
+   pnpm install      # Experience Builder 1.21 and later
+   npm install       # Experience Builder 1.20 and earlier
    ```
 
-   Because the widget includes a `package.json` and `package-lock.json` and lives in `your-extensions`, Experience Builder installs its dependencies automatically. You do not install shp-write, shpjs, or jszip by hand.
+   Because the widget includes a `package.json` with both lockfiles (`pnpm-lock.yaml`, `package-lock.json`) and lives in `your-extensions`, Experience Builder installs its dependencies automatically. You do not install shp-write, shpjs, jszip, or proj4 by hand.
 
 3. Start (or restart) the client and refresh the Builder window. The widget appears under **Insert Widget > Custom**.
 
@@ -55,10 +58,10 @@ Or use the green **Code** button above and choose **Download ZIP**. The `draw-ad
 
 ## Requirements
 
-- ArcGIS Experience Builder Developer Edition 1.17 or later, with 1.19 and 1.20 being the build/test targets.
+- ArcGIS Experience Builder Developer Edition 1.17 or later. 1.21 (Maps SDK 5.1) is the build/test target; 1.19 and 1.20 (Maps SDK 4.3x) still work.
 - The measurement functions use ArcGIS Maps SDK 4.32 features, so editions earlier than 1.17 are not supported.
 
-Dependencies (installed automatically, pinned in `draw-advanced/package-lock.json`): `@mapbox/shp-write`, `shpjs`, `jszip`. `proj4` and `seamless-immutable` resolve from the SDK and the jimu framework.
+Dependencies (installed automatically, pinned in `draw-advanced/package-lock.json` and `draw-advanced/pnpm-lock.yaml`): `@mapbox/shp-write`, `shpjs`, `jszip`, `proj4`. `seamless-immutable` resolves from the jimu framework.
 
 ## Features
 

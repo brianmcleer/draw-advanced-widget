@@ -3473,14 +3473,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							? graphicData.geometry
 							: (geomFromJSON ? geomFromJSON(graphicData.geometry) : graphicData.geometry);
 
-						// Reconstruct symbol from JSON if provided
-						let symbol = null;
-						if (graphicData.symbol) {
-							try {
-								import('esri/symbols/support/jsonUtils').then((symbolJsonUtils: any) => {
-									const symFromJSON = symbolJsonUtils.fromJSON || symbolJsonUtils.default?.fromJSON;
-									symbol = symFromJSON ? symFromJSON(graphicData.symbol) : null;
-									// Use default symbol if no symbol provided
+						// Build and add the graphic. Runs whether or not Identify sent a symbol; the old
+						// code only created the graphic inside the `if (graphicData.symbol)` branch, so
+						// a feature copied without a symbol was silently dropped.
+						const addGraphicWithSymbol = (symbol: any) => {
 									if (!symbol) {
 										symbol = this.getDefaultSymbol(geometry.type);
 									}
@@ -3532,13 +3528,20 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 
 										this.announceToScreenReader(`Feature geometry added to My Drawings from Identify widget.`);
 									}
+						};
 
-								}).catch(() => {
-									// Symbol reconstruction failed, will use default
-								});
-							} catch (e) {
-								// Fallback to default symbol
-							}
+						if (graphicData.symbol) {
+							import('esri/symbols/support/jsonUtils').then((symbolJsonUtils: any) => {
+								const symFromJSON = symbolJsonUtils.fromJSON || symbolJsonUtils.default?.fromJSON;
+								let symbol: any = null;
+								try { symbol = symFromJSON ? symFromJSON(graphicData.symbol) : null; } catch (e) { symbol = null; }
+								addGraphicWithSymbol(symbol);
+							}).catch(() => {
+								// Symbol module failed to load: fall back to the default symbol
+								addGraphicWithSymbol(null);
+							});
+						} else {
+							addGraphicWithSymbol(null);
 						}
 					}).catch(error => {
 						console.error('[Draw] Error loading geometry utils:', error);
@@ -4417,14 +4420,19 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		if (this.state.currentJimuMapView) {
 			const widgetState: WidgetState = this.props.state;
 			const view = this.state.currentJimuMapView.view;
+			// Only react to a real controller open/close transition. Running these blocks on
+			// every re-render re-cancelled the sketch, re-enabled updateOnGraphicClick behind the
+			// measurement tool's back, and (while Closed) called setState from componentDidUpdate
+			// in a loop.
+			const stateChanged = prevProps.state !== widgetState;
 
-			if (widgetState === WidgetState.Closed && this.sketchViewModel) {
+			if (stateChanged && widgetState === WidgetState.Closed && this.sketchViewModel) {
 				// Properly cancel any active operations
 				this.sketchViewModel.cancel();
 				this.sketchViewModel.updateOnGraphicClick = false;
 
 				// Clear any active drawing states to prevent interference with map interactions
-				this.setDrawToolBtnState(null);
+				this.setDrawToolBtnState('');
 
 				// Restore original popup state
 				if (view) {
@@ -4434,45 +4442,20 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						//console.log('Restored popup state to:', this.originalPopupEnabled);
 					}
 
-					if (view.popup && "autoCloseEnabled" in view.popup) {
-						view.popup.autoCloseEnabled = true;
-					}
+					this.releaseMapPopup(view);
 
-					// Restore highlight appearance
-					view.highlightOptions = {
-						color: [0, 255, 255, 1],
-						fillOpacity: 0.0,
-						haloOpacity: 0.8
-					};
+					// Restore highlight appearance (4.x highlightOptions or 5.x view.highlights)
+					this.setMapHighlightsHidden(view, false);
 
-					// Restore layer-level highlight styling
-					view.map.layers.forEach(layer => {
-						view.whenLayerView(layer).then((layerView: any) => {
-							if (layer.type === "feature") {
-								const featureLayerView = layerView as any;
-								if ("highlightOptions" in featureLayerView) {
-									featureLayerView.highlightOptions = {
-										color: [0, 255, 255, 1],
-										fillOpacity: 0.0,
-										haloOpacity: 0.8
-									};
-								}
-							}
-						});
-					});
-
-					// Clear widget graphics but preserve draw layer
-					const allGraphics = view.graphics.toArray();
-					const graphicsToRemove = allGraphics.filter(graphic =>
-						graphic.layer !== this.drawLayer
-					);
-					view.graphics.removeMany(graphicsToRemove);
+					// Clear this widget's own view graphics (copy/paste highlights); leave graphics
+					// other widgets put in view.graphics alone
+					this.removeOwnViewGraphics(view);
 				}
 
 				if (this.props.config.turnOffOnClose) {
-					this.setDrawToolBtnState(null);
+					this.setDrawToolBtnState('');
 				}
-			} else if (widgetState === WidgetState.Opened && this.sketchViewModel) {
+			} else if (stateChanged && widgetState === WidgetState.Opened && this.sketchViewModel) {
 				this.sketchViewModel.updateOnGraphicClick = true;
 
 				// Disable interactions when widget opens
@@ -4485,17 +4468,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 
 					// Disable popups and interactions
 					view.popupEnabled = false;
-					if (view.popup && "autoCloseEnabled" in view.popup) {
-						view.popup.autoCloseEnabled = false;
-					}
-					view.popup.visible = false;
+					this.suppressMapPopup(view);
 
 					// Make highlights invisible
-					view.highlightOptions = {
-						color: [0, 0, 0, 0],
-						fillOpacity: 0,
-						haloOpacity: 0
-					};
+					this.setMapHighlightsHidden(view, true);
 				}
 			}
 
@@ -4522,33 +4498,20 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						view.popupEnabled = this.originalPopupEnabled;
 						//console.log('Restored popup state (uncontrolled widget):', this.originalPopupEnabled);
 
-						if (view.popup && "autoCloseEnabled" in view.popup) {
-							view.popup.autoCloseEnabled = true;
-						}
+						this.releaseMapPopup(view);
 
 						// Restore highlight appearance
-						view.highlightOptions = {
-							color: [0, 255, 255, 1],
-							fillOpacity: 0.0,
-							haloOpacity: 0.8
-						};
+						this.setMapHighlightsHidden(view, false);
 					}
 					// Disable popups when entering drawing mode
 					else if (!wasDrawingActive && isDrawingActive && view.popupEnabled) {
 						view.popupEnabled = false;
 						//console.log('Disabled popups (uncontrolled widget, entering drawing mode)');
 
-						if (view.popup && "autoCloseEnabled" in view.popup) {
-							view.popup.autoCloseEnabled = false;
-						}
-						view.popup.visible = false;
+						this.suppressMapPopup(view);
 
 						// Make highlights invisible
-						view.highlightOptions = {
-							color: [0, 0, 0, 0],
-							fillOpacity: 0,
-							haloOpacity: 0
-						};
+						this.setMapHighlightsHidden(view, true);
 					}
 				}
 			}
@@ -4582,7 +4545,28 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		}
 	}
 
+	/** Set on unmount so async view setup that resolves afterwards does nothing. */
+	private _unmounted = false;
+
+	/**
+	 * Remove only the graphics this widget added to view.graphics (copy-mode and paste highlights).
+	 * The old code removed every view graphic whose layer was not the draw layer, which is all of
+	 * them, so closing Draw wiped the Search pin and other widgets' highlights.
+	 */
+	private removeOwnViewGraphics = (view: any): void => {
+		try {
+			if (!view?.graphics) return;
+			const mine = view.graphics.toArray().filter((g: any) =>
+				g === this._copyHighlightGraphic ||
+				g?.attributes?.isMultiCopyHighlight === true ||
+				g?.attributes?.isCopyHighlight === true
+			);
+			if (mine.length > 0) view.graphics.removeMany(mine);
+		} catch (e) { /* view may be destroyed */ }
+	};
+
 	componentWillUnmount() {
+		this._unmounted = true;
 		// Clean up measurement update timeouts
 		if (this._measurementUpdateTimeout) {
 			clearTimeout(this._measurementUpdateTimeout);
@@ -4660,43 +4644,13 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 				view.popupEnabled = this.originalPopupEnabled;
 				//console.log('componentWillUnmount: Restored popup state to:', this.originalPopupEnabled);
 
-				if (view.popup && "autoCloseEnabled" in view.popup) {
-					view.popup.autoCloseEnabled = true;
-				}
+				this.releaseMapPopup(view);
 
-				// Restore highlight options to default
-				view.highlightOptions = {
-					color: [0, 255, 255, 1],
-					fillOpacity: 0.0,
-					haloOpacity: 0.8
-				};
+				// Restore highlight style (4.x highlightOptions or 5.x view.highlights)
+				this.setMapHighlightsHidden(view, false);
 
-				// Restore layer-level highlight styling
-				view.map.layers.forEach(layer => {
-					view.whenLayerView(layer).then((layerView: any) => {
-						if (layer.type === "feature") {
-							const featureLayerView = layerView as any;
-							if ("highlightOptions" in featureLayerView) {
-								featureLayerView.highlightOptions = {
-									color: [0, 255, 255, 1],
-									fillOpacity: 0.0,
-									haloOpacity: 0.8
-								};
-							}
-						}
-					}).catch(err => {
-						console.warn(`Could not restore highlight options for layer ${layer.title}:`, err);
-					});
-				});
-
-				// Clear any widget graphics but preserve draw layer
-				const allGraphics = view.graphics.toArray();
-				const graphicsToRemove = allGraphics.filter(graphic =>
-					graphic.layer !== this.drawLayer
-				);
-				if (graphicsToRemove.length > 0) {
-					view.graphics.removeMany(graphicsToRemove);
-				}
+				// Clear this widget's own view graphics; leave other widgets' graphics alone
+				this.removeOwnViewGraphics(view);
 
 			} catch (error) {
 				console.warn('Error restoring view state during unmount:', error);
@@ -4722,15 +4676,11 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			this.sketchViewModel = null;
 		}
 
-		// Clean up draw layer
-		if (this.drawLayer) {
-			try {
-				this.drawLayer.removeAll();
-			} catch (error) {
-				console.warn('Error clearing draw layer:', error);
-			}
-			this.drawLayer = null;
-		}
+		// Drop our reference to the draw layer but leave its graphics on the map. The layer is
+		// re-found by id ('DrawGL') on remount and the storage restore only runs when it is empty,
+		// so clearing it here made drawings vanish on every ExB page/view switch and lost them for
+		// good when local storage was disabled or declined.
+		this.drawLayer = null;
 	}
 
 	activeViewChangeHandler = (jimuMapView: JimuMapView) => {
@@ -4755,6 +4705,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		this.setState({ currentJimuMapView: jimuMapView });
 
 		jimuMapView.whenJimuMapViewLoaded().then(async () => {
+			// Widget unmounted (or moved to another view) while the map was loading: do not attach
+			// handlers, create a SketchViewModel or disable popups on a view nobody will restore.
+			if (this._unmounted || this.state.currentJimuMapView !== jimuMapView) return;
+
 			const { map } = jimuMapView.view;
 			const view = jimuMapView.view;
 
@@ -4784,10 +4738,9 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			if ((isWidgetControlled && widgetState === WidgetState.Opened) || isDrawingActive) {
 				// Disable popups and interactions
 				view.popupEnabled = false;
-				if (view.popup && "autoCloseEnabled" in view.popup) view.popup.autoCloseEnabled = false;
-				view.popup.visible = false;
+				this.suppressMapPopup(view);
 
-				view.highlightOptions = { color: [0, 0, 0, 0], fillOpacity: 0, haloOpacity: 0 };
+				this.setMapHighlightsHidden(view, true);
 				//console.log('Disabled popups on widget initialization (controlled widget or drawing active)');
 			} else {
 				// For uncontrolled widgets with no active drawing tools, leave popups enabled
@@ -4801,12 +4754,12 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						if (layer.type === "feature") {
 							const flv = layerView as any;
 							if (typeof flv.highlight === "function") {
-								const h = flv.highlight([]); h.remove();
-								// Only disable highlight options if widget is controlled or drawing is active
+								const h = flv.highlight([]); if (h && typeof h.remove === "function") h.remove();
+								// Layer-level highlightOptions is 4.x only; the view-level style was already set above
 								if ("highlightOptions" in flv && ((isWidgetControlled && widgetState === WidgetState.Opened) || isDrawingActive)) {
 									flv.highlightOptions = { color: [0, 0, 0, 0], fillOpacity: 0, haloOpacity: 0 };
 								}
-								if (flv.hasOwnProperty("_highlightIds")) flv._highlightIds = {};
+								if (Object.prototype.hasOwnProperty.call(flv, "_highlightIds")) flv._highlightIds = {};
 							}
 						}
 						if ("featureEffect" in layerView) (layerView as any).featureEffect = null;
@@ -5683,6 +5636,102 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	}
 
 	private originalPopupEnabled: boolean | null = null;
+
+	/** Saved copy of the map's default highlight so it can be put back exactly. Maps SDK 4.x stores
+	 *  it on MapView.highlightOptions; 5.x stores it as the "default" entry of view.highlights. */
+	private originalHighlight: any = null;
+
+	/**
+	 * Close the map popup and stop it reopening while a draw tool is active.
+	 * Maps SDK 5.x: view.popup is undefined until a popup has been opened (the popup is a web
+	 * component now), so every access is guarded and closePopup() is preferred when present.
+	 * Maps SDK 4.x: falls back to popup.visible / popup.autoCloseEnabled.
+	 */
+	private suppressMapPopup = (view: any): void => {
+		if (!view) return;
+		try {
+			if (typeof view.closePopup === 'function') view.closePopup();
+			else if (view.popup && 'visible' in view.popup) view.popup.visible = false;
+		} catch (e) { /* popup not available on this view */ }
+		try {
+			if (view.popup && 'autoCloseEnabled' in view.popup) view.popup.autoCloseEnabled = false;
+		} catch (e) { /* property removed in 5.x */ }
+	};
+
+	/** Undo suppressMapPopup's autoCloseEnabled change (4.x only; a no-op in 5.x). */
+	private releaseMapPopup = (view: any): void => {
+		if (!view) return;
+		try {
+			if (view.popup && 'autoCloseEnabled' in view.popup) view.popup.autoCloseEnabled = true;
+		} catch (e) { /* property removed in 5.x */ }
+	};
+
+	/**
+	 * Hide the map's selection highlight while drawing, or restore it.
+	 * Maps SDK 5.x removed MapView.highlightOptions and FeatureLayerView.highlightOptions in
+	 * favour of the view.highlights collection, whose "default" entry styles every highlight()
+	 * call that does not name its own group. Both APIs are handled; the original values are
+	 * saved on first hide and restored verbatim rather than reset to hard-coded cyan.
+	 */
+	private setMapHighlightsHidden = (view: any, hidden: boolean): void => {
+		if (!view) return;
+		const hiddenOpts = { color: [0, 0, 0, 0], haloColor: [0, 0, 0, 0], fillOpacity: 0, haloOpacity: 0 };
+		const fallbackOpts = { color: [0, 255, 255, 1], fillOpacity: 0.0, haloOpacity: 0.8 };
+		const pick = (src: any) => ({
+			color: src?.color?.clone ? src.color.clone() : src?.color,
+			haloColor: src?.haloColor?.clone ? src.haloColor.clone() : src?.haloColor,
+			fillOpacity: src?.fillOpacity,
+			haloOpacity: src?.haloOpacity
+		});
+		const apply = (target: any, opts: any) => {
+			if (!target) return;
+			if (opts.color !== undefined) target.color = opts.color;
+			if (opts.haloColor !== undefined) target.haloColor = opts.haloColor;
+			if (opts.fillOpacity !== undefined) target.fillOpacity = opts.fillOpacity;
+			if (opts.haloOpacity !== undefined) target.haloOpacity = opts.haloOpacity;
+		};
+		try {
+			const highlights: any = view.highlights;
+			if (highlights && typeof highlights.find === 'function') {
+				// Maps SDK 5.x
+				const def = highlights.find((h: any) => h?.name === 'default') ?? highlights.getItemAt?.(0);
+				if (!def) return;
+				if (hidden) {
+					if (!this.originalHighlight) this.originalHighlight = pick(def);
+					apply(def, hiddenOpts);
+				} else if (this.originalHighlight) {
+					apply(def, this.originalHighlight);
+					this.originalHighlight = null;
+				}
+				return;
+			}
+			if ('highlightOptions' in view) {
+				// Maps SDK 4.x
+				if (hidden) {
+					if (!this.originalHighlight) this.originalHighlight = pick(view.highlightOptions) ?? fallbackOpts;
+					view.highlightOptions = { color: hiddenOpts.color, fillOpacity: 0, haloOpacity: 0 };
+				} else {
+					const o = this.originalHighlight ?? fallbackOpts;
+					view.highlightOptions = { color: o.color ?? fallbackOpts.color, fillOpacity: o.fillOpacity ?? fallbackOpts.fillOpacity, haloOpacity: o.haloOpacity ?? fallbackOpts.haloOpacity };
+					this.originalHighlight = null;
+				}
+				// Layer-level highlightOptions only existed in 4.x
+				const layers: any[] = view.map?.layers?.toArray?.() ?? [];
+				layers.forEach((layer: any) => {
+					if (layer?.type !== 'feature') return;
+					view.whenLayerView(layer).then((flv: any) => {
+						if (flv && 'highlightOptions' in flv) {
+							flv.highlightOptions = hidden
+								? { color: hiddenOpts.color, fillOpacity: 0, haloOpacity: 0 }
+								: { color: fallbackOpts.color, fillOpacity: fallbackOpts.fillOpacity, haloOpacity: fallbackOpts.haloOpacity };
+						}
+					}).catch(() => { /* layer view not ready; nothing to restore */ });
+				});
+			}
+		} catch (e) {
+			console.warn('draw-advanced: could not update map highlight style', e);
+		}
+	};
 
 	// Add this method to save drawings to localStorage
 	private saveDrawingsToLocalStorage = (drawings: Graphic[]) => {
@@ -7070,8 +7119,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						break;
 				}
 			} else if (this.creationMode === 'single') {
-				// For single mode: if tool was text, we already set symbol; now exit draw mode
-				this.setDrawToolBtnState(null);
+				// For single mode: if tool was text, we already set symbol; now exit draw mode.
+				// '' is the "no tool" value; null used to slip past every `toolBtn !== ''` check and
+				// left the symbol preview open and popups disabled.
+				this.setDrawToolBtnState('');
 			}
 
 			// ---- 8) Optional: light refresh to ensure visibility in edge cases ----
@@ -7387,7 +7438,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		if (evt) {
 			if (this.state.currentSymbolType === JimuSymbolType.Polyline) {
 				let ddBtnCont = document.getElementsByClassName('dropdown-button-content')[0] as HTMLElement;
-				ddBtnCont.style.filter = 'invert(1)';
+				if (ddBtnCont) ddBtnCont.style.filter = 'invert(1)';
 			}
 			let ddBtn = document.getElementsByClassName('jimu-btn jimu-dropdown-button dropdown-button')[0] as HTMLElement;
 			// 🔧 MEMORY FIX: Only wire the click listener once per DOM element.
@@ -7417,10 +7468,13 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					ele.firstChild.style.padding = '0';
 				}
 			});
-			let popper = document.getElementsByClassName('content-container')[0].parentNode.parentElement;
-			setTimeout(() => {
-				popper.style.zIndex = '1004';
-			}, 5);
+			const contentContainer = document.getElementsByClassName('content-container')[0] as HTMLElement | undefined;
+			const popper = (contentContainer?.parentNode as HTMLElement | null)?.parentElement ?? null;
+			if (popper) {
+				setTimeout(() => {
+					popper.style.zIndex = '1004';
+				}, 5);
+			}
 			let colorPickerBlocks = document.getElementsByClassName('color-picker-block');
 			Array.from(colorPickerBlocks).forEach((ele: HTMLElement) => {
 				// 🔧 MEMORY FIX: Guard against re-attaching to the same block.
@@ -8227,32 +8281,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					view.popupEnabled = this.originalPopupEnabled;
 					//console.log('Restored popup state (uncontrolled widget, exiting drawing):', this.originalPopupEnabled);
 
-					if (view.popup && "autoCloseEnabled" in view.popup) {
-						view.popup.autoCloseEnabled = true;
-					}
+					this.releaseMapPopup(view);
 
 					// Restore highlight appearance
-					view.highlightOptions = {
-						color: [0, 255, 255, 1],
-						fillOpacity: 0.0,
-						haloOpacity: 0.8
-					};
-
-					// Restore layer-level highlight styling
-					view.map.layers.forEach(layer => {
-						view.whenLayerView(layer).then((layerView: any) => {
-							if (layer.type === "feature") {
-								const featureLayerView = layerView as any;
-								if ("highlightOptions" in featureLayerView) {
-									featureLayerView.highlightOptions = {
-										color: [0, 255, 255, 1],
-										fillOpacity: 0.0,
-										haloOpacity: 0.8
-									};
-								}
-							}
-						});
-					});
+					this.setMapHighlightsHidden(view, false);
 				}
 				// Disable popups when entering drawing mode
 				else if (!wasInDrawingMode && willBeInDrawingMode && view.popupEnabled) {
@@ -8265,17 +8297,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					view.popupEnabled = false;
 					//console.log('Disabled popups (uncontrolled widget, entering drawing mode)');
 
-					if (view.popup && "autoCloseEnabled" in view.popup) {
-						view.popup.autoCloseEnabled = false;
-					}
-					view.popup.visible = false;
+					this.suppressMapPopup(view);
 
 					// Make highlights invisible
-					view.highlightOptions = {
-						color: [0, 0, 0, 0],
-						fillOpacity: 0,
-						haloOpacity: 0
-					};
+					this.setMapHighlightsHidden(view, true);
 				}
 			}
 		}
@@ -8399,7 +8424,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		//workaround for color picker style issue
 		setTimeout(() => {
 			let colorPicker = document.querySelectorAll('.color-picker-popper>.popper-box>.sketch-standard')[0] as HTMLElement;
-			colorPicker.style.backgroundColor = 'unset';
+			if (colorPicker) colorPicker.style.backgroundColor = 'unset';
 		}, 200);
 	}
 

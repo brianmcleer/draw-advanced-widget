@@ -6,7 +6,7 @@ An advanced drawing widget for ArcGIS Experience Builder. It builds on the work 
 - **License:** Apache-2.0
 - **Discussion, downloads, and feedback:** [Advanced Draw Widget on Esri Community](https://community.esri.com/t5/experience-builder-custom-widgets/advanced-draw-widget-improvements-import-export/ba-p/1618579)
 
-Built and tested on **ArcGIS Experience Builder Developer Edition 1.19 and 1.20**. Per the community thread, the earliest compatible release is Developer Edition 1.17 (Enterprise 11.5); the measurement functions use API features added in 4.32, so it will not run on versions earlier than 1.17.
+Built and tested on **ArcGIS Experience Builder Developer Edition 1.21** (ArcGIS Maps SDK for JavaScript 5.1) and still runs on 1.19 and 1.20 (Maps SDK 4.3x). Per the community thread, the earliest compatible release is Developer Edition 1.17 (Enterprise 11.5); the measurement functions use API features added in 4.32, so it will not run on versions earlier than 1.17.
 
 ---
 
@@ -22,13 +22,14 @@ This widget ships with a `package.json` and `package-lock.json`, so you do not i
 
    The `manifest.json` must sit directly inside `your-extensions/widgets/draw-advanced/`, not one level deeper (for example `widgets/draw-advanced/draw-advanced/`). Nesting it a second level is the usual cause of a widget not registering.
 
-2. From your Experience Builder **client** directory, run:
+2. From your Experience Builder **client** directory, run the client install for your version:
 
    ```bash
-   npm ci
+   pnpm install      # Experience Builder 1.21 and later
+   npm ci            # Experience Builder 1.20 and earlier
    ```
 
-   `npm ci` installs the exact versions captured in `package-lock.json`. Because the widget lives in `your-extensions` and carries its own `package.json`, Experience Builder installs its dependencies automatically. You do not install shp-write, shpjs, or jszip by hand.
+   Both lockfiles ship with the widget (`pnpm-lock.yaml` and `package-lock.json`), so you get the exact tested versions either way. Because the widget lives in `your-extensions` and carries its own `package.json`, Experience Builder installs its dependencies automatically. You do not install shp-write, shpjs, jszip, or proj4 by hand.
 
 3. Start (or restart) the client, then refresh the Builder window. The widget appears under **Insert Widget > Custom**.
 
@@ -48,8 +49,13 @@ npm install --save shpjs jszip
 | `@mapbox/shp-write` | Export drawings to zipped shapefile |
 | `shpjs` | Parse imported shapefiles to GeoJSON |
 | `jszip` | Read and write the shapefile ZIP container |
+| `proj4` | Fallback coordinate transform for imports when the Maps SDK projection engine is unavailable |
 
-`proj4` and `seamless-immutable` are resolved from the ArcGIS Maps SDK and the jimu framework, so they are not listed here. Exact versions of the listed packages are pinned in `package.json` and frozen in `package-lock.json`.
+`seamless-immutable` is resolved from the jimu framework, so it is not listed here. Exact versions of the listed packages are pinned in `package.json` and frozen in `package-lock.json` and `pnpm-lock.yaml`.
+
+### About the `.d.ts` files in `src/`
+
+The GitHub repo carries `src/exb-editor-shims.d.ts` and `src/declarations.d.ts`. They exist only so Visual Studio can type check this widget on its own; the Experience Builder build ignores them. The release zip leaves the editor shim out on purpose: its ambient `declare module 'react' | 'jimu-*' | 'esri/*'` blocks are not file-scoped, so a copy sitting in `your-extensions` rewrites those types for every other widget in the folder and floods `tsc` with errors. If you clone the repo instead of using the zip and see that happen, delete `src/exb-editor-shims.d.ts`; nothing else depends on it.
 
 ---
 
@@ -112,6 +118,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ---
 
 ## Changelog
+
+- 2026-09-17 v4.5.2: Maps SDK 5.x fixes reported after the move to Experience Builder 1.21. The widget no longer throws on open when `view.popup` is undefined (the popup is a web component in 5.x); popup suppression now uses `view.closePopup()` with a guarded fallback. Highlight hiding and restore use the 5.x `view.highlights` collection when present and fall back to `MapView.highlightOptions` on 4.x, and the original highlight style is saved and put back instead of being reset to cyan. Packaging: the Visual Studio editor shims (`src/exb-editor-shims*.d.ts`) are no longer included in the release zip because their ambient module declarations rewrote react, jimu and esri types for neighbouring widgets. Also fixed: controller open/close side effects ran on every re-render (re-cancelling the sketch, re-enabling `updateOnGraphicClick` behind the measurement tool, and looping `setState` while closed); closing or unmounting the widget wiped every graphic in `view.graphics`, including the Search pin and other widgets' highlights; unmounting emptied the shared `DrawGL` layer so drawings vanished on page switches when local storage was off; finishing a drawing in single mode left the symbol preview open and popups disabled; a feature copied from Identify without a symbol was silently dropped; GeoJSON and KML imports into State Plane or other non-Web Mercator maps were placed with a linear approximation (proj4 only knows 4326/4269/3857), now projected with the Maps SDK `projectOperator` first; merging overlapping polygons concatenated rings (overlaps rendered as holes) instead of unioning; deleting several drawings at once orphaned the measurement labels of all but the first; My Drawings re-registered its map, graphics and sketch listeners on every initialisation (N duplicate refreshes per change); the measurement-edit pointer handler was attached from an uncancelled timer with a stale tool value, which blocked text placement while edit mode was on; a label drag in progress at unmount left pointer listeners on the view; unguarded DOM lookups in the symbol and color pickers; `localStorage.getItem` outside try/catch in the restore path; an unhandled `goTo` rejection during label edits.
 
 - 2026-07-01 v4.2.2: Fixed the triangle and true-curve tools not switching the widget into Drawing Mode, which had left the Identify widget enabled during those draws. Buffer custom color now supports independent fill and outline colors, and changing one buffer's color no longer restyles the others. Consistent "Send All (N)" count formatting between the Mailing Labels and Identify buttons. Title-case pass across UI labels: buffer options, Clear All Graphics and its delete confirmation, the drawing-mode messages, and the curve menu items. Security: replaced the settings-import XML parser with a controlled text scan and a key allowlist, resolving a CodeQL DOM-based XSS alert (js/xss-through-dom).
 

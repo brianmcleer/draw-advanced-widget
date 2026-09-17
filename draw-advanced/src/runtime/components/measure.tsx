@@ -215,6 +215,13 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 	// All useRef calls moved to the top level of the component
 	const measureEnabledRef = React.useRef(false);
 	const editableMeasurementsRef = React.useRef(false);
+	// Live copy of props.currentTool for handlers created inside timers (their closure is stale)
+	const currentToolRef = React.useRef(props.currentTool);
+	currentToolRef.current = props.currentTool;
+	// Label-drag pointer listeners. Refs, not locals, so the unmount cleanup can remove them if
+	// the component goes away mid-drag.
+	const activeDragMoveListenerRef = React.useRef<any>(null);
+	const activeDragEndListenerRef = React.useRef<any>(null);
 
 	// 🔧 NEW: Store listeners in refs for immediate synchronous access
 	const updateListenerRef = React.useRef(null);
@@ -1028,9 +1035,6 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		}
 	};
 
-	let activeDragMoveListener = null;
-	let activeDragEndListener = null;
-
 	const startLabelDrag = (labelGraphic: ExtendedGraphic, screenPoint?: any) => {
 		if (!currentMapView || !labelGraphic) {
 			//console.log('❌ Cannot start drag - missing mapView or graphic');
@@ -1076,20 +1080,20 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		// Set up event listeners - CRITICAL: Store references immediately in module variables
 		try {
 			// Clean up any existing listeners first
-			if (activeDragMoveListener) {
-				activeDragMoveListener.remove();
-				activeDragMoveListener = null;
+			if (activeDragMoveListenerRef.current) {
+				activeDragMoveListenerRef.current.remove();
+				activeDragMoveListenerRef.current = null;
 			}
-			if (activeDragEndListener) {
-				activeDragEndListener.remove();
-				activeDragEndListener = null;
+			if (activeDragEndListenerRef.current) {
+				activeDragEndListenerRef.current.remove();
+				activeDragEndListenerRef.current = null;
 			}
 
-			activeDragMoveListener = currentMapView.on('pointer-move', (event) => {
+			activeDragMoveListenerRef.current = currentMapView.on('pointer-move', (event) => {
 				handleLabelDragMoveRef(event);
 			});
 
-			activeDragEndListener = currentMapView.on('pointer-up', (event) => {
+			activeDragEndListenerRef.current = currentMapView.on('pointer-up', (event) => {
 				handleLabelDragEndRef(event);
 			});
 
@@ -1172,13 +1176,13 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 
 		try {
 			// Remove listeners
-			if (activeDragMoveListener) {
-				activeDragMoveListener.remove();
-				activeDragMoveListener = null;
+			if (activeDragMoveListenerRef.current) {
+				activeDragMoveListenerRef.current.remove();
+				activeDragMoveListenerRef.current = null;
 			}
-			if (activeDragEndListener) {
-				activeDragEndListener.remove();
-				activeDragEndListener = null;
+			if (activeDragEndListenerRef.current) {
+				activeDragEndListenerRef.current.remove();
+				activeDragEndListenerRef.current = null;
 			}
 			if (dragMoveListener) {
 				dragMoveListener.remove();
@@ -2791,6 +2795,16 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 				try { createListener.remove(); } catch { }
 			}
 
+			// Drop a label drag that was in progress when the component unmounted
+			if (activeDragMoveListenerRef.current) {
+				try { activeDragMoveListenerRef.current.remove(); } catch { }
+				activeDragMoveListenerRef.current = null;
+			}
+			if (activeDragEndListenerRef.current) {
+				try { activeDragEndListenerRef.current.remove(); } catch { }
+				activeDragEndListenerRef.current = null;
+			}
+
 			// Reset the ref to false
 			if (measureEnabledRef) {
 				measureEnabledRef.current = false;
@@ -3159,16 +3173,24 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					setMeasurementClickListener(null);
 				}
 
-				// Use a much longer delay to completely avoid SketchViewModel conflicts
-				setTimeout(() => {
-					if (!editableMeasurements) return; // Check if still enabled
+				// Use a much longer delay to completely avoid SketchViewModel conflicts.
+				// The timer id is kept so the effect cleanup can cancel it: without that, turning
+				// edit mode off (or unmounting) inside the delay still attached a listener that
+				// nothing ever removed.
+				const view = currentMapView;
+				let attachedHandle: any = null;
+				const setupTimer = setTimeout(() => {
+					if (!editableMeasurementsRef.current) return; // Check if still enabled (live value)
 
 					try {
 						// Use 'pointer-down' instead of 'click' to avoid SketchViewModel interference
-						const isolatedClickHandler = currentMapView.on('pointer-down', async (event) => {
+						const isolatedClickHandler = view.on('pointer-down', async (event) => {
 							try {
-								// Only process if no drawing tool is active
-								if (currentTool && currentTool !== '' && currentTool !== 'text') {
+								// Only process if no drawing tool is active. Read the ref: the closure's
+								// currentTool is frozen at the time edit mode was turned on, which made
+								// the text tool unusable while edit mode was active.
+								const tool = currentToolRef.current;
+								if (tool && tool !== '' && tool !== 'text') {
 									return;
 								}
 
@@ -3176,7 +3198,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 								event.stopPropagation();
 
 								// Simple hit test without any layer constraints
-								const hitTest = await currentMapView.hitTest({
+								const hitTest = await view.hitTest({
 									x: event.x,
 									y: event.y
 								});
@@ -3206,12 +3228,19 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 							}
 						});
 
+						attachedHandle = isolatedClickHandler;
 						setMeasurementClickListener(isolatedClickHandler);
 						//console.log('Isolated measurement handler set up successfully');
 					} catch (setupError) {
 						console.error('Error setting up isolated measurement handler:', setupError);
 					}
 				}, 1500); // Very long delay to avoid all SketchViewModel operations
+
+				return () => {
+					clearTimeout(setupTimer);
+					// Unmount, or edit mode turned off: make sure the handler this run attached goes too
+					if (attachedHandle) { try { attachedHandle.remove(); } catch { } }
+				};
 			}
 		} else {
 			//console.log('Cleaning up measurement editing');
@@ -4865,7 +4894,10 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		// --- DELETE listener (clean up labels/segments) ---
 		const newDeleteListener = sketchViewModel.on('delete', (event) => {
 			// DON'T check sketchViewModel here - we're already in its event handler!
-			const graphic = event.graphics?.[0] as ExtendedGraphic | undefined;
+			// One delete event can carry several graphics (multi-select delete); clean up each one,
+			// otherwise the labels of graphics 2..n stay on the layer as orphans.
+			const deleted = (event.graphics ?? []) as ExtendedGraphic[];
+			deleted.forEach((graphic: ExtendedGraphic) => {
 			if (!graphic) return;
 
 			const graphicId = getGraphicId(graphic);
@@ -4918,6 +4950,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 			}
 
 			//console.log('🗑️ Graphic deletion cleanup complete:', graphicId);
+			});
 		});
 
 		// 🔧 Store in refs for synchronous access
