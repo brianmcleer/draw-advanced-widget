@@ -18,3 +18,7 @@ Thumbs.db
 
 # NOTE: src/, manifest.json, config.json, icon.svg, icon.png, package.json,
 # package-lock.json, README.md and LICENSE are intentionally shipped.
+
+# Cowork working folder and release zips never ship
+Claude outputs/
+*.zip
