@@ -17,6 +17,9 @@ export interface UnitConfig {
 // default-on boolean, DEFAULT_ON_BOOLEAN_KEYS) in setting/setting.tsx so the
 // settings XML import/export stays complete.
 export interface Config {
+  /** Show the question-mark button that opens the help guide. Undefined means on,
+   *  so apps configured before this setting existed keep their help button. */
+  showHelp?: boolean
     creationMode: DrawMode;
     turnOffOnClose: boolean;
     changeTitle: boolean;

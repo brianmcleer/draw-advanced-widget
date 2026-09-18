@@ -10479,9 +10479,11 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						</div>
 					</div>
 				)}
-				<JimuButton size="sm" type="tertiary" icon onClick={this.openHelp} title={this.nls('helpTitle')} aria-label={this.nls('helpTitle')} style={{ flexShrink: 0, marginLeft: 'auto' }}>
-					<CalciteIcon icon="question" scale="s" />
-				</JimuButton>
+				{this.props.config?.showHelp !== false && (
+				    <JimuButton size="sm" type="tertiary" icon onClick={this.openHelp} title={this.nls('helpTitle')} aria-label={this.nls('helpTitle')} style={{ flexShrink: 0, marginLeft: 'auto' }}>
+    					<CalciteIcon icon="question" scale="s" />
+    				</JimuButton>
+				)}
 				</div>
 				<HelpPopup
 					open={this.state.helpOpen}
@@ -10510,7 +10512,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						aria-hidden={activeTab !== 'draw'}
 						tabIndex={activeTab === 'draw' ? 0 : -1}
 					>
-						{this.state.showFirstRunHint && (
+						{this.props.config?.showHelp !== false && this.state.showFirstRunHint && (
 							<HelpHint
 								title={this.nls('firstRunTitle')}
 								body={this.nls('firstRunBody')}
