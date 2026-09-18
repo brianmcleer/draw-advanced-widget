@@ -1,5 +1,7 @@
 import { React, AllWidgetProps, jsx, WidgetState, getAppStore, appActions, MutableStoreManager } from 'jimu-core';
 import { IMConfig, DrawMode, StorageScope } from '../config';
+import { beacon } from '../shared/beacon';
+import type { BeaconHandle } from '../shared/beacon';
 import {
 	Icon, Button, TextInput, NumericInput, Switch, TextAlignValue, Popper, Checkbox,
 	Slider, Label, defaultMessages, AdvancedButtonGroup, Select, Option, CollapsablePanel
@@ -513,6 +515,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	Graphic: any = null;
 	creationMode: DrawMode;
 	currentSymbol: any | any | any | any | any | any | any;
+	private beacon: BeaconHandle | null = null;
 	measureRef: React.RefObject<any> = React.createRef();
 
 	// Identify By Query integration - event listener cleanup
@@ -804,6 +807,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	};
 
 	private onMeasurementCheckboxChange = (checked: boolean) => {
+		this.beacon?.action('measure');
 		//console.log(`📊 Measurement checkbox ${checked ? 'ENABLED' : 'DISABLED'}`);
 
 		// Update your own UI state
@@ -2008,6 +2012,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	}
 
 	componentDidMount() {
+		this.beacon = beacon.init(this.props);
 		this.setState({ widgetInit: true });
 		this.drawLayer = new GraphicsLayer({
 			id: 'DrawGL',
@@ -3190,6 +3195,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	};
 
 	private sendToMailingLabels = async () => {
+		this.beacon?.action('export', 'mailing-labels');
 		const mainDrawings = this.getMainDrawings();
 
 
@@ -3303,6 +3309,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					sendGeometry(1500);
 				}, 100);
 			} catch (err) {
+				this.beacon?.error(err, 'export');
 				console.warn('[Draw Widget] Could not open Mailing Labels widget:', err);
 			}
 		}
@@ -8084,6 +8091,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	}
 
 	setDrawToolBtnState = (toolBtn: 'point' | 'polyline' | 'freepolyline' | 'extent' | 'polygon' | 'circle' | 'freepolygon' | 'text' | '') => {
+		if (toolBtn !== '') this.beacon?.action('draw');
 		// Exit the custom curve line tool whenever any draw tool is (re)selected,
 		// so the line button and another tool never show active simultaneously.
 		this._deactivateCurveTool();
@@ -8254,6 +8262,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					break;
 			}
 		} catch (error) {
+			this.beacon?.error(error, 'draw');
 			console.error('Error in setDrawToolBtnState:', error);
 			// Reset state on error to prevent UI inconsistencies
 			cState = {
