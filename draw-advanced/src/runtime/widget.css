@@ -51,6 +51,12 @@
     overflow: hidden;
 }
 
+/* Measurement dropdown panel scrolling: keep dropdown accessible even when expanded */
+.measurement-section .jimu-collapsable-panel > .body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
 /* Tab header */
 .tab-header {
     flex-shrink: 0;

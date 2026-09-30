@@ -5906,10 +5906,11 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 												<div className='d-flex justify-content-center w-100 mt-2'>
 													<Button
 														size='sm'
-														type='tertiary'
+														type='secondary'
 														onClick={resetMeasurePrefs}
 														aria-label={props.nls('measureResetMeasurementSettingsToThe')}
 														title={props.nls('measureResetUnitsDisplayOptionsAnd')}
+														style={{ border: '1px solid currentColor' }}
 													>
 														Reset Measurement Defaults
 													</Button>
