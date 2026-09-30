@@ -5418,12 +5418,10 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 											{toolType === 'point' || toolType === '' || toolType === 'text' ? (
 												<></>
 											) : (
-												<Label
-													className='drawToolbarDiv'
-													id='linear-units-label'
-												>
-													Linear Units:
-													<Select
+												<div className='drawToolbarDiv d-flex align-items-center'>
+													<Label id='linear-units-label' className='measure-unit-label'>Linear Units:</Label>
+													<div className='flex-grow-1' style={{ minWidth: 0 }}>
+														<Select size='sm' className='w-100'
 														title={props.nls('measureSelectLinearMeasurementUnitsFor')}
 														onChange={(e) => setDistanceUnit(e.target.value)}
 														value={distanceUnit}
@@ -5441,6 +5439,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 															</Option>
 														))}
 													</Select>
+													</div>
 													<span
 														id='linear-units-description'
 														className='sr-only'
@@ -5448,19 +5447,19 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 													>
 														Select the unit of measurement for linear distances such as length and perimeter
 													</span>
-												</Label>
+												</div>
 											)}
 
 											{!allowMultipleUnits || toolType === 'point' || toolType === '' || toolType === 'text' ? (
 												<></>
 											) : (
 												<div className='drawToolbarDiv d-flex align-items-center'>
-													<span id='additional-linear-units-label' className='mr-2 text-nowrap' title={props.nls('measureShowLengthPerimeterAndRadius')}>{props.nls('measureAlsoShow')}</span>
+													<span id='additional-linear-units-label' className='measure-unit-label' title={props.nls('measureShowLengthPerimeterAndRadius')}>{props.nls('measureAlsoShow')}</span>
 													<Dropdown size='sm' className='flex-grow-1' style={{ minWidth: 0 }}>
 														<DropdownButton
 															size='sm'
 															type='default'
-															className='w-100 text-truncate'
+															className='w-100 text-truncate text-left measure-also-show-btn'
 															aria-labelledby='additional-linear-units-label'
 															aria-label={`Additional linear units: ${additionalDistanceUnits.length ? additionalDistanceUnits.map(n => (availableDistanceUnits.find(u => u.unit === n)?.abbreviation || n)).join(', ') : 'none selected'}`}
 															title={props.nls('measureShowLengthPerimeterAndRadius')}
@@ -5501,12 +5500,10 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 											{toolType === 'point' || toolType === 'polyline' || toolType === 'freepolyline' || toolType === '' || toolType === 'text' ? (
 												<></>
 											) : (
-												<Label
-													className='drawToolbarDiv'
-													id='area-units-label'
-												>
-													Area Units:
-													<Select
+												<div className='drawToolbarDiv d-flex align-items-center'>
+													<Label id='area-units-label' className='measure-unit-label'>Area Units:</Label>
+													<div className='flex-grow-1' style={{ minWidth: 0 }}>
+														<Select size='sm' className='w-100'
 														title={props.nls('measureSelectAreaMeasurementUnitsFor')}
 														onChange={(e) => setAreaUnit(e.target.value)}
 														value={areaUnit}
@@ -5524,6 +5521,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 															</Option>
 														))}
 													</Select>
+													</div>
 													<span
 														id='area-units-description'
 														className='sr-only'
@@ -5531,19 +5529,19 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 													>
 														Select the unit of measurement for area calculations on polygons and circles
 													</span>
-												</Label>
+												</div>
 											)}
 
 											{!allowMultipleUnits || toolType === 'point' || toolType === 'polyline' || toolType === 'freepolyline' || toolType === '' || toolType === 'text' ? (
 												<></>
 											) : (
 												<div className='drawToolbarDiv d-flex align-items-center'>
-													<span id='additional-area-units-label' className='mr-2 text-nowrap' title={props.nls('measureShowAreaInAdditionalUnits')}>{props.nls('measureAlsoShow')}</span>
+													<span id='additional-area-units-label' className='measure-unit-label' title={props.nls('measureShowAreaInAdditionalUnits')}>{props.nls('measureAlsoShow')}</span>
 													<Dropdown size='sm' className='flex-grow-1' style={{ minWidth: 0 }}>
 														<DropdownButton
 															size='sm'
 															type='default'
-															className='w-100 text-truncate'
+															className='w-100 text-truncate text-left measure-also-show-btn'
 															aria-labelledby='additional-area-units-label'
 															aria-label={`Additional area units: ${additionalAreaUnits.length ? additionalAreaUnits.map(n => (availableAreaUnits.find(u => u.unit === n)?.abbreviation || n)).join(', ') : 'none selected'}`}
 															title={props.nls('measureShowAreaInAdditionalUnits')}
