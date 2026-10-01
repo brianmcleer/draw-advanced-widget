@@ -60,9 +60,26 @@
     text-align: left;
 }
 
+/* Primary Unit labels bold so they read as the main choice; "Also Show" stays regular and small */
+.measure-unit-label-primary {
+    font-weight: 600;
+}
+
 /* "Also Show" dropdowns: same inner padding as the primary unit Selects so text and arrows line up */
 .measure-also-show-btn.jimu-dropdown-button {
     padding: 4px 8px !important;
+}
+
+/* Unit dropdowns: 2px above/below instead of 4px to keep the Measurements panel compact */
+#measurement-settings-panel .jimu-dropdown > .jimu-dropdown-button {
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+}
+
+/* Primary Unit dropdowns: large text, but 32px tall instead of jimu's 40px so there is less padding above and below */
+#measurement-settings-panel .jimu-dropdown > .jimu-dropdown-button.btn-lg {
+    height: 32px !important;
+    min-height: 0 !important;
 }
 
 /* Tab header */

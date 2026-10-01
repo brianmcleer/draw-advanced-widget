@@ -738,7 +738,9 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			this.measureRef.current.disableMeasurementEditing?.();
 
 			const selectedGraphic = this.sketchViewModel?.updateGraphics?.getItemAt(0);
-			let checkboxShouldBeChecked = false; // No selected graphic -> measurement off by default
+			// No selected graphic -> go back to the user's own Enable Measurements choice (it was
+			// switched off automatically on the way to My Drawings)
+			let checkboxShouldBeChecked = this.measureRef.current.getRememberedMeasureEnabled?.() ?? false;
 
 			if (selectedGraphic) {
 				const extGraphic = selectedGraphic as any;

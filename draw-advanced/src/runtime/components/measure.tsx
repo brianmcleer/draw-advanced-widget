@@ -189,6 +189,7 @@ interface MeasureRef {
 	disableMeasurements: () => void;
 	refreshAllMeasurements: () => void;
 	isMeasurementEnabled: () => boolean;
+	getRememberedMeasureEnabled: () => boolean;           // ➕ The user's last explicit choice (survives tab switches)
 	setMeasurementEnabled: (enabled: boolean) => void;   // ➕ Expose control of measurement state
 	setSegmentsEnabled: (enabled: boolean) => void;      // ➕ Restore the global segment-labels toggle on reload
 	isBusy: () => boolean;
@@ -324,6 +325,10 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 	// Enable Measurements is the toggle users most want remembered. An explicit
 	// prop from the host still wins; otherwise the stored preference seeds it.
 	const [measureEnabled, setMeasureEnabledState] = React.useState(props.measurementEnabled ?? storedPrefs?.measureEnabled ?? false);
+	// The user's own Enable Measurements choice. Only a click on the checkbox changes it, so the
+	// automatic off when switching to My Drawings (and other programmatic toggles) is never saved
+	// as the remembered preference.
+	const userMeasureChoiceRef = React.useRef<boolean>(props.measurementEnabled ?? storedPrefs?.measureEnabled ?? false);
 
 	const setMeasureEnabled = (value: boolean) => {
 		setMeasureEnabledState(value);
@@ -371,7 +376,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 			lengthOn, areaOn, perimeterOn, radiusOn, segmentsOn, rotateSegments,
 			pointRound, otherRound, xy, latLong, wkid,
 			additionalDistanceUnits, additionalAreaUnits,
-			measureEnabled, tooltips
+			measureEnabled: userMeasureChoiceRef.current, tooltips
 		});
 	}, [prefsKey, distanceUnit?.unit, areaUnit?.unit, lengthOn, areaOn, perimeterOn, radiusOn, segmentsOn,
 		rotateSegments, pointRound, otherRound, xy, latLong, wkid, additionalDistanceKey, additionalAreaKey, measureEnabled, tooltips]);
@@ -2897,6 +2902,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		},
 
 		isMeasurementEnabled: () => !!measureEnabledRef.current,
+		getRememberedMeasureEnabled: () => !!userMeasureChoiceRef.current,
 
 		// Restore the global segment-labels toggle. On a fresh page load segmentsOn
 		// defaults to false, so the post-restore measurement rebuild
@@ -4997,6 +5003,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					}}
 					checked={editableMeasurements}  // ✅ Make it controlled
 					disableActionForUnchecked
+					defaultIsOpen={editableMeasurements}
 					openForCheck
 					closeForUncheck
 					className='w-100'
@@ -5392,10 +5399,12 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 										}
 										onCheckedChange={(e) => {
 											//console.log('🔧 User toggled measurements:', e);
+											userMeasureChoiceRef.current = e;
 											setMeasureEnabled(e);
 										}}
 										checked={measureEnabled}
 										disableActionForUnchecked
+										defaultIsOpen={measureEnabled}
 										openForCheck
 										closeForUncheck
 										className='w-100'
@@ -5419,9 +5428,9 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 												<></>
 											) : (
 												<div className='drawToolbarDiv d-flex align-items-center'>
-													<Label id='linear-units-label' className='measure-unit-label'>Linear Units:</Label>
+													<Label id='linear-units-label' className='measure-unit-label measure-unit-label-primary'>Linear Units:</Label>
 													<div className='flex-grow-1' style={{ minWidth: 0 }}>
-														<Select size='sm' className='w-100'
+														<Select size='lg' className='w-100'
 														title={props.nls('measureSelectLinearMeasurementUnitsFor')}
 														onChange={(e) => setDistanceUnit(e.target.value)}
 														value={distanceUnit}
@@ -5501,9 +5510,9 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 												<></>
 											) : (
 												<div className='drawToolbarDiv d-flex align-items-center'>
-													<Label id='area-units-label' className='measure-unit-label'>Area Units:</Label>
+													<Label id='area-units-label' className='measure-unit-label measure-unit-label-primary'>Area Units:</Label>
 													<div className='flex-grow-1' style={{ minWidth: 0 }}>
-														<Select size='sm' className='w-100'
+														<Select size='lg' className='w-100'
 														title={props.nls('measureSelectAreaMeasurementUnitsFor')}
 														onChange={(e) => setAreaUnit(e.target.value)}
 														value={areaUnit}
@@ -5591,7 +5600,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																id='xy-checkbox-label'
 															>
 																<Checkbox
-																	className='mr-2 mt-2 mb-2 ml-4'
+																	className='mr-2 my-1 ml-4'
 																	checked={xy}
 																	onChange={() => setXy(!xy)}
 																	aria-labelledby='xy-checkbox-label'
@@ -5606,7 +5615,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																id='latlong-checkbox-label'
 															>
 																<Checkbox
-																	className='mr-2 mt-2 mb-2 ml-4'
+																	className='mr-2 my-1 ml-4'
 																	checked={latLong}
 																	onChange={() => setLatLong(!latLong)}
 																	aria-labelledby='latlong-checkbox-label'
@@ -5622,7 +5631,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																	id='wkid-checkbox-label'
 																>
 																	<Checkbox
-																		className='mr-2 mt-2 mb-2 ml-4'
+																		className='mr-2 my-1 ml-4'
 																		checked={wkid}
 																		onChange={() => setWkid(!wkid)}
 																		aria-labelledby='wkid-checkbox-label'
@@ -5639,7 +5648,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 													</fieldset>
 													<Label
 														centric
-														className='d-flex justify-content-center'
+														className='d-flex justify-content-center mb-1'
 														id='point-decimal-label'
 													>
 														Decimal Places:
@@ -5676,7 +5685,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																id='length-checkbox-label'
 															>
 																<Checkbox
-																	className='mr-2 mt-2 mb-2 ml-4'
+																	className='mr-2 my-1 ml-4'
 																	checked={lengthOn}
 																	onChange={() => setLengthOn(!lengthOn)}
 																	aria-labelledby='length-checkbox-label'
@@ -5691,7 +5700,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																id='line-segments-checkbox-label'
 															>
 																<Checkbox
-																	className='mr-2 mt-2 mb-2 ml-4'
+																	className='mr-2 my-1 ml-4'
 																	checked={segmentsOn}
 																	onChange={() => setSegmentsOn(!segmentsOn)}
 																	aria-labelledby='line-segments-checkbox-label'
@@ -5725,7 +5734,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 													)}
 													<Label
 														centric
-														className='d-flex justify-content-center'
+														className='d-flex justify-content-center mb-1'
 														id='line-decimal-label'
 													>
 														Decimal Places:
@@ -5775,7 +5784,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																id='area-checkbox-label'
 															>
 																<Checkbox
-																	className='mr-2 mt-2 mb-2 ml-4'
+																	className='mr-2 my-1 ml-4'
 																	checked={areaOn}
 																	onChange={() => setAreaOn(!areaOn)}
 																	aria-labelledby='area-checkbox-label'
@@ -5790,7 +5799,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																id='perimeter-checkbox-label'
 															>
 																<Checkbox
-																	className='mr-2 mt-2 mb-2 ml-4'
+																	className='mr-2 my-1 ml-4'
 																	checked={perimeterOn}
 																	onChange={() => setPerimeterOn(!perimeterOn)}
 																	aria-labelledby='perimeter-checkbox-label'
@@ -5806,7 +5815,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																	id='radius-checkbox-label'
 																>
 																	<Checkbox
-																		className='mr-2 mt-2 mb-2 ml-4'
+																		className='mr-2 my-1 ml-4'
 																		checked={radiusOn}
 																		onChange={() => setRadiusOn(!radiusOn)}
 																		aria-labelledby='radius-checkbox-label'
@@ -5825,7 +5834,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 																	id='polygon-segments-checkbox-label'
 																>
 																	<Checkbox
-																		className='mr-2 mt-2 mb-2 ml-4'
+																		className='mr-2 my-1 ml-4'
 																		checked={segmentsOn}
 																		onChange={() => setSegmentsOn(!segmentsOn)}
 																		aria-labelledby='polygon-segments-checkbox-label'
@@ -5862,7 +5871,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 													)}
 													<Label
 														centric
-														className='d-flex justify-content-center'
+														className='d-flex justify-content-center mb-1'
 														id='polygon-decimal-label'
 													>
 														Decimal Places:
@@ -5901,7 +5910,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 											)}
 											{/* Remembered preferences live in this browser; give users a one-click way back to the app defaults. */}
 											{rememberPrefs && (
-												<div className='d-flex justify-content-center w-100 mt-2'>
+												<div className='d-flex justify-content-center w-100 mt-1'>
 													<Button
 														size='sm'
 														type='secondary'
@@ -5931,6 +5940,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 							checked={tooltips}
 							onCheckedChange={() => setTooltips(!tooltips)}
 							disableActionForUnchecked
+							defaultIsOpen={tooltips}
 							openForCheck
 							closeForUncheck
 							label={tooltips ? props.nls('measureDisableTooltips') : props.nls('measureEnableTooltips')}

@@ -341,16 +341,20 @@ const asExtended = (g: any) => g as ExtendedGraphic;
 
 export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, sketchViewModel, defaultDistance, defaultUnit, defaultOpacity, defaultColor, defaultOutlineColor }) => {
     const t = hooks.useTranslation(defaultMessages);
-    // OFF by default
-    const [bufferEnabled, setBufferEnabled] = React.useState<boolean>(false);
+    // Checkbox state is read once at mount (not in the load effect) so the Buffer panel
+    // renders open when it was left on. OFF when nothing is saved.
+    const [savedBuffer] = React.useState<any>(() => {
+        try { const raw = localStorage.getItem('bufferControlSettings'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+    });
+    const [bufferEnabled, setBufferEnabled] = React.useState<boolean>(savedBuffer?.enabled === true);
     const [bufferDistance, setBufferDistance] = React.useState<number>(typeof defaultDistance === 'number' ? defaultDistance : 100);
     const [bufferUnit, setBufferUnit] = React.useState<string>(defaultUnit || 'feet');
     const [bufferOpacity, setBufferOpacity] = React.useState<number>(typeof defaultOpacity === 'number' ? defaultOpacity : 75);
     // Outline-only: transparent fill, outline stroke only. OFF by default.
-    const [bufferOutlineOnly, setBufferOutlineOnly] = React.useState<boolean>(false);
+    const [bufferOutlineOnly, setBufferOutlineOnly] = React.useState<boolean>(savedBuffer?.outlineOnly === true);
     // Custom buffer color: override the color inherited from the source graphic.
     // Fill and outline colors are picked independently.
-    const [bufferUseCustomColor, setBufferUseCustomColor] = React.useState<boolean>(false);
+    const [bufferUseCustomColor, setBufferUseCustomColor] = React.useState<boolean>(savedBuffer?.useCustomColor === true);
     const [bufferColor, setBufferColor] = React.useState<string>(defaultColor || '#d83020');
     const [bufferOutlineColor, setBufferOutlineColor] = React.useState<string>(defaultOutlineColor || defaultColor || '#d83020');
 
@@ -410,17 +414,12 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
             if (!raw) return;
             const parsed = JSON.parse(raw);
 
-            // Always start with buffers disabled, regardless of saved state
-            // if (typeof parsed.enabled === 'boolean') setBufferEnabled(parsed.enabled);
+            // enabled / outlineOnly / useCustomColor are restored in their useState initializers above
 
             // Load other user preferences
             if (typeof parsed.distance === 'number') setBufferDistance(parsed.distance);
             if (typeof parsed.unit === 'string') setBufferUnit(parsed.unit);
             if (typeof parsed.opacity === 'number') setBufferOpacity(parsed.opacity);
-            // Always start outline-only and custom-color OFF, regardless of saved state.
-            // (Per-drawing buffer styles still restore via My Drawings.)
-            // if (typeof parsed.outlineOnly === 'boolean') setBufferOutlineOnly(parsed.outlineOnly);
-            // if (typeof parsed.useCustomColor === 'boolean') setBufferUseCustomColor(parsed.useCustomColor);
             if (typeof parsed.color === 'string') setBufferColor(parsed.color);
             if (typeof parsed.outlineColor === 'string') setBufferOutlineColor(parsed.outlineColor);
         } catch { /* no-op */ }
@@ -1307,6 +1306,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
                     checked={bufferEnabled}
                     onCheckedChange={handleBufferEnabledChange}
                     disableActionForUnchecked
+                    defaultIsOpen={bufferEnabled}
                     openForCheck
                     closeForUncheck
                     aria-label={t('bufferEnableBufferCheckboxToToggle')}

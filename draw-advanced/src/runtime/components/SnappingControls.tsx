@@ -27,24 +27,46 @@ const srOnlyStyles: React.CSSProperties = {
     border: '0'
 };
 
+// Remembered snapping/grid checkbox state (per browser, per app path), same tier as the
+// measurement preferences. Read once at mount so the panels render open when they were on.
+const SNAP_PREFS_KEY = `draw-advanced:snap-prefs:v1:${typeof window !== 'undefined' ? window.location.pathname : 'default'}`;
+interface SnapPrefs { enabled?: boolean; gridEnabled?: boolean; gridDynamicScale?: boolean; gridSnapEnabled?: boolean; gridRotateWithMap?: boolean }
+const loadSnapPrefs = (): SnapPrefs | null => {
+    try {
+        const raw = window.localStorage?.getItem(SNAP_PREFS_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        return parsed && typeof parsed === 'object' ? parsed as SnapPrefs : null;
+    } catch { return null; }
+};
+const boolOr = (v: any, fallback: boolean): boolean => (typeof v === 'boolean' ? v : fallback);
+
 export const SnappingControls = (props: SnappingControlsProps): React.ReactElement => {
     const t = hooks.useTranslation(defaultMessages);
-    const [enabled, setEnabled] = React.useState(false);
+    const [savedSnap] = React.useState<SnapPrefs | null>(loadSnapPrefs);
+    const [enabled, setEnabled] = React.useState(boolOr(savedSnap?.enabled, false));
     const [snapSourcesCount, setSnapSourcesCount] = React.useState(0);
     const [error, setError] = React.useState<string | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
     const processedLayerKeys = React.useRef(new Set<string>());
 
     // Grid Controls state
-    const [gridEnabled, setGridEnabled] = React.useState(false);
+    // Grid can only be on while snapping is on
+    const [gridEnabled, setGridEnabled] = React.useState(boolOr(savedSnap?.enabled, false) && boolOr(savedSnap?.gridEnabled, false));
     const [gridColor, setGridColor] = React.useState('rgba(0,0,0,1)');
     const [gridTheme, setGridTheme] = React.useState<'light' | 'dark' | 'custom'>('light');
     const [gridRotation, setGridRotation] = React.useState(0);
     const [gridSpacing, setGridSpacing] = React.useState(50);
-    const [gridDynamicScale, setGridDynamicScale] = React.useState(true);
-    const [gridSnapEnabled, setGridSnapEnabled] = React.useState(true);
+    const [gridDynamicScale, setGridDynamicScale] = React.useState(boolOr(savedSnap?.gridDynamicScale, true));
+    const [gridSnapEnabled, setGridSnapEnabled] = React.useState(boolOr(savedSnap?.gridSnapEnabled, true));
     const [gridMajorLineInterval, setGridMajorLineInterval] = React.useState(5);
-    const [gridRotateWithMap, setGridRotateWithMap] = React.useState(false);
+    const [gridRotateWithMap, setGridRotateWithMap] = React.useState(boolOr(savedSnap?.gridRotateWithMap, false));
+
+    // Save the checkbox state whenever it changes
+    React.useEffect(() => {
+        try {
+            window.localStorage?.setItem(SNAP_PREFS_KEY, JSON.stringify({ enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap }));
+        } catch { /* quota or privacy mode: settings simply don't persist */ }
+    }, [enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap]);
     const [gridPlacementActive, setGridPlacementActive] = React.useState(false);
     const gridControlsRef = React.useRef<GridControls | null>(null);
 
@@ -571,6 +593,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                     checked={enabled}
                     onCheckedChange={handleToggle}
                     disableActionForUnchecked
+                    defaultIsOpen={enabled}
                     openForCheck
                     closeForUncheck
                     className='w-100'
@@ -671,6 +694,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                         checked={gridEnabled}
                                         onCheckedChange={handleGridToggle}
                                         disableActionForUnchecked
+                                        defaultIsOpen={gridEnabled}
                                         openForCheck
                                         closeForUncheck
                                         label={gridEnabled ? t('snapDisableGrid') : t('snapEnableGrid')}
