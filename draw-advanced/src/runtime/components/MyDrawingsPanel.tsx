@@ -2389,7 +2389,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             //console.log('Starting Shapefile export with', drawingsToExport.length, 'drawings');
 
             const exportData = await this.generateCompatibleExportData(drawingsToExport);
-            const geoJSON = exportData.geoJSONFormat as FeatureCollection<Geometry, GeoJsonProperties>;
+            const geoJSON = exportData.geoJSONFormat as any;
 
             const zipOut = await shpwrite.zip(geoJSON, {
                 folder: 'myDrawings',
