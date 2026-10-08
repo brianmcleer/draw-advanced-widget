@@ -5960,7 +5960,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 									aria-label={props.nls('measureKeyboardShortcutsForTooltips')}
 								>
 									<li role='listitem' aria-label={props.nls('measureKeyboardTipPressTabKey')}>
-										{props.nls('press')} <strong>Tab</strong> {props.nls('toManuallyEnterValues')}
+										{props.nls('press')} <strong>{props.nls('measureTab')}</strong> {props.nls('toManuallyEnterValues')}
 									</li>
 								</ul>
 							</div>

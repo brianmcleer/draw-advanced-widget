@@ -57,6 +57,9 @@ import * as lengthOperator from 'esri/geometry/operators/lengthOperator';
 import * as geodeticLengthOperator from 'esri/geometry/operators/geodeticLengthOperator';
 import * as areaOperator from 'esri/geometry/operators/areaOperator';
 import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
+import { hooks as __exbI18nHooks } from 'jimu-core';
+import __exbI18nMessages from './translations/default';
+
 
 // EB 1.21's editor occasionally loses ArcGIS static factory members even though
 // they exist at runtime. These casts restore editor typing without changing JS.
@@ -387,6 +390,7 @@ export const ScrollableContainer: React.FC<ScrollIndicatorProps> = ({
 	children,
 	className = ''
 }) => {
+  const t = __exbI18nHooks.useTranslation(__exbI18nMessages);
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const [showTopShadow, setShowTopShadow] = React.useState(false);
 	const [showBottomShadow, setShowBottomShadow] = React.useState(false);

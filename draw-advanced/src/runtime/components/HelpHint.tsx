@@ -2,6 +2,9 @@ import { React } from 'jimu-core'
 import { Button } from 'jimu-ui'
 import { CalciteIcon } from 'calcite-components'
 import { useTokens } from '../theme'
+import { hooks as __exbI18nHooks } from 'jimu-core';
+import __exbI18nMessages from '../translations/default';
+
 
 /**
  * First-run hint banner (playbook Section 10.5, markup verbatim). A small function
@@ -17,6 +20,7 @@ export interface HelpHintProps {
 }
 
 const HelpHint: React.FC<HelpHintProps> = ({ title, body, linkLabel, dismissLabel, onOpenHelp, onDismiss }) => {
+  const t = __exbI18nHooks.useTranslation(__exbI18nMessages);
   const tokens = useTokens()
   return (
     <div role="note" style={{ margin: '0 14px 10px 14px', padding: '10px 12px', display: 'flex', alignItems: 'flex-start', gap: '10px', background: tokens.infoBg, color: tokens.text, border: `1px solid ${tokens.divider}`, borderLeft: `3px solid ${tokens.primary}`, borderRadius: tokens.radius, fontSize: '12px', lineHeight: 1.5 }}>
