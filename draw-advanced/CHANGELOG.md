@@ -2,6 +2,14 @@
 
 Newest first. Every release bumps `manifest.json` and `package.json` together.
 
+## 4.6.0 (2026-10-08)
+
+- Localization: the widget and its settings panel follow the app language in all 39 Experience Builder locales, including the out-of-the-box Language Switcher widget and the `?locale=` URL parameter. `manifest.json` lists every locale in `translatedLocales`.
+- About 640 hardcoded English strings moved into `translations/default.ts` (dialogs, buttons, tooltips, screen-reader labels, status announcements, the custom unit editor in settings). Sentences with values are single ICU messages such as `Delete {name}`, so translators see the whole sentence.
+- Locale files are generated with exb-i18n-kit from the translations Esri ships with Experience Builder and the ArcGIS Maps SDK plus Unicode CLDR unit names. Strings Esri does not ship show in English until translated; see `i18n/STATUS.md`.
+- Help guide: a tip explains which language the widget uses.
+- Fix bug where messages with values showed raw `{placeholders}` when a panel ran without the host widget's translator.
+
 ## 4.5.6 (2026-09-18)
 
 - Settings: a **Show help guide** option. Turn it off and the question-mark button and the first-run hint both disappear; the guide itself is untouched. Undefined means on, so apps configured before this release keep their help button.

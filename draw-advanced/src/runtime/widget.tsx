@@ -842,7 +842,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					className='drawToolbarDiv'
 					id="symbol-style-heading"
 				>
-					Change Symbol Style:
+					{this.nls('changeSymbolStyle')}
 				</h6>
 				<div
 					className="myss border"
@@ -872,7 +872,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							className='mt-2'
 							id="rotation-heading"
 						>
-							Rotate Point Symbol:
+							{this.nls('rotatePointSymbol')}
 						</h6>
 						<div
 							className='w-100 d-flex align-items-center'
@@ -970,7 +970,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					className='drawToolbarDiv'
 					id="text-options-heading"
 				>
-					Change Text Options:
+					{this.nls('changeTextOptions')}
 				</h6>
 				<div className="myss">
 					<div
@@ -1042,11 +1042,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 								</div>
 							</span>
 							<span className="sr-only">
-								Current text style: {currentTextSymbol.font.family}, {fontSize}px,
-								{fontWeight === 'bold' ? ' bold,' : ''}
-								{fontStyle === 'italic' ? ' italic,' : ''}
-								{fontDecoration === 'underline' ? ' underlined,' : ''}
-								rotated {fontRotation} degrees
+								{(fontWeight === 'bold' ? (fontStyle === 'italic' ? (fontDecoration === 'underline' ? this.nls('currentTextStyleFamilyFontSizePx', { family: currentTextSymbol.font.family, fontSize, fontRotation }) : this.nls('currentTextStyleFamilyFontSizePx2', { family: currentTextSymbol.font.family, fontSize, fontRotation })) : (fontDecoration === 'underline' ? this.nls('currentTextStyleFamilyFontSizePx3', { family: currentTextSymbol.font.family, fontSize, fontRotation }) : this.nls('currentTextStyleFamilyFontSizePx4', { family: currentTextSymbol.font.family, fontSize, fontRotation }))) : (fontStyle === 'italic' ? (fontDecoration === 'underline' ? this.nls('currentTextStyleFamilyFontSizePx5', { family: currentTextSymbol.font.family, fontSize, fontRotation }) : this.nls('currentTextStyleFamilyFontSizePx6', { family: currentTextSymbol.font.family, fontSize, fontRotation })) : (fontDecoration === 'underline' ? this.nls('currentTextStyleFamilyFontSizePx7', { family: currentTextSymbol.font.family, fontSize, fontRotation }) : this.nls('currentTextStyleFamilyFontSizePx8', { family: currentTextSymbol.font.family, fontSize, fontRotation }))))}
 							</span>
 						</Button>
 					</div>
@@ -1449,17 +1445,17 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						centric
 						id="preset-circle-size-label"
 					>
-						Preset Circle Size
+						{this.nls('presetCircleSize')}
 						<Switch
 							className="ml-2"
 							checked={presetEnabled}
 							onChange={(e) => this._setCirclePresetEnabled((e.target as HTMLInputElement).checked)}
 							aria-labelledby="preset-circle-size-label"
 							aria-describedby="preset-circle-size-description"
-							title={presetEnabled ? "Click to disable the preset circle size" : "Click to place a circle with an exact radius or area with one click"}
+							title={presetEnabled ? this.nls('clickToDisableThePresetCircle') : this.nls('clickToPlaceACircleWith')}
 						/>
 						<span id="preset-circle-size-description" className="sr-only">
-							Toggle to place a circle with an exact radius or area with a single click on the map
+							{this.nls('toggleToPlaceACircleWith')}
 						</span>
 					</Label>
 				</div>
@@ -1472,7 +1468,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 								className="mb-0"
 								id="preset-circle-mode-label"
 							>
-								Size By:
+								{this.nls('sizeBy')}
 								<Select
 									size="sm"
 									className="ml-2"
@@ -1480,7 +1476,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									onChange={(e) => this._setCirclePresetMode((e.target as HTMLSelectElement).value as 'radius' | 'area')}
 									style={{ width: '110px' }}
 									aria-labelledby="preset-circle-mode-label"
-									title={`Currently sizing by ${presetMode === 'radius' ? 'radius' : 'area'}. Select radius or area.`}
+									title={(presetMode === 'radius' ? this.nls('currentlySizingByRadiusSelectRadius') : this.nls('currentlySizingByAreaSelectRadius'))}
 								>
 									<Option value="radius">{this.nls('widgetRadius')}</Option>
 									<Option value="area">{this.nls('widgetArea')}</Option>
@@ -1503,26 +1499,26 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									onChange={(v: number) => this.setState({ circlePresetValue: v })}
 									style={{ width: '80px' }}
 									aria-labelledby="preset-circle-value-label"
-									title={`Current value: ${this.state.circlePresetValue ?? 100}. Enter the circle ${presetMode === 'radius' ? 'radius' : 'area'}.`}
+									title={(presetMode === 'radius' ? this.nls('currentValueCirclePresetValueEnterTheCircle', { circlePresetValue: this.state.circlePresetValue ?? 100 }) : this.nls('currentValueCirclePresetValueEnterTheCircle2', { circlePresetValue: this.state.circlePresetValue ?? 100 }))}
 								/>
 								<Select
 									size="sm"
 									value={this.state.circlePresetUnit || 'feet'}
 									onChange={(e) => this.setState({ circlePresetUnit: (e.target as HTMLSelectElement).value })}
 									style={{ width: '150px' }}
-									aria-label={`Circle ${presetMode === 'radius' ? 'radius' : 'area'} unit of measurement`}
-									title={`Current unit: ${this.state.circlePresetUnit || 'feet'}. Select the unit of measurement.`}
+									aria-label={(presetMode === 'radius' ? this.nls('circleRadiusUnitOfMeasurement') : this.nls('circleAreaUnitOfMeasurement'))}
+									title={this.nls('currentUnitCirclePresetUnitSelectTheUnit', { circlePresetUnit: this.state.circlePresetUnit || 'feet' })}
 								>
 									{(presetMode === 'radius'
-										? [['feet', 'Feet'], ['yards', 'Yards'], ['meters', 'Meters'], ['kilometers', 'Kilometers'], ['miles', 'Miles']]
-										: [['acres', 'Acres'], ['square-feet', 'Square Feet'], ['square-meters', 'Square Meters'], ['hectares', 'Hectares'], ['square-kilometers', 'Square Kilometers'], ['square-miles', 'Square Miles']]
+										? [['feet', this.nls('feet')], ['yards', this.nls('yards')], ['meters', this.nls('meters')], ['kilometers', this.nls('kilometers')], ['miles', this.nls('miles')]]
+										: [['acres', this.nls('acres')], ['square-feet', this.nls('squareFeet')], ['square-meters', this.nls('squareMeters')], ['hectares', this.nls('hectares')], ['square-kilometers', this.nls('squareKilometers')], ['square-miles', this.nls('squareMiles')]]
 									).map(([unitValue, unitLabel]) => (
 										<Option key={unitValue} value={unitValue}>{unitLabel}</Option>
 									))}
 								</Select>
 							</Label>
 						</div>
-						<div className="text-center" style={{ fontSize: 13, opacity: 0.85 }}>Click the map to place the circle&nbsp;&nbsp;&bull;&nbsp;&nbsp;Esc to cancel</div>
+						<div className="text-center" style={{ fontSize: 13, opacity: 0.85 }}>{this.nls('clickTheMapToPlaceThe')}</div>
 					</div>
 				)}
 			</div>
@@ -1543,17 +1539,17 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						centric
 						id="enable-arrows-label"
 					>
-						Enable Arrows
+						{this.nls('enableArrows')}
 						<Switch
 							className="ml-2"
 							checked={arrowEnabled}
 							onChange={this.handleArrowToggle}
 							aria-labelledby="enable-arrows-label"
 							aria-describedby="enable-arrows-description"
-							title={arrowEnabled ? "Click to disable arrow markers on lines" : "Click to enable arrow markers on lines"}
+							title={arrowEnabled ? this.nls('clickToDisableArrowMarkersOn') : this.nls('clickToEnableArrowMarkersOn')}
 						/>
 						<span id="enable-arrows-description" className="sr-only">
-							Toggle to add directional arrow markers to line drawings
+							{this.nls('toggleToAddDirectionalArrowMarkers')}
 						</span>
 					</Label>
 				</div>
@@ -1569,7 +1565,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							className="mb-0"
 							id="arrow-position-label"
 						>
-							Arrow Position:
+							{this.nls('arrowPosition')}
 							<AdvancedButtonGroup
 								className='ml-2'
 								role="radiogroup"
@@ -1590,7 +1586,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									aria-label={this.nls('widgetPlaceArrowAtTheStart')}
 									title={this.nls('widgetArrowWillAppearAtThe')}
 								>
-									Start
+									{this.nls('start')}
 								</Button>
 								<Button
 									className='m-0'
@@ -1607,7 +1603,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									aria-label={this.nls('widgetPlaceArrowAtTheEnd')}
 									title={this.nls('widgetArrowWillAppearAtThe2')}
 								>
-									End
+									{this.nls('end')}
 								</Button>
 								<Button
 									className='m-0'
@@ -1624,7 +1620,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									aria-label={this.nls('widgetPlaceArrowsAtBothEnds')}
 									title={this.nls('widgetArrowsWillAppearAtBoth')}
 								>
-									Both
+									{this.nls('both')}
 								</Button>
 							</AdvancedButtonGroup>
 						</Label>
@@ -2010,7 +2006,9 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	};
 
 	nls = (id: string, values?: Record<string, any>) => {
-		return this.props.intl ? this.props.intl.formatMessage({ id: id, defaultMessage: defMessages[id] }, values) : (defMessages[id] ?? id);
+		return this.props.intl
+			? this.props.intl.formatMessage({ id: id, defaultMessage: defMessages[id] }, values)
+			: String(defMessages[id] ?? id).replace(/\{(\w+)\}/g, (m, k) => (values && values[k] != null ? String(values[k]) : m));
 	}
 
 	componentDidMount() {
@@ -8611,7 +8609,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={pointBtnActive}
 										onClick={() => this.setDrawToolBtnState('point')}
 										title={this.nls('drawPoint')}
-										aria-label={`Draw point marker${pointBtnActive ? ' - currently active' : ''}`}
+										aria-label={(pointBtnActive ? this.nls('drawPointMarkerCurrentlyActive') : this.nls('drawPointMarker'))}
 										aria-pressed={pointBtnActive}
 										aria-describedby="mode-heading"
 									>
@@ -8627,7 +8625,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={lineBtnActive}
 										onClick={() => this.setDrawToolBtnState('polyline')}
 										title={this.nls('drawLine')}
-										aria-label={`Draw line${lineBtnActive ? ' - currently active' : ''}`}
+										aria-label={(lineBtnActive ? this.nls('drawLineCurrentlyActive') : this.nls('drawLine2'))}
 										aria-pressed={lineBtnActive}
 									>
 										<Icon icon={lineIcon} aria-hidden="true" />
@@ -8658,7 +8656,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											<div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: 'var(--white, #fff)', border: '1px solid var(--light-300, #ccc)', borderRadius: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.25)', minWidth: 160, overflow: 'hidden' }}>
 												<Button size="sm" type="default" color={this.state.currentTool === 'arc' ? 'primary' : 'default'} active={this.state.currentTool === 'arc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('arc')} title={this.nls('widgetClickStartAPointOn')}>{this.nls('widgetArcSegment')}</Button>
 												<Button size="sm" type="default" color={this.state.currentTool === 'endpointArc' ? 'primary' : 'default'} active={this.state.currentTool === 'endpointArc'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('endpointArc')} title={this.nls('widgetClickStartEndThenMove')}>{this.nls('widgetEndpointArc')}</Button>
-												<Button size="sm" type="default" color={this.state.currentTool === 'bezier' ? 'primary' : 'default'} active={this.state.currentTool === 'bezier'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('bezier')} title={this.nls('widgetClickStartEndControl1')}>Bézier Curve</Button>
+												<Button size="sm" type="default" color={this.state.currentTool === 'bezier' ? 'primary' : 'default'} active={this.state.currentTool === 'bezier'} style={{ display: 'block', width: '100%', margin: 0, boxSizing: 'border-box', borderRadius: 0, textAlign: 'left', whiteSpace: 'nowrap' }} onClick={() => this.startCurveTool('bezier')} title={this.nls('widgetClickStartEndControl1')}>{this.nls('bZierCurve')}</Button>
 											</div>
 										)}
 									</div>
@@ -8671,7 +8669,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={flineBtnActive}
 										onClick={() => this.setDrawToolBtnState('freepolyline')}
 										title={this.nls('drawFreeLine')}
-										aria-label={`Draw freehand line${flineBtnActive ? ' - currently active' : ''}`}
+										aria-label={(flineBtnActive ? this.nls('drawFreehandLineCurrentlyActive') : this.nls('drawFreehandLine'))}
 										aria-pressed={flineBtnActive}
 									>
 										<Icon icon={curveIcon} aria-hidden="true" />
@@ -8686,7 +8684,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={textBtnActive}
 										onClick={() => this.setDrawToolBtnState('text')}
 										title={this.nls('drawText')}
-										aria-label={`Add text annotation${textBtnActive ? ' - currently active' : ''}`}
+										aria-label={(textBtnActive ? this.nls('addTextAnnotationCurrentlyActive') : this.nls('addTextAnnotation'))}
 										aria-pressed={textBtnActive}
 									>
 										<Icon icon={textIcon} aria-hidden="true" />
@@ -8707,7 +8705,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={rectBtnActive}
 										onClick={() => this.setDrawToolBtnState('extent')}
 										title={this.nls('drawRectangle')}
-										aria-label={`Draw rectangle${rectBtnActive ? ' - currently active' : ''}`}
+										aria-label={(rectBtnActive ? this.nls('drawRectangleCurrentlyActive') : this.nls('drawRectangle'))}
 										aria-pressed={rectBtnActive}
 									>
 										<Icon icon={rectIcon} aria-hidden="true" />
@@ -8722,7 +8720,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={polygonBtnActive}
 										onClick={() => this.setDrawToolBtnState('polygon')}
 										title={this.nls('drawPolygon')}
-										aria-label={`Draw polygon${polygonBtnActive ? ' - currently active' : ''}`}
+										aria-label={(polygonBtnActive ? this.nls('drawPolygonCurrentlyActive') : this.nls('drawPolygon'))}
 										aria-pressed={polygonBtnActive}
 									>
 										<Icon icon={polyIcon} aria-hidden="true" />
@@ -8737,7 +8735,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={fpolygonBtnActive}
 										onClick={() => this.setDrawToolBtnState('freepolygon')}
 										title={this.nls('drawFreePolygon')}
-										aria-label={`Draw freehand polygon${fpolygonBtnActive ? ' - currently active' : ''}`}
+										aria-label={(fpolygonBtnActive ? this.nls('drawFreehandPolygonCurrentlyActive') : this.nls('drawFreePolygon'))}
 										aria-pressed={fpolygonBtnActive}
 									>
 										<Icon icon={freePolyIcon} aria-hidden="true" />
@@ -8752,7 +8750,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={circleBtnActive}
 										onClick={() => this.setDrawToolBtnState('circle')}
 										title={this.nls('drawCircle')}
-										aria-label={`Draw circle${circleBtnActive ? ' - currently active' : ''}`}
+										aria-label={(circleBtnActive ? this.nls('drawCircleCurrentlyActive') : this.nls('drawCircle'))}
 										aria-pressed={circleBtnActive}
 									>
 										<Icon icon={circleIcon} aria-hidden="true" />
@@ -8767,7 +8765,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={!!this.state.triangleActive}
 										onClick={() => { if (this.state.triangleActive) { this._deactivateTriangleTool(); } else { this.startTriangleTool(); } }}
 										title={this.nls('widgetDrawEquilateralTriangleClickCenter')}
-										aria-label={`Draw triangle${this.state.triangleActive ? ' - currently active' : ''}`}
+										aria-label={(this.state.triangleActive ? this.nls('drawTriangleCurrentlyActive') : this.nls('drawTriangle'))}
 										aria-pressed={!!this.state.triangleActive}
 									>
 										<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L15 14 L1 14 Z" fill="currentColor" /></svg>
@@ -8803,17 +8801,17 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									}
 								}}
 								title={this.state.copyModeActive && !this.state.selectedCopyLayerId
-									? "Click on a feature to copy, or press Esc to cancel"
-									: "Click on any feature in the map to copy it into your drawings"}
+									? this.nls('clickOnAFeatureToCopy')
+									: this.nls('clickOnAnyFeatureInThe')}
 								aria-label={this.state.copyModeActive && !this.state.selectedCopyLayerId
-									? "Cancel copy mode"
-									: "Copy feature from map"}
+									? this.nls('cancelCopyMode')
+									: this.nls('copyFeatureFromMap')}
 							>
 								<span className="d-flex align-items-center">
 									<CopyOutlined aria-hidden="true" style={{ marginRight: '4px' }} />
 									{this.state.copyModeActive && !this.state.selectedCopyLayerId
 										? (this.state.copySelectionMode === 'multiple' ? 'Selecting...' : 'Copying...')
-										: 'Copy'}
+										: this.nls('drawingsCopy')}
 								</span>
 							</Button>
 							{/* Copy From — layer-first mode */}
@@ -8835,11 +8833,11 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									}
 								}}
 								title={this.state.copyModeActive && !!this.state.selectedCopyLayerId
-									? "Click on a feature to copy, or press Esc to cancel"
-									: "Choose a layer first, then click a feature to copy"}
+									? this.nls('clickOnAFeatureToCopy')
+									: this.nls('chooseALayerFirstThenClick')}
 								aria-label={this.state.copyModeActive && !!this.state.selectedCopyLayerId
-									? "Cancel copy from layer mode"
-									: "Copy from a specific layer"}
+									? this.nls('cancelCopyFromLayerMode')
+									: this.nls('copyFromASpecificLayer')}
 								aria-expanded={this.state.showCopyLayerDropdown}
 								aria-haspopup="listbox"
 							>
@@ -8847,7 +8845,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									<CopyOutlined aria-hidden="true" style={{ marginRight: '4px' }} />
 									{this.state.copyModeActive && !!this.state.selectedCopyLayerId
 										? (this.state.copySelectionMode === 'multiple' ? 'Selecting...' : 'Copying...')
-										: 'Copy From ▾'}
+										: this.nls('copyFrom')}
 								</span>
 							</Button>
 						</div>
@@ -8899,7 +8897,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											background: '#fafafa'
 										}}>
 											<span style={{ fontSize: '12px', fontWeight: 600, color: '#333' }}>
-												Selection Mode
+												{this.nls('selectionMode')}
 											</span>
 											<button
 												onClick={() => this.setState({ showCopyModePrompt: false, copyModePromptContext: null })}
@@ -9027,7 +9025,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										{this.state.multiCopySelectedFeatures.length}
 									</span>
 									<span style={{ flex: 1, color: '#166534', fontWeight: 500 }}>
-										feature{this.state.multiCopySelectedFeatures.length !== 1 ? 's' : ''} selected
+										{(this.state.multiCopySelectedFeatures.length !== 1 ? this.nls('featuresSelected') : this.nls('featureSelected'))}
 									</span>
 									<Button
 										size="sm"
@@ -9038,7 +9036,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										title={this.nls('widgetCopyEachSelectedFeatureAs')}
 										aria-label={this.nls('widgetCopyLengthFeaturesAsSeparate', { length: this.state.multiCopySelectedFeatures.length })}
 									>
-										Copy
+										{this.nls('drawingsCopy')}
 									</Button>
 									<Button
 										size="sm"
@@ -9055,18 +9053,18 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										})()}
 										style={{ fontSize: '11px', padding: '2px 10px' }}
 										title={(() => {
-											if (this.state.multiCopySelectedFeatures.length < 2) return 'Select at least 2 features to merge';
+											if (this.state.multiCopySelectedFeatures.length < 2) return this.nls('selectAtLeast2FeaturesTo');
 											const types = new Set(
 												this.state.multiCopySelectedFeatures
 													.map(f => f.geometryType === 'extent' ? 'polygon' : f.geometryType)
 													.filter(Boolean)
 											);
-											if (types.size > 1) return `Cannot merge mixed types (${Array.from(types).join(', ')}) — use Copy instead`;
-											return 'Merge all selected features into a single drawing';
+											if (types.size > 1) return this.nls('cannotMergeMixedTypesJoinUse', { join: Array.from(types).join(', ') });
+											return this.nls('mergeAllSelectedFeaturesIntoA');
 										})()}
 										aria-label={this.nls('widgetMergeLengthFeaturesIntoOne', { length: this.state.multiCopySelectedFeatures.length })}
 									>
-										Merge
+										{this.nls('merge')}
 									</Button>
 									<Button
 										size="sm"
@@ -9076,7 +9074,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										title={this.nls('widgetCancelMultiSelectCopy')}
 										aria-label={this.nls('widgetCancelMultiSelectCopy')}
 									>
-										Cancel
+										{this.nls('drawingsCancel')}
 									</Button>
 								</div>
 								{/* Hint when nothing selected yet */}
@@ -9093,7 +9091,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
 											<path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
 										</svg>
-										Click features on the map to select them one at a time
+										{this.nls('clickFeaturesOnTheMapTo')}
 									</div>
 								)}
 								{/* Spatial selection tools */}
@@ -9122,7 +9120,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
 											<rect x="3" y="3" width="18" height="18" rx="1" strokeDasharray="4 2" />
 										</svg>
-										Rectangle
+										{this.nls('rectangle')}
 									</button>
 									<button
 										onClick={() => this.startSpatialSelection('polygon')}
@@ -9141,7 +9139,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
 											<path d="M12 2l8 6-3 10H7L4 8z" strokeDasharray="4 2" />
 										</svg>
-										Polygon
+										{this.nls('polygon')}
 									</button>
 									{this.state.multiCopySpatialTool && (
 										<button
@@ -9159,7 +9157,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											title={this.nls('widgetSwitchBackToClickingFeatures')}
 											aria-label={this.nls('widgetSwitchToIndividualFeatureSelection')}
 										>
-											One at a Time
+											{this.nls('oneAtATime')}
 										</button>
 									)}
 								</div>
@@ -9182,7 +9180,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											<line x1="12" y1="9" x2="12" y2="13" />
 											<line x1="12" y1="17" x2="12.01" y2="17" />
 										</svg>
-										<span>{this.nls('widgetThisMaySelectManyFeatures')}<strong>{this.nls('widgetCopyFrom')}</strong> instead.</span>
+										<span>{this.nls('widgetThisMaySelectManyFeatures')}<strong>{this.nls('widgetCopyFrom')}</strong> {this.nls('instead')}</span>
 									</div>
 								)}
 							</div>
@@ -9235,7 +9233,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											background: '#fafafa'
 										}}>
 											<span style={{ fontSize: '12px', fontWeight: 600, color: '#333' }}>
-												Copy from Layer
+												{this.nls('copyFromLayer')}
 											</span>
 											<button
 												onClick={() => this.setState({ showCopyLayerDropdown: false, copyableLayers: [] })}
@@ -9254,7 +9252,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										<div style={{ maxHeight: '300px', overflowY: 'auto' }}>
 											{!hasLayers && (
 												<div style={{ padding: '16px', textAlign: 'center', color: '#999', fontSize: '12px' }}>
-													No copyable layers found.<br />
+													{this.nls('noCopyableLayersFound')}<br />
 													<span style={{ fontSize: '11px' }}>{this.nls('widgetMakeSureLayersAreVisible')}</span>
 												</div>
 											)}
@@ -9279,7 +9277,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 													role="option"
 													tabIndex={0}
 													title={this.nls('widgetSelectTitleToCopyFeatures', { title: layer.title })}
-													aria-label={layer.parentTitle ? `${layer.title} from ${layer.parentTitle}` : layer.title}
+													aria-label={layer.parentTitle ? this.nls('titleFromParentTitle', { title: layer.title, parentTitle: layer.parentTitle }) : layer.title}
 												>
 													<span style={{
 														overflow: 'hidden',
@@ -9318,27 +9316,27 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							// Helper: get a short feature identifier from attributes
 							const getFeatureLabel = (graphic: any, idx: number): string => {
 								const attrs = graphic?.attributes;
-								if (!attrs) return `Feature ${idx + 1}`;
-								const nameFields = ['Name', 'NAME', 'name', 'LABEL', 'Label', 'label', 'FACILITYID', 'FacilityID', 'ADDRESS', 'Address', 'STREET', 'Street'];
+								if (!attrs) return this.nls('featureIdx', { idx: idx + 1 });
+								const nameFields = [this.nls('drawingsName'), 'NAME', 'name', 'LABEL', this.nls('label'), 'label', 'FACILITYID', this.nls('facilityID'), 'ADDRESS', this.nls('address'), 'STREET', this.nls('street')];
 								for (const field of nameFields) {
 									if (attrs[field] != null && String(attrs[field]).trim() !== '') {
 										return String(attrs[field]);
 									}
 								}
-								const oidFields = ['OBJECTID', 'objectid', 'ObjectID', 'FID', 'fid', 'OID'];
+								const oidFields = ['OBJECTID', 'objectid', this.nls('objectID'), 'FID', 'fid', 'OID'];
 								for (const field of oidFields) {
 									if (attrs[field] != null) {
-										return `OID: ${attrs[field]}`;
+										return this.nls('oidAttrs', { attrs: attrs[field] });
 									}
 								}
-								return `Feature ${idx + 1}`;
+								return this.nls('featureIdx', { idx: idx + 1 });
 							};
 
 							// Helper: geometry type badge
 							const geomBadge = (geomType: string) => {
 								const labels: Record<string, string> = {
-									'point': 'Pt', 'multipoint': 'MPt', 'polyline': 'Line',
-									'polygon': 'Poly', 'extent': 'Rect', 'rectangle': 'Rect', 'circle': 'Circle'
+									'point': this.nls('pt'), 'multipoint': this.nls('mPt'), 'polyline': this.nls('line'),
+									'polygon': this.nls('poly'), 'extent': this.nls('rect'), 'rectangle': this.nls('rect'), 'circle': this.nls('circle')
 								};
 								return labels[geomType] || geomType.charAt(0).toUpperCase();
 							};
@@ -9373,7 +9371,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										role="option"
 										tabIndex={0}
 										title={this.nls('widgetCopyFeaturelabel', { featureLabel: featureLabel })}
-										aria-label={`${featureLabel} - ${badge} type${!isLayerFirstMode ? ` - from ${candidate.layerTitle}` : ''}`}
+										aria-label={this.nls('featureLabelBadgeTypeIsLayerFirstMode', { featureLabel, badge, isLayerFirstMode: !isLayerFirstMode ? this.nls('fromLayerTitle', { layerTitle: candidate.layerTitle }) : '' })}
 									>
 										<span style={{
 											background: '#e8e8e8', borderRadius: '3px', padding: '1px 4px',
@@ -9396,7 +9394,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 								// GROUP BY LAYER (click-first / original behavior)
 								const grouped: Map<string, Array<{ candidate: typeof candidates[0]; index: number }>> = new Map();
 								candidates.forEach((candidate, index) => {
-									const key = candidate.layerTitle || 'Unknown Layer';
+									const key = candidate.layerTitle || this.nls('unknownLayer');
 									if (!grouped.has(key)) grouped.set(key, []);
 									grouped.get(key)!.push({ candidate, index });
 								});
@@ -9445,7 +9443,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 												display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fafafa'
 											}}>
 												<span style={{ fontSize: '12px', fontWeight: 600, color: '#333' }}>
-													Select Feature to Copy ({candidates.length})
+													{this.nls('selectFeatureToCopyCandidatesCount', { candidatesCount: candidates.length })}
 												</span>
 												<button
 													onClick={this.cancelCopyPicker}
@@ -9497,7 +9495,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 
 											{showSearch && filterText && (
 												<div style={{ padding: '4px 10px', borderTop: '1px solid #e8e8e8', background: '#fafafa', fontSize: '10px', color: '#999', textAlign: 'center' }}>
-													Showing {totalFiltered} of {candidates.length} features
+													{this.nls('showingTotalFilteredOfCandidatesCountFeatures', { totalFiltered, candidatesCount: candidates.length })}
 												</div>
 											)}
 										</div>
@@ -9519,7 +9517,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									});
 
 								const showSearch = candidates.length > 5;
-								const layerTitle = candidates[0]?.layerTitle || 'Selected Layer';
+								const layerTitle = candidates[0]?.layerTitle || this.nls('selectedLayer');
 
 								return (
 									<div>
@@ -9543,10 +9541,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											}}>
 												<div style={{ flex: 1, minWidth: 0 }}>
 													<span style={{ fontSize: '12px', fontWeight: 600, color: '#333', display: 'block' }}>
-														Select Feature ({candidates.length})
+														{this.nls('selectFeatureCandidatesCount', { candidatesCount: candidates.length })}
 													</span>
 													<span style={{ fontSize: '10px', color: '#666', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-														from {layerTitle}
+														{this.nls('fromLayerTitle2', { layerTitle })}
 													</span>
 												</div>
 												<button
@@ -9581,7 +9579,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 
 											{showSearch && filterText && (
 												<div style={{ padding: '4px 10px', borderTop: '1px solid #e8e8e8', background: '#fafafa', fontSize: '10px', color: '#999', textAlign: 'center' }}>
-													Showing {filteredCandidates.length} of {candidates.length} features
+													{this.nls('showingFilteredCandidatesCountOfCandidatesCountFeatures', { filteredCandidatesCount: filteredCandidates.length, candidatesCount: candidates.length })}
 												</div>
 											)}
 										</div>
@@ -9762,10 +9760,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									onClick={this.drawUndoBtnClick}
 									title={this.nls('drawUndo')}
 									disabled={!canUndo}
-									aria-label={`Undo last drawing action${!canUndo ? ' - no actions to undo' : ''}`}
+									aria-label={(!canUndo ? this.nls('undoLastDrawingActionNoActions') : this.nls('undoLastDrawingAction'))}
 									aria-disabled={!canUndo}
 								>
-									<ArrowUndoOutlined aria-hidden="true" /> Undo
+									<ArrowUndoOutlined aria-hidden="true" /> {this.nls('drawUndo')}
 								</Button>
 								<Button
 									size="sm"
@@ -9774,10 +9772,10 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									onClick={this.drawRedoBtnClick}
 									title={this.nls('drawRedo')}
 									disabled={!canRedo}
-									aria-label={`Redo drawing action${!canRedo ? ' - no actions to redo' : ''}`}
+									aria-label={(!canRedo ? this.nls('redoDrawingActionNoActionsTo') : this.nls('redoDrawingAction'))}
 									aria-disabled={!canRedo}
 								>
-									<ArrowRedoOutlined aria-hidden="true" /> Redo
+									<ArrowRedoOutlined aria-hidden="true" /> {this.nls('drawRedo')}
 								</Button>
 							</div>
 						)}
@@ -9792,7 +9790,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									aria-describedby="confirm-delete-description"
 								>
 									<span id="confirm-delete-description" className="sr-only">
-										Are you sure you want to delete all drawings? This action cannot be undone.
+										{this.nls('areYouSureYouWantTo')}
 									</span>
 									<Button
 										size="sm"
@@ -9812,7 +9810,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										title={this.nls('drawingsCancel')}
 										aria-label={this.nls('widgetCancelDeleteOperation')}
 									>
-										<WrongOutlined aria-hidden="true" /> Cancel
+										<WrongOutlined aria-hidden="true" /> {this.nls('drawingsCancel')}
 									</Button>
 								</div>
 							) : (
@@ -9829,7 +9827,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									}}
 									title={clearBtnTitle}
 									disabled={!drawGLLengthcheck}
-									aria-label={`Clear all drawings${!drawGLLengthcheck ? ' - no drawings to clear' : ''}`}
+									aria-label={(!drawGLLengthcheck ? this.nls('clearAllDrawingsNoDrawingsTo') : this.nls('clearAllDrawings'))}
 									aria-disabled={!drawGLLengthcheck}
 								>
 									<TrashOutlined aria-hidden="true" /> {clearBtnTitle}
@@ -9865,7 +9863,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										className="w-100"
 										id="draw-layer-title-label"
 									>
-										Draw Layer Title:
+										{this.nls('drawLayerTitle')}
 										<TextInput
 											defaultValue={this.props.config.title}
 											onChange={(e) => this.handleTitleChange(e)}
@@ -9877,7 +9875,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											title={this.nls('widgetEnterATitleForThe')}
 										/>
 										<span id="draw-layer-title-hint" className="sr-only">
-											This title will be displayed in the map layer list
+											{this.nls('thisTitleWillBeDisplayedIn')}
 										</span>
 									</Label>
 									<Label
@@ -9891,7 +9889,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											aria-labelledby="show-in-list-label"
 											title={this.nls('widgetWhenCheckedTheDrawLayer')}
 										/>
-										Show In Map Layer List
+										{this.nls('showInMapLayerList')}
 									</Label>
 								</div>
 							</CollapsablePanel>
@@ -10015,7 +10013,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									}}
 								/>
 								<span id="text-input-hint" className="sr-only">
-									Type the text you want to add to your drawing
+									{this.nls('typeTheTextYouWantTo')}
 								</span>
 							</div>
 						</div>
@@ -10079,7 +10077,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={this.state.fsBoldBtnActive}
 										onClick={(evt) => { this.onFontStyleChange(evt, 'bold') }}
 										title={this.nls('fontBold')}
-										aria-label={`Bold text${this.state.fsBoldBtnActive ? ' - currently active' : ''}`}
+										aria-label={(this.state.fsBoldBtnActive ? this.nls('boldTextCurrentlyActive') : this.nls('boldText'))}
 										aria-pressed={this.state.fsBoldBtnActive}
 									>
 										<Icon icon={fsBoldIcon} size={'m'} aria-hidden="true" />
@@ -10090,7 +10088,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={this.state.fsItalicBtnActive}
 										onClick={(evt) => { this.onFontStyleChange(evt, 'italic') }}
 										title={this.nls('fontItalic')}
-										aria-label={`Italic text${this.state.fsItalicBtnActive ? ' - currently active' : ''}`}
+										aria-label={(this.state.fsItalicBtnActive ? this.nls('italicTextCurrentlyActive') : this.nls('italicText'))}
 										aria-pressed={this.state.fsItalicBtnActive}
 									>
 										<Icon icon={fItalicIcon} size={'m'} aria-hidden="true" />
@@ -10101,7 +10099,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										active={this.state.fsUnderlineBtnActive}
 										onClick={(evt) => { this.onFontStyleChange(evt, 'underline') }}
 										title={this.nls('fontUnderline')}
-										aria-label={`Underline text${this.state.fsUnderlineBtnActive ? ' - currently active' : ''}`}
+										aria-label={(this.state.fsUnderlineBtnActive ? this.nls('underlineTextCurrentlyActive') : this.nls('underlineText'))}
 										aria-pressed={this.state.fsUnderlineBtnActive}
 									>
 										<Icon icon={fUnderlineIcon} width={12} aria-hidden="true" />
@@ -10110,7 +10108,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							</div>
 						</div>
 						<Label id="font-opacity-label">
-							Opacity:
+							{this.nls('textStyleOpacity')}
 							<div className='w-100 d-flex justify-content-between align-items-center mb-2 border' role="group" aria-labelledby="font-opacity-label">
 								<Slider
 									size='default'
@@ -10143,7 +10141,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						</Label>
 						<div className="w-100" role="group" aria-label={this.nls('widgetTextRotationAndLineWidth')} style={{ borderTop: '1px solid #eee', paddingTop: '6px', marginTop: '2px' }}>
 							<div className='w-100 d-flex justify-content-between align-items-center mb-2'>
-								<label htmlFor="text-rotation-input" style={{ fontSize: '12px', color: '#555', margin: 0 }}>Rotation (°)</label>
+								<label htmlFor="text-rotation-input" style={{ fontSize: '12px', color: '#555', margin: 0 }}>{this.nls('rotation2')}</label>
 								<NumericInput
 									size='sm'
 									onChange={this.fontRotationChange}
@@ -10271,7 +10269,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							centric
 							id="background-color-label"
 						>
-							Background Color:
+							{this.nls('backgroundColor')}
 							<ColorPicker
 								className='mr-4 ml-2'
 								style={{ padding: '0' }}
@@ -10286,7 +10284,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 								onClick={e => { this.onColorPickerToggle(e) }}
 								onChange={this.updateBackgroundColor}
 								aria-labelledby="background-color-label"
-								aria-label={`Text background color picker${this.state.fontBackgroundColor === 'rgba(0,0,0,0)' ? ', currently no background' : ''}`}
+								aria-label={(this.state.fontBackgroundColor === 'rgba(0,0,0,0)' ? this.nls('textBackgroundColorPickerCurrentlyNo') : this.nls('textBackgroundColorPicker'))}
 								title={this.nls('widgetSelectABackgroundColorFor')}
 							/>
 						</Label>
@@ -10304,7 +10302,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										centric
 										id="halo-toggle-label"
 									>
-										{this.state.fontHaloEnabled ? 'Disable' : 'Enable'}
+										{this.state.fontHaloEnabled ? this.nls('disable') : this.nls('enable2')}
 										<Switch
 											title={this.nls('enableFontHalo')}
 											className="mr-4 ml-2"
@@ -10314,7 +10312,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 											aria-describedby="halo-toggle-description"
 										/>
 										<span id="halo-toggle-description" className="sr-only">
-											Toggle to enable or disable the text halo effect (outline around text)
+											{this.nls('toggleToEnableOrDisableThe')}
 										</span>
 									</Label>
 									<ColorPicker
@@ -10326,9 +10324,9 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										onClick={e => { this.onColorPickerToggle(e) }}
 										onChange={this.updateFontHaloColor}
 										disabled={!this.state.fontHaloEnabled}
-										aria-label={`Halo color picker${!this.state.fontHaloEnabled ? ' - disabled' : ''}`}
+										aria-label={(!this.state.fontHaloEnabled ? this.nls('haloColorPickerDisabled') : this.nls('haloColorPicker'))}
 										aria-disabled={!this.state.fontHaloEnabled}
-										title={this.state.fontHaloEnabled ? "Select halo color" : "Enable halo to change color"}
+										title={this.state.fontHaloEnabled ? this.nls('selectHaloColor') : this.nls('enableHaloToChangeColor')}
 									/>
 									<NumericInput
 										size='sm'
@@ -10340,17 +10338,17 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										showHandlers={true}
 										min={1}
 										max={20}
-										aria-label={`Halo size in pixels${!this.state.fontHaloEnabled ? ' - disabled' : ''}, current value: ${this.state.fontHaloSize}`}
+										aria-label={(!this.state.fontHaloEnabled ? this.nls('haloSizeInPixelsDisabledCurrent', { fontHaloSize: this.state.fontHaloSize }) : this.nls('haloSizeInPixelsCurrentValue', { fontHaloSize: this.state.fontHaloSize }))}
 										aria-disabled={!this.state.fontHaloEnabled}
 										aria-valuemin={1}
 										aria-valuemax={20}
 										aria-valuenow={this.state.fontHaloSize}
-										title={this.state.fontHaloEnabled ? "Halo size in pixels (1-20)" : "Enable halo to change size"}
+										title={this.state.fontHaloEnabled ? this.nls('haloSizeInPixels120') : this.nls('enableHaloToChangeSize')}
 									/>
 								</div>
 							</div>
 							<Label id="halo-opacity-label">
-								Opacity:
+								{this.nls('textStyleOpacity')}
 								<div className='w-100 d-flex justify-content-between align-items-center mb-2 border' role="group" aria-labelledby="halo-opacity-label">
 									<Slider
 										size='default'
@@ -10370,7 +10368,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 												this.updateSymbolHaloOpacity(e.currentTarget.value);
 											}
 										}}
-										aria-label={`Halo opacity slider${!this.state.fontHaloEnabled ? ' - disabled' : ''}, current value: ${Math.round(100 * this.state.fontHaloOpacity)}%`}
+										aria-label={(!this.state.fontHaloEnabled ? this.nls('haloOpacitySliderDisabledCurrentValue', { fontHaloOpacity: Math.round(100 * this.state.fontHaloOpacity) }) : this.nls('haloOpacitySliderCurrentValueFontHaloOpacity', { fontHaloOpacity: Math.round(100 * this.state.fontHaloOpacity) }))}
 										aria-valuemin={0}
 										aria-valuemax={100}
 										aria-valuenow={Math.round(100 * this.state.fontHaloOpacity)}
@@ -10383,7 +10381,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										onChange={(e) => this.onHaloOpacityInputChanged(e)}
 										style={{ width: '70px' }}
 										disabled={!this.state.fontHaloEnabled}
-										aria-label={`Halo opacity percentage${!this.state.fontHaloEnabled ? ' - disabled' : ''}`}
+										aria-label={(!this.state.fontHaloEnabled ? this.nls('haloOpacityPercentageDisabled') : this.nls('haloOpacityPercentage'))}
 										aria-disabled={!this.state.fontHaloEnabled}
 									/>
 								</div>

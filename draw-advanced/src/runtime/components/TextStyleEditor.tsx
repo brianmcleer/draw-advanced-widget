@@ -404,7 +404,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             }
 
             // Announce editor opened for screen readers
-            announce('Text style editor opened. Use Tab to navigate between controls.');
+            announce(t('textStyleEditorOpenedUseTab'));
         } catch (err) {
             console.error('Error initializing text style editor:', err);
         }
@@ -437,7 +437,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(`Font changed to ${newFamily}`);
+        announce(t('fontChangedToNewFamily', { newFamily }));
     };
 
     const updateFontSize = (newSize: number) => {
@@ -499,7 +499,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(`Font color changed to ${newColor}`);
+        announce(t('fontColorChangedToNewColor', { newColor }));
     };
 
     const updateFontOpacity = (newOpacity: number) => {
@@ -528,7 +528,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(newWeight === 'bold' ? 'Bold enabled' : 'Bold disabled');
+        announce(newWeight === 'bold' ? t('boldEnabled') : t('boldDisabled'));
     };
 
     const updateFontStyle = (newStyle: string) => {
@@ -546,7 +546,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(newStyle === 'italic' ? 'Italic enabled' : 'Italic disabled');
+        announce(newStyle === 'italic' ? t('italicEnabled') : t('italicDisabled'));
     };
 
     const updateFontDecoration = (newDecoration: string) => {
@@ -564,7 +564,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(newDecoration === 'underline' ? 'Underline enabled' : 'Underline disabled');
+        announce(newDecoration === 'underline' ? t('underlineEnabled') : t('underlineDisabled'));
     };
 
     const updateFontRotation = (newRotation: number) => {
@@ -585,7 +585,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(`Horizontal alignment set to ${newAlign}`);
+        announce(t('horizontalAlignmentSetToNewAlign', { newAlign }));
     };
 
     const updateVerticalAlignment = (newAlign: 'top' | 'middle' | 'bottom' | 'baseline') => {
@@ -596,7 +596,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(`Vertical alignment set to ${newAlign}`);
+        announce(t('verticalAlignmentSetToNewAlign', { newAlign }));
     };
 
     const updateBackgroundColor = (newColor: string) => {
@@ -612,7 +612,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(a === 0 ? 'Background color removed' : `Background color changed`);
+        announce(a === 0 ? t('backgroundColorRemoved') : t('backgroundColorChanged'));
     };
 
     const updateFontHaloEnabled = (enabled: boolean) => {
@@ -632,7 +632,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         setSymbol(updated);
         updateSymbol(updated);
         setHasChanges(true);
-        announce(enabled ? 'Text halo enabled' : 'Text halo disabled');
+        announce(enabled ? t('textHaloEnabled') : t('textHaloDisabled'));
     };
 
     const updateFontHaloColor = (newColor: string) => {
@@ -672,7 +672,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
 
     const handleApplyClose = () => {
         isClosingRef.current = true;
-        announce('Text style editor closed. Changes applied.');
+        announce(t('textStyleEditorClosedChangesApplied'));
         onClose();
     };
 
@@ -694,7 +694,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
         >
             {/* Screen reader only description */}
             <div id={`${ids.editorPanel}-desc`} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                Text style editor panel. Configure font, size, color, alignment, and effects for your text label. Press Escape to close and apply changes.
+                {t('textStyleEditorPanelConfigureFont')}
             </div>
 
             {/* Live region for announcements */}
@@ -747,14 +747,14 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-brand-hover, #0055aa)'; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-brand, #0066cc)'; }}
                 >
-                    ✓ Apply &amp; Close
+                    {t('applyClose')}
                 </div>
             </div>
 
             {/* Label text input section */}
             <fieldset style={{ border: 'none', padding: 0, margin: '0 0 10px' }}>
                 <legend className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                    Label Text Configuration
+                    {t('labelTextConfiguration')}
                 </legend>
                 <div style={{ marginBottom: '0' }}>
                     <label
@@ -762,11 +762,11 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         className="d-block"
                         style={{ marginBottom: '4px', fontSize: '12px', fontWeight: 600, color: 'var(--calcite-color-text-1, #1f2937)' }}
                     >
-                        Label Text
-                        <span className="sr-only"> - Enter the text content for your map label</span>
+                        {t('labelText')}
+                        <span className="sr-only"> {t('enterTheTextContentForYour')}</span>
                     </label>
                     <span id={ids.labelTextDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                        Enter the text you want to display on the map. Spaces are preserved. Current length is {text.length} characters with {text.split(' ').length - 1} spaces.
+                        {t('enterTheTextYouWantTo', { textCount: text.length, splitCount: text.split(' ').length - 1 })}
                     </span>
                     <input
                         ref={firstFocusableRef}
@@ -815,7 +815,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         style={{ fontSize: '10px', marginTop: '3px', lineHeight: '1.2', color: 'var(--calcite-color-text-3, #9ca3af)', display: 'block' }}
                         aria-live="polite"
                     >
-                        Length: {text.length} | Spaces: {text.split(' ').length - 1}
+                        {t('lengthTextCountSpacesSplitCount', { textCount: text.length, splitCount: text.split(' ').length - 1 })}
                     </small>
                 </div>
             </fieldset>
@@ -823,7 +823,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             {/* Font family selection */}
             <fieldset style={{ border: 'none', padding: 0, margin: '0 0 10px' }}>
                 <legend className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                    Font Family Selection
+                    {t('fontFamilySelection')}
                 </legend>
                 <div className="w-100 d-flex align-items-center">
                     <label
@@ -831,11 +831,11 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         className="mr-2"
                         style={{ ...labelStyle, minWidth: '35px' }}
                     >
-                        Font:
-                        <span className="sr-only"> - Select a font family for the text</span>
+                        {t('widgetFont')}
+                        <span className="sr-only"> {t('selectAFontFamilyForThe')}</span>
                     </label>
                     <span id={ids.fontFamilyDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                        Choose a typeface from the available font families. Current selection is {fontFamily}.
+                        {t('chooseATypefaceFromTheAvailable', { fontFamily })}
                     </span>
                     <Select
                         id={ids.fontFamilySelect}
@@ -866,7 +866,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             {/* Color, Size, and Style formatting section */}
             <fieldset style={{ border: 'none', padding: 0, margin: '0 0 10px' }}>
                 <legend className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                    Font Color, Size, and Style Controls
+                    {t('fontColorSizeAndStyleControls')}
                 </legend>
                 <div
                     className="w-100 d-flex flex-wrap align-items-center"
@@ -875,7 +875,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     {/* Font Color Picker */}
                     <div role="group" aria-labelledby={ids.fontColorDesc}>
                         <span id={ids.fontColorDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Font color picker. Current color is {fontColor}. Opens color selection dialog.
+                            {t('fontColorPickerCurrentColorIs', { fontColor })}
                         </span>
                         <ColorPicker
                             className="fontcolorpicker"
@@ -894,7 +894,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     {/* Font Size Input */}
                     <div role="group" aria-labelledby={ids.fontSizeDesc}>
                         <span id={ids.fontSizeDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Font size in points. Enter a value between 1 and 120. Current size is {fontSize} points.
+                            {t('fontSizeInPointsEnterA', { fontSize })}
                         </span>
                         <NumericInput
                             id={ids.fontSizeInput}
@@ -930,9 +930,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         id={ids.fontStyleGroup}
                     >
                         <span id={ids.fontStyleDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Toggle buttons for text formatting. Bold is {fontWeight === 'bold' ? 'enabled' : 'disabled'}.
-                            Italic is {fontStyle === 'italic' ? 'enabled' : 'disabled'}.
-                            Underline is {fontDecoration === 'underline' ? 'enabled' : 'disabled'}.
+                            {(fontWeight === 'bold' ? (fontStyle === 'italic' ? (fontDecoration === 'underline' ? t('toggleButtonsForTextFormattingBold') : t('toggleButtonsForTextFormattingBold2')) : (fontDecoration === 'underline' ? t('toggleButtonsForTextFormattingBold3') : t('toggleButtonsForTextFormattingBold4'))) : (fontStyle === 'italic' ? (fontDecoration === 'underline' ? t('toggleButtonsForTextFormattingBold5') : t('toggleButtonsForTextFormattingBold6')) : (fontDecoration === 'underline' ? t('toggleButtonsForTextFormattingBold7') : t('toggleButtonsForTextFormattingBold8'))))}
                         </span>
                         <AdvancedButtonGroup size="sm" aria-describedby={ids.fontStyleDesc}>
                             <Button
@@ -940,8 +938,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 size="sm"
                                 active={fontWeight === 'bold'}
                                 aria-pressed={fontWeight === 'bold'}
-                                aria-label={`Bold text, currently ${fontWeight === 'bold' ? 'enabled' : 'disabled'}. Press to toggle.`}
-                                title={`Bold (${fontWeight === 'bold' ? 'On' : 'Off'}). Click to ${fontWeight === 'bold' ? 'disable' : 'enable'} bold formatting.`}
+                                aria-label={(fontWeight === 'bold' ? t('boldTextCurrentlyEnabledPressTo') : t('boldTextCurrentlyDisabledPressTo'))}
+                                title={(fontWeight === 'bold' ? (fontWeight === 'bold' ? t('boldOnClickToDisableBold') : t('boldOnClickToEnableBold')) : (fontWeight === 'bold' ? t('boldOffClickToDisableBold') : t('boldOffClickToEnableBold')))}
                                 onClick={() => updateFontWeight(fontWeight === 'bold' ? 'normal' : 'bold')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(fontWeight === 'bold' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -952,8 +950,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 size="sm"
                                 active={fontStyle === 'italic'}
                                 aria-pressed={fontStyle === 'italic'}
-                                aria-label={`Italic text, currently ${fontStyle === 'italic' ? 'enabled' : 'disabled'}. Press to toggle.`}
-                                title={`Italic (${fontStyle === 'italic' ? 'On' : 'Off'}). Click to ${fontStyle === 'italic' ? 'disable' : 'enable'} italic formatting.`}
+                                aria-label={(fontStyle === 'italic' ? t('italicTextCurrentlyEnabledPressTo') : t('italicTextCurrentlyDisabledPressTo'))}
+                                title={(fontStyle === 'italic' ? (fontStyle === 'italic' ? t('italicOnClickToDisableItalic') : t('italicOnClickToEnableItalic')) : (fontStyle === 'italic' ? t('italicOffClickToDisableItalic') : t('italicOffClickToEnableItalic')))}
                                 onClick={() => updateFontStyle(fontStyle === 'italic' ? 'normal' : 'italic')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(fontStyle === 'italic' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -964,8 +962,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 size="sm"
                                 active={fontDecoration === 'underline'}
                                 aria-pressed={fontDecoration === 'underline'}
-                                aria-label={`Underline text, currently ${fontDecoration === 'underline' ? 'enabled' : 'disabled'}. Press to toggle.`}
-                                title={`Underline (${fontDecoration === 'underline' ? 'On' : 'Off'}). Click to ${fontDecoration === 'underline' ? 'disable' : 'enable'} underline formatting.`}
+                                aria-label={(fontDecoration === 'underline' ? t('underlineTextCurrentlyEnabledPressTo') : t('underlineTextCurrentlyDisabledPressTo'))}
+                                title={(fontDecoration === 'underline' ? (fontDecoration === 'underline' ? t('underlineOnClickToDisableUnderline') : t('underlineOnClickToEnableUnderline')) : (fontDecoration === 'underline' ? t('underlineOffClickToDisableUnderline') : t('underlineOffClickToEnableUnderline')))}
                                 onClick={() => updateFontDecoration(fontDecoration === 'underline' ? 'none' : 'underline')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(fontDecoration === 'underline' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -979,7 +977,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             {/* Opacity and Rotation section */}
             <fieldset style={{ border: 'none', padding: 0, margin: '0 0 10px' }}>
                 <legend className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                    Opacity and Rotation Controls
+                    {t('opacityAndRotationControls')}
                 </legend>
                 <div
                     className="w-100 d-flex justify-content-between align-items-center"
@@ -991,10 +989,10 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             htmlFor={ids.opacityInput}
                             style={{ ...labelStyle, marginRight: '4px', minWidth: '50px' }}
                         >
-                            Opacity:
+                            {t('textStyleOpacity')}
                         </label>
                         <span id={ids.opacityDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Text opacity percentage. 0 is fully transparent, 100 is fully opaque. Current value is {Math.round(fontOpacity * 100)} percent.
+                            {t('textOpacityPercentage0IsFully', { fontOpacity: Math.round(fontOpacity * 100) })}
                         </span>
                         <NumericInput
                             id={ids.opacityInput}
@@ -1021,10 +1019,10 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             htmlFor={ids.rotationInput}
                             style={{ ...labelStyle, marginRight: '4px', minWidth: '55px' }}
                         >
-                            Rotation:
+                            {t('rotation')}
                         </label>
                         <span id={ids.rotationDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Text rotation angle in degrees. Negative values rotate counterclockwise, positive values rotate clockwise. Range is -360 to 360 degrees. Current value is {fontRotation} degrees.
+                            {t('textRotationAngleInDegreesNegative', { fontRotation })}
                         </span>
                         <NumericInput
                             id={ids.rotationInput}
@@ -1049,7 +1047,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             {/* Alignment section */}
             <fieldset style={{ border: 'none', padding: 0, margin: '0 0 10px' }}>
                 <legend className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                    Text Alignment Controls
+                    {t('textAlignmentControls')}
                 </legend>
                 <div className="w-100 d-flex justify-content-between align-items-center">
                     {/* Horizontal Alignment */}
@@ -1060,7 +1058,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         id={ids.hAlignGroup}
                     >
                         <span id={ids.hAlignDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Choose horizontal alignment for text. Options are left, center, or right. Currently set to {horizontalAlignment}.
+                            {t('chooseHorizontalAlignmentForTextOptions', { horizontalAlignment })}
                         </span>
                         <AdvancedButtonGroup size="sm">
                             <Button
@@ -1069,8 +1067,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={horizontalAlignment === 'left'}
                                 role="radio"
                                 aria-checked={horizontalAlignment === 'left'}
-                                aria-label={`Align left${horizontalAlignment === 'left' ? ', selected' : ''}`}
-                                title={`Align Left${horizontalAlignment === 'left' ? ' (Current)' : ''}. Position text to the left.`}
+                                aria-label={(horizontalAlignment === 'left' ? t('alignLeftSelected') : t('alignLeft'))}
+                                title={(horizontalAlignment === 'left' ? t('alignLeftCurrentPositionTextTo') : t('alignLeftPositionTextToThe'))}
                                 onClick={() => updateHorizontalAlignment('left')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(horizontalAlignment === 'left' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1082,8 +1080,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={horizontalAlignment === 'center'}
                                 role="radio"
                                 aria-checked={horizontalAlignment === 'center'}
-                                aria-label={`Align center${horizontalAlignment === 'center' ? ', selected' : ''}`}
-                                title={`Align Center${horizontalAlignment === 'center' ? ' (Current)' : ''}. Position text in the center.`}
+                                aria-label={(horizontalAlignment === 'center' ? t('alignCenterSelected') : t('alignCenter'))}
+                                title={(horizontalAlignment === 'center' ? t('alignCenterCurrentPositionTextIn') : t('alignCenterPositionTextInThe'))}
                                 onClick={() => updateHorizontalAlignment('center')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(horizontalAlignment === 'center' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1095,8 +1093,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={horizontalAlignment === 'right'}
                                 role="radio"
                                 aria-checked={horizontalAlignment === 'right'}
-                                aria-label={`Align right${horizontalAlignment === 'right' ? ', selected' : ''}`}
-                                title={`Align Right${horizontalAlignment === 'right' ? ' (Current)' : ''}. Position text to the right.`}
+                                aria-label={(horizontalAlignment === 'right' ? t('alignRightSelected') : t('alignRight'))}
+                                title={(horizontalAlignment === 'right' ? t('alignRightCurrentPositionTextTo') : t('alignRightPositionTextToThe'))}
                                 onClick={() => updateHorizontalAlignment('right')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(horizontalAlignment === 'right' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1121,7 +1119,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         id={ids.vAlignGroup}
                     >
                         <span id={ids.vAlignDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Choose vertical alignment for text. Options are baseline, top, middle, or bottom. Currently set to {verticalAlignment}.
+                            {t('chooseVerticalAlignmentForTextOptions', { verticalAlignment })}
                         </span>
                         <AdvancedButtonGroup size="sm">
                             <Button
@@ -1130,8 +1128,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={verticalAlignment === 'baseline'}
                                 role="radio"
                                 aria-checked={verticalAlignment === 'baseline'}
-                                aria-label={`Align to baseline${verticalAlignment === 'baseline' ? ', selected' : ''}`}
-                                title={`Baseline Alignment${verticalAlignment === 'baseline' ? ' (Current)' : ''}. Align text to the font baseline.`}
+                                aria-label={(verticalAlignment === 'baseline' ? t('alignToBaselineSelected') : t('alignToBaseline'))}
+                                title={(verticalAlignment === 'baseline' ? t('baselineAlignmentCurrentAlignTextTo') : t('baselineAlignmentAlignTextToThe'))}
                                 onClick={() => updateVerticalAlignment('baseline')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'baseline' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1143,8 +1141,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={verticalAlignment === 'top'}
                                 role="radio"
                                 aria-checked={verticalAlignment === 'top'}
-                                aria-label={`Align to top${verticalAlignment === 'top' ? ', selected' : ''}`}
-                                title={`Top Alignment${verticalAlignment === 'top' ? ' (Current)' : ''}. Position text at the top.`}
+                                aria-label={(verticalAlignment === 'top' ? t('alignToTopSelected') : t('alignToTop'))}
+                                title={(verticalAlignment === 'top' ? t('topAlignmentCurrentPositionTextAt') : t('topAlignmentPositionTextAtThe'))}
                                 onClick={() => updateVerticalAlignment('top')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'top' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1156,8 +1154,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={verticalAlignment === 'middle'}
                                 role="radio"
                                 aria-checked={verticalAlignment === 'middle'}
-                                aria-label={`Align to middle${verticalAlignment === 'middle' ? ', selected' : ''}`}
-                                title={`Middle Alignment${verticalAlignment === 'middle' ? ' (Current)' : ''}. Center text vertically.`}
+                                aria-label={(verticalAlignment === 'middle' ? t('alignToMiddleSelected') : t('alignToMiddle'))}
+                                title={(verticalAlignment === 'middle' ? t('middleAlignmentCurrentCenterTextVertically') : t('middleAlignmentCenterTextVertically'))}
                                 onClick={() => updateVerticalAlignment('middle')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'middle' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1169,8 +1167,8 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                 active={verticalAlignment === 'bottom'}
                                 role="radio"
                                 aria-checked={verticalAlignment === 'bottom'}
-                                aria-label={`Align to bottom${verticalAlignment === 'bottom' ? ', selected' : ''}`}
-                                title={`Bottom Alignment${verticalAlignment === 'bottom' ? ' (Current)' : ''}. Position text at the bottom.`}
+                                aria-label={(verticalAlignment === 'bottom' ? t('alignToBottomSelected') : t('alignToBottom'))}
+                                title={(verticalAlignment === 'bottom' ? t('bottomAlignmentCurrentPositionTextAt') : t('bottomAlignmentPositionTextAtThe'))}
                                 onClick={() => updateVerticalAlignment('bottom')}
                                 style={{ minWidth: 'auto', padding: '2px 6px', ...(verticalAlignment === 'bottom' ? { backgroundColor: 'var(--calcite-color-foreground-current, #e0e7ff)', borderColor: 'var(--calcite-color-brand, #6366f1)' } : {}) }}
                             >
@@ -1184,7 +1182,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
             {/* Background and Halo section */}
             <fieldset style={{ border: 'none', padding: 0, margin: '0 0 4px', position: 'relative' }}>
                 <legend className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                    Background Color and Halo Effect Controls
+                    {t('backgroundColorAndHaloEffectControls')}
                 </legend>
 
                 {/* Halo details — floats above the toggle row */}
@@ -1209,7 +1207,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         aria-label={t('textStyleHaloStyleDetails')}
                     >
                         <span id={ids.haloColorDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Halo color. Current: {fontHaloColor}.
+                            {t('haloColorCurrentFontHaloColor', { fontHaloColor })}
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '6px' }}>
                             <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>{t('textStyleColor')}</label>
@@ -1230,7 +1228,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         </div>
 
                         <span id={ids.haloSizeDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Halo size: {fontHaloSize}px.
+                            {t('haloSizeFontHaloSizePx', { fontHaloSize })}
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '4px' }}>
                             <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>{t('textStyleSize')}</label>
@@ -1253,7 +1251,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                         </div>
 
                         <span id={ids.haloOpacityDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Halo opacity: {Math.round(fontHaloOpacity * 100)}%.
+                            {t('haloOpacityFontHaloOpacity', { fontHaloOpacity: Math.round(fontHaloOpacity * 100) })}
                         </span>
                         <div className="d-flex align-items-center" style={{ gap: '4px' }}>
                             <label style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #374151)', fontWeight: 500 }}>{t('textStyleOpacity')}</label>
@@ -1299,7 +1297,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-foreground-3, #e5e7eb)'; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--calcite-color-foreground-1, #fff)'; }}
                         >
-                            Done
+                            {t('done')}
                         </div>
                     </div>
                 )}
@@ -1311,10 +1309,10 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             htmlFor={ids.bgColorPicker}
                             style={{ ...labelStyle, marginRight: '6px' }}
                         >
-                            Background:
+                            {t('background')}
                         </label>
                         <span id={ids.bgColorDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Background color behind the text. Current setting is {fontBackgroundColor === 'rgba(0,0,0,0)' ? 'transparent (no background)' : fontBackgroundColor}. Opens color selection dialog.
+                            {t('backgroundColorBehindTheTextCurrent')} {fontBackgroundColor === 'rgba(0,0,0,0)' ? t('transparentNoBackground') : fontBackgroundColor}{t('opensColorSelectionDialog')}
                         </span>
                         <ColorPicker
                             id={ids.bgColorPicker}
@@ -1323,10 +1321,10 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             height={26}
                             color={fontBackgroundColor === 'rgba(0,0,0,0)' ? '' : fontBackgroundColor}
                             onChange={updateBackgroundColor}
-                            aria-label={`Background color picker, currently ${fontBackgroundColor === 'rgba(0,0,0,0)' ? 'transparent' : fontBackgroundColor}`}
+                            aria-label={t('backgroundColorPickerCurrentlyFontBackgroundColor', { fontBackgroundColor: fontBackgroundColor === 'rgba(0,0,0,0)' ? 'transparent' : fontBackgroundColor })}
                             aria-describedby={ids.bgColorDesc}
                             aria-haspopup="dialog"
-                            title={`Background color: ${fontBackgroundColor === 'rgba(0,0,0,0)' ? 'None (transparent)' : fontBackgroundColor}. Click to select a background color for the text.`}
+                            title={t('backgroundColorFontBackgroundColorClickToSelect', { fontBackgroundColor: fontBackgroundColor === 'rgba(0,0,0,0)' ? t('noneTransparent') : fontBackgroundColor })}
                         />
                     </div>
 
@@ -1336,20 +1334,20 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                             style={labelStyle}
                             id={`${ids.haloToggle}-label`}
                         >
-                            Halo:
+                            {t('halo')}
                         </label>
                         <span id={ids.haloToggleDesc} className="sr-only" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
-                            Enable or disable halo effect around text. Currently {fontHaloEnabled ? 'enabled' : 'disabled'}.
+                            {(fontHaloEnabled ? t('enableOrDisableHaloEffectAround') : t('enableOrDisableHaloEffectAround2'))}
                         </span>
                         <Switch
                             id={ids.haloToggle}
                             size="sm"
                             checked={fontHaloEnabled}
                             onChange={evt => updateFontHaloEnabled(evt.target.checked)}
-                            aria-label={`Toggle text halo effect, currently ${fontHaloEnabled ? 'enabled' : 'disabled'}`}
+                            aria-label={(fontHaloEnabled ? t('toggleTextHaloEffectCurrentlyEnabled') : t('toggleTextHaloEffectCurrentlyDisabled'))}
                             aria-describedby={ids.haloToggleDesc}
                             aria-checked={fontHaloEnabled}
-                            title={`Halo Effect: ${fontHaloEnabled ? 'On' : 'Off'}`}
+                            title={(fontHaloEnabled ? t('haloEffectOn') : t('haloEffectOff'))}
                         />
                         {fontHaloEnabled && !haloDetailsOpen && (
                             <div
@@ -1369,7 +1367,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                                     textDecoration: 'underline'
                                 }}
                             >
-                                Edit
+                                {t('edit')}
                             </div>
                         )}
                     </div>
@@ -1403,7 +1401,7 @@ export const TextStyleEditor: React.FC<Props> = ({ currentTextSymbol, updateSymb
                     firstFocusableRef.current?.focus();
                 }}
             >
-                Return to beginning of text editor
+                {t('returnToBeginningOfTextEditor')}
             </a>
         </div>
     );

@@ -91,6 +91,18 @@ For the complete narrative of capabilities and known issues, see the [Esri Commu
 
 ---
 
+## Languages
+
+The widget speaks the app's language. Experience Builder picks the language from the user's ArcGIS profile, the browser, the `?locale=` URL parameter, or the out-of-the-box **Language Switcher** widget, and Draw Advanced follows along in all 39 languages Experience Builder supports (40 with English).
+
+- Every button, tooltip, screen-reader label, message and help guide line lives in `src/runtime/translations/default.ts` and `src/setting/translations/default.ts` (about 1,370 strings).
+- The locale files (`translations/es.js`, `fr.js`, and the rest) are generated with [exb-i18n-kit](https://github.com/brianmcleer/exb-i18n-kit). It reuses the translations Esri already ships with Experience Builder and the ArcGIS Maps SDK, plus Unicode CLDR unit names, so shared words (Undo, Delete, Square Feet, Hectares) match Esri's own widgets exactly.
+- Anything Esri does not ship yet shows in English. `i18n/STATUS.md` in the repo lists coverage per language.
+
+**Help translate.** Native speakers are welcome: run `exb-i18n review draw-advanced --locales es` (any locale), fill the `translation` column of `i18n/review/es.csv`, run `exb-i18n import draw-advanced i18n/review/es.csv`, and send a pull request. Hand edits made straight in a locale file are also kept on the next sync.
+
+---
+
 ## Known issues
 
 - **Circles are 60-sided polygons.** Any polygon with exactly 60 sides is treated as a circle and given a radius, so a hand-drawn 60-sided polygon or a distorted circle will be measured as a circle.
@@ -122,6 +134,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ---
 
 ## Changelog
+
+- 2026-10-08 v4.6.0: Localization. The widget and its settings panel follow the app language in all 39 Experience Builder locales, including the out-of-the-box Language Switcher and the `?locale=` URL parameter. About 640 hardcoded English strings (dialogs, buttons, tooltips, screen-reader labels, status announcements, the unit editor in settings) moved into the translation files; locale files are generated with exb-i18n-kit from the translations Esri ships plus Unicode CLDR unit names, and untranslated strings fall back to English. Fix bug where messages with values (counts, names) showed raw `{placeholders}` when the panel ran without the host widget's translator.
 
 - 2026-09-17 v4.5.2: Maps SDK 5.x fixes reported after the move to Experience Builder 1.21. The widget no longer throws on open when `view.popup` is undefined (the popup is a web component in 5.x); popup suppression now uses `view.closePopup()` with a guarded fallback. Highlight hiding and restore use the 5.x `view.highlights` collection when present and fall back to `MapView.highlightOptions` on 4.x, and the original highlight style is saved and put back instead of being reset to cyan. Packaging: the Visual Studio editor shims (`src/exb-editor-shims*.d.ts`) are no longer included in the release zip because their ambient module declarations rewrote react, jimu and esri types for neighbouring widgets. Also fixed: controller open/close side effects ran on every re-render (re-cancelling the sketch, re-enabling `updateOnGraphicClick` behind the measurement tool, and looping `setState` while closed); closing or unmounting the widget wiped every graphic in `view.graphics`, including the Search pin and other widgets' highlights; unmounting emptied the shared `DrawGL` layer so drawings vanished on page switches when local storage was off; finishing a drawing in single mode left the symbol preview open and popups disabled; a feature copied from Identify without a symbol was silently dropped; GeoJSON and KML imports into State Plane or other non-Web Mercator maps were placed with a linear approximation (proj4 only knows 4326/4269/3857), now projected with the Maps SDK `projectOperator` first; merging overlapping polygons concatenated rings (overlaps rendered as holes) instead of unioning; deleting several drawings at once orphaned the measurement labels of all but the first; My Drawings re-registered its map, graphics and sketch listeners on every initialisation (N duplicate refreshes per change); the measurement-edit pointer handler was attached from an uncancelled timer with a stale tool value, which blocked text placement while edit mode was on; a label drag in progress at unmount left pointer listeners on the view; unguarded DOM lookups in the symbol and color pickers; `localStorage.getItem` outside try/catch in the restore path; an unhandled `goTo` rejection during label edits.
 

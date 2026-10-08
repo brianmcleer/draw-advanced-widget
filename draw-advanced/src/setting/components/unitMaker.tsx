@@ -1,9 +1,14 @@
 import { React } from 'jimu-core'
 import { TextInput, NumericInput, Label, Button, CollapsablePanel } from 'jimu-ui'
+import defaultMessages from '../translations/default'
 
 const { useState, useEffect } = React
 
 const UnitMaker = (props) => {
+    // Translation helper passed down from the settings panel; English defaults when absent.
+    const nls = (id: string, values?: Record<string, any>): string => props.nls
+        ? props.nls(id, values)
+        : String((defaultMessages as any)[id] ?? id).replace(/\{(\w+)\}/g, (m, k) => (values && values[k] != null ? String(values[k]) : m))
     const allUnits = props.allUnits
     const type = props.type
     const oldUnit = props.oldUnit
@@ -22,15 +27,15 @@ const UnitMaker = (props) => {
         const letters = /^[a-zA-Z]+$/.test(unit)
         if (unit === '' || label === '' || abbreviation === '') {
             valid = false
-            text = 'Required Field Missing'
+            text = nls('settingRequiredFieldMissing')
         }
         if (!conversion) {
             valid = false
-            text = 'Invalid Conversion Factor'
+            text = nls('settingInvalidConversionFactor')
         }
         if (!letters) {
             valid = false
-            text = 'Name May Only Contain Letters'
+            text = nls('settingNameMayOnlyContainLetters')
         }
         for (let i = 0; i < allUnits.length; i++) {
             if (unit === allUnits[i].unit) {
@@ -39,7 +44,7 @@ const UnitMaker = (props) => {
                     continue
                 } else {
                     valid = false
-                    text = 'Name Must Be Unique'
+                    text = nls('settingNameMustBeUnique')
                 }
             }
         }
@@ -49,14 +54,14 @@ const UnitMaker = (props) => {
 
     return <CollapsablePanel
         defaultIsOpen={!oldUnit}
-        label={oldUnit ? `Edit/Delete - ${label}` : 'Create New Unit'}
+        label={oldUnit ? nls('settingEditDeleteLabel', { label }) : nls('settingCreateNewUnit')}
         type={oldUnit ? 'primary' : 'default'}
         className='mb-2'
     >
         <Label
             className='w-100'
         >
-            {props.handleChangeUnit ? 'Name (Cannot be changed):' : 'Name (Must be unique, letters only):'}
+            {props.handleChangeUnit ? nls('settingNameCannotBeChanged') : nls('settingNameMustBeUniqueLettersOnly')}
             <TextInput
                 allowClear={!props.handleChangeUnit}
                 required
@@ -69,7 +74,7 @@ const UnitMaker = (props) => {
         <Label
             className='w-100'
         >
-            Label (Full name used in menus):
+            {nls('settingLabelFullNameUsedInMenus')}
             <TextInput
                 allowClear
                 required
@@ -81,7 +86,7 @@ const UnitMaker = (props) => {
         <Label
             className='w-100'
         >
-            Abbreviation (Used on map):
+            {nls('settingAbbreviationUsedOnMap')}
             <TextInput
                 allowClear
                 required
@@ -93,7 +98,7 @@ const UnitMaker = (props) => {
         <Label
             className='w-100'
         >
-            {type === 'linear' ? 'Conversion Factor (One meter is how many of your unit?):' : 'Conversion Factor (One square meter is how many of your unit?):'}
+            {type === 'linear' ? nls('settingConversionFactorOneMeterIsHow') : nls('settingConversionFactorOneSquareMeterIs')}
             <NumericInput
                 className='w-100'
                 required
@@ -103,12 +108,12 @@ const UnitMaker = (props) => {
         </Label>
         {allValid ?
             <div>
-                <h6>{type === 'linear' ? `1 meter = ${conversion} ${label} (${abbreviation})` : `1 square meter = ${conversion} ${label} (${abbreviation})`}</h6>
+                <h6>{type === 'linear' ? nls('setting1MeterConversionLabelAbbreviation', { conversion, label, abbreviation }) : nls('setting1SquareMeterConversionLabelAbbreviation', { conversion, label, abbreviation })}</h6>
                 <Button
                     block
                     onClick={() => props.handleAddUnit ? props.handleAddUnit({ unit, label, abbreviation, conversion }, type) : props.handleChangeUnit({ unit, label, abbreviation, conversion }, type)}
                 >
-                    Save Unit
+                    {nls('settingSaveUnit')}
                 </Button>
             </div>
             : <h6>{validityText}</h6>}
@@ -118,7 +123,7 @@ const UnitMaker = (props) => {
                 type='danger'
                 onClick={() => props.handleDeleteUnit(unit, type)}
             >
-                Delete Unit
+                {nls('settingDeleteUnit')}
             </Button>
             : <></>
         }

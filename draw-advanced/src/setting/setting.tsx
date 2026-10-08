@@ -226,7 +226,9 @@ const DEFAULT_ON_BOOLEAN_KEYS: string[] = [
 export default class Setting extends React.PureComponent<SettingProps, SettingState> {
     // Translation helper backed by the builder's intl; falls back to English defaults.
     nls = (id: string, values?: Record<string, any>): string =>
-        (this.props as any).intl ? (this.props as any).intl.formatMessage({ id, defaultMessage: (defaultMessages as any)[id] }, values) : ((defaultMessages as any)[id] ?? id);
+        (this.props as any).intl
+            ? (this.props as any).intl.formatMessage({ id, defaultMessage: (defaultMessages as any)[id] }, values)
+            : String((defaultMessages as any)[id] ?? id).replace(/\{(\w+)\}/g, (m, k) => (values && values[k] != null ? String(values[k]) : m));
 
     declare props: SettingProps;
     declare state: SettingState;
@@ -664,8 +666,8 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             </Select>
                             <p style={{ ...s.sub, marginTop: '4px' }}>
                                 {config.creationMode === DrawMode.CONTINUOUS
-                                    ? 'Drawing tool stays active after completing each shape.'
-                                    : 'Drawing tool deactivates after completing one shape.'}
+                                    ? this.nls('settingDrawingToolStaysActiveAfterCompleting')
+                                    : this.nls('settingDrawingToolDeactivatesAfterCompletingOne')}
                             </p>
                         </SettingRow>
                     </SettingSection>
@@ -675,9 +677,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     ================================================================ */}
                     <SettingSection title={this.nls('settingImportExportSettings')}>
                         <p style={s.sectionDesc}>
-                            Save this widget&apos;s configuration to an XML file, or load a saved file to copy settings
-                            between applications. Importing merges the file&apos;s values onto the current configuration.
-                            The selected map widget is not included.
+                            {this.nls('settingSaveThisWidgetSConfigurationTo')}
                         </p>
 
                         {/* Export */}
@@ -686,12 +686,12 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             <div style={s.quickBtns}>
                                 <Tooltip title={this.nls('settingBuildAnXmlDocumentFrom')} placement='top'>
                                     <Button size='sm' type='primary' onClick={this.handleGenerateExport} aria-label={this.nls('settingGenerateSettingsXml')} title={this.nls('settingGenerateSettingsXml')}>
-                                        Generate XML
+                                        {this.nls('settingGenerateXml')}
                                     </Button>
                                 </Tooltip>
                                 <Tooltip title={this.nls('settingDownloadTheCurrentSettingsAs')} placement='top'>
                                     <Button size='sm' type='default' onClick={this.handleDownloadExport} aria-label={this.nls('settingDownloadSettingsXmlFile')} title={this.nls('settingDownloadSettingsAsAnXml')}>
-                                        Download File
+                                        {this.nls('settingDownloadFile')}
                                     </Button>
                                 </Tooltip>
                             </div>
@@ -706,7 +706,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                     />
                                     <div style={{ ...s.quickBtns, marginTop: '6px' }}>
                                         <Button size='sm' type='tertiary' onClick={this.handleCopyExport} aria-label={this.nls('settingCopySettingsXmlToClipboard')} title={this.nls('settingCopyXmlToClipboard')}>
-                                            Copy to Clipboard
+                                            {this.nls('settingCopyToClipboard')}
                                         </Button>
                                     </div>
                                 </>
@@ -730,12 +730,12 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             <div style={s.quickBtns}>
                                 <Tooltip title={this.nls('settingChooseAPreviouslyExportedXml')} placement='top'>
                                     <Button size='sm' type='default' onClick={() => this.fileInputRef.current?.click()} aria-label={this.nls('settingLoadSettingsFromAnXml')} title={this.nls('settingLoadSettingsFromAnXml2')}>
-                                        Load from File
+                                        {this.nls('settingLoadFromFile')}
                                     </Button>
                                 </Tooltip>
                             </div>
                             <Label className='w-100' style={{ fontSize: '12px', marginTop: '4px' }}>
-                                Or paste XML:
+                                {this.nls('settingOrPasteXml')}
                                 <TextArea
                                     className='w-100 mt-1'
                                     style={{ minHeight: '120px', fontFamily: 'monospace', fontSize: '11px' }}
@@ -748,7 +748,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             <div style={{ ...s.quickBtns, marginTop: '6px' }}>
                                 <Tooltip title={this.nls('settingApplyTheLoadedOrPasted')} placement='top'>
                                     <Button size='sm' type='primary' onClick={this.handleApplyImport} aria-label={this.nls('settingApplyImportedSettings')} title={this.nls('settingApplyImportedSettings')}>
-                                        Apply Imported Settings
+                                        {this.nls('settingApplyImportedSettings2')}
                                     </Button>
                                 </Tooltip>
                             </div>
@@ -759,7 +759,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             )}
                             {this.state.importSuccess && (
                                 <Alert type='success' role='status' aria-live='polite' style={{ width: '100%', marginTop: '6px' }}>
-                                    Settings imported. Review the sections below and click Save in the builder to keep them.
+                                    {this.nls('settingSettingsImportedReviewTheSectionsBelow')}
                                 </Alert>
                             )}
                         </div>
@@ -804,7 +804,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
 
                         {enabledToolCount === 0 && (
                             <Alert type='warning' style={{ width: '100%', marginTop: '8px' }}>
-                                No draw tools enabled. Users will not be able to create new drawings.
+                                {this.nls('settingNoDrawToolsEnabledUsersWill')}
                             </Alert>
                         )}
                     </SettingSection>
@@ -815,27 +815,27 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     <SettingSection title={this.nls('settingFeaturesAmpCapabilities')}>
                         <p style={s.sectionDesc}>{this.nls('settingEnableOrDisableMajorWidget')}</p>
 
-                        {this.renderToggle('enableSymbolEditor', 'Symbol Editor',
-                            'Color, size, and style controls for drawing symbols.')}
+                        {this.renderToggle('enableSymbolEditor', this.nls('settingSymbolEditor'),
+                            this.nls('settingColorSizeAndStyleControlsFor'))}
 
-                        {this.renderToggle('enableMeasurements', 'Measurements',
-                            'Length, area, and perimeter measurement labels on drawings.')}
+                        {this.renderToggle('enableMeasurements', this.nls('settingMeasurements'),
+                            this.nls('settingLengthAreaAndPerimeterMeasurementLabels'))}
 
                         {config.enableMeasurements !== false && (
                             <div style={s.indent}>
-                                {this.renderToggle('rememberMeasurementPreferences', 'Remember User Preferences',
-                                    'Store each user\'s measurement units, display options, and decimal places in their browser so they persist between sessions. Users can reset to your defaults at any time.')}
+                                {this.renderToggle('rememberMeasurementPreferences', this.nls('settingRememberUserPreferences'),
+                                    this.nls('settingStoreEachUserSMeasurementUnits'))}
 
-                                {this.renderToggle('allowMultipleUnits', 'Multiple Units',
-                                    'Let users show measurements in additional units alongside the primary unit, for example acres with square feet.')}
+                                {this.renderToggle('allowMultipleUnits', this.nls('settingMultipleUnits'),
+                                    this.nls('settingLetUsersShowMeasurementsInAdditional'))}
                             </div>
                         )}
 
-                        {this.renderToggle('enableSnapping', 'Snapping',
-                            'Snap drawing vertices to features in other map layers.')}
+                        {this.renderToggle('enableSnapping', this.nls('settingSnapping'),
+                            this.nls('settingSnapDrawingVerticesToFeaturesIn'))}
 
-                        {this.renderToggle('enableBuffer', 'Buffer',
-                            'Create buffer zones around drawn features.')}
+                        {this.renderToggle('enableBuffer', this.nls('settingBuffer'),
+                            this.nls('settingCreateBufferZonesAroundDrawnFeatures'))}
 
                         {config.enableBuffer !== false && (
                             <div style={s.indent}>
@@ -869,7 +869,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                 </div>
 
                                 <div style={s.fieldRow}>
-                                    <Label style={s.fieldLabel} title={this.nls('settingInitialBufferFillOpacity1')}>Default Opacity (%)</Label>
+                                    <Label style={s.fieldLabel} title={this.nls('settingInitialBufferFillOpacity1')}>{this.nls('settingDefaultOpacity')}</Label>
                                     <NumericInput
                                         value={config.defaultBufferOpacity ?? 75}
                                         min={1}
@@ -899,36 +899,36 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             </div>
                         )}
 
-                        {this.renderToggle('enableUndoRedo', 'Undo / Redo',
-                            'Undo and redo buttons during active drawing.')}
+                        {this.renderToggle('enableUndoRedo', this.nls('settingUndoRedo'),
+                            this.nls('settingUndoAndRedoButtonsDuringActive'))}
 
-                        {this.renderToggle('enableCopyFromMap', 'Copy from Map',
-                            'Copy features from map layers into drawings. Includes single click, multi-select, and spatial selection modes.')}
+                        {this.renderToggle('enableCopyFromMap', this.nls('settingCopyFromMap'),
+                            this.nls('settingCopyFeaturesFromMapLayersInto'))}
                     </SettingSection>
 
                     {/* ================================================================
                         SECTION 4: MY DRAWINGS PANEL
                     ================================================================ */}
                     <SettingSection title={this.nls('settingMyDrawingsPanel')}>
-                        {this.renderToggle('enableMyDrawings', 'Enable My Drawings',
-                            'Tabbed panel for managing, sorting, and organizing saved drawings. When disabled, there is no tab bar and only the Draw panel is shown.')}
+                        {this.renderToggle('enableMyDrawings', this.nls('settingEnableMyDrawings'),
+                            this.nls('settingTabbedPanelForManagingSortingAnd'))}
 
                         {myDrawingsEnabled && (
                             <>
                                 <div style={s.divider} />
                                 <p style={{ ...s.sub, fontWeight: 600, color: 'var(--calcite-color-text-2, #495057)', marginBottom: '6px' }}>
-                                    Choose which actions are available in the My Drawings toolbar:
+                                    {this.nls('settingChooseWhichActionsAreAvailableIn')}
                                 </p>
                                 <div style={s.indent}>
-                                    {this.renderCheck('enableMyDrawingsImport', 'Import (Shapefile, GeoJSON, KML)', true, 'Show the Import button for loading Shapefile (.zip), GeoJSON, and KML files into My Drawings.')}
-                                    {this.renderCheck('enableMyDrawingsExport', 'Export (Shapefile, GeoJSON, KML, CSV)', true, 'Show the Export menu. Buffers are exported as their own features in every format.')}
-                                    {this.renderCheck('enableMyDrawingsLock', 'Lock / Unlock drawings', true, 'Allow users to lock drawings so they cannot be moved or edited.')}
-                                    {this.renderCheck('enableMyDrawingsGroup', 'Group / Ungroup drawings', true, 'Allow users to group multiple drawings together for batch actions.')}
-                                    {this.renderCheck('enableMyDrawingsMerge', 'Merge selected drawings', true, 'Allow users to merge selected geometries into a single drawing.')}
-                                    {this.renderCheck('enableMyDrawingsDuplicate', 'Duplicate drawings', true, 'Allow users to duplicate an existing drawing.')}
-                                    {this.renderCheck('enableMyDrawingsZoomTo', 'Zoom to drawing', true, 'Show a control that zooms the map to a drawing extent.')}
-                                    {this.renderCheck('enableMyDrawingsProperties', 'View drawing properties', true, 'Show the per-drawing properties / details panel.')}
-                                    {this.renderCheck('enableMyDrawingsSort', 'Sort and filter controls', true, 'Show sorting and filtering controls at the top of the My Drawings list.')}
+                                    {this.renderCheck('enableMyDrawingsImport', this.nls('settingImportShapefileGeoJSONKml'), true, this.nls('settingShowTheImportButtonForLoading'))}
+                                    {this.renderCheck('enableMyDrawingsExport', this.nls('settingExportShapefileGeoJSONKmlCsv'), true, this.nls('settingShowTheExportMenuBuffersAre'))}
+                                    {this.renderCheck('enableMyDrawingsLock', this.nls('settingLockUnlockDrawings'), true, this.nls('settingAllowUsersToLockDrawingsSo'))}
+                                    {this.renderCheck('enableMyDrawingsGroup', this.nls('settingGroupUngroupDrawings'), true, this.nls('settingAllowUsersToGroupMultipleDrawings'))}
+                                    {this.renderCheck('enableMyDrawingsMerge', this.nls('settingMergeSelectedDrawings'), true, this.nls('settingAllowUsersToMergeSelectedGeometries'))}
+                                    {this.renderCheck('enableMyDrawingsDuplicate', this.nls('settingDuplicateDrawings'), true, this.nls('settingAllowUsersToDuplicateAnExisting'))}
+                                    {this.renderCheck('enableMyDrawingsZoomTo', this.nls('settingZoomToDrawing'), true, this.nls('settingShowAControlThatZoomsThe'))}
+                                    {this.renderCheck('enableMyDrawingsProperties', this.nls('settingViewDrawingProperties'), true, this.nls('settingShowThePerDrawingPropertiesDetails'))}
+                                    {this.renderCheck('enableMyDrawingsSort', this.nls('settingSortAndFilterControls'), true, this.nls('settingShowSortingAndFilteringControlsAt'))}
                                 </div>
 
                                 <div style={{ ...s.quickBtns, marginTop: '8px', paddingLeft: '12px' }}>
@@ -961,7 +961,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     <SettingSection title={this.nls('settingDrawLayer')}>
                         <SettingRow>
                             <Label className='w-100'>
-                                Default Layer Name:
+                                {this.nls('settingDefaultLayerName')}
                                 <TextInput
                                     type='text'
                                     required
@@ -973,9 +973,9 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             </Label>
                         </SettingRow>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '4px 0' }}>
-                            {this.renderCheck('changeTitle', 'Allow users to rename the draw layer', false, 'When on, end users can edit the draw layer name at runtime.')}
-                            {this.renderCheck('listMode', 'Show draw layer in map layer list', false, 'When on, the draw graphics layer appears in the map\u2019s layer list / legend.')}
-                            {this.renderCheck('changeListMode', 'Allow users to toggle layer list visibility', false, 'When on, end users can show or hide the draw layer in the layer list.')}
+                            {this.renderCheck('changeTitle', this.nls('settingAllowUsersToRenameTheDraw'), false, this.nls('settingWhenOnEndUsersCanEdit'))}
+                            {this.renderCheck('listMode', this.nls('settingShowDrawLayerInMapLayer'), false, this.nls('settingWhenOnTheDrawGraphicsLayer'))}
+                            {this.renderCheck('changeListMode', this.nls('settingAllowUsersToToggleLayerList'), false, this.nls('settingWhenOnEndUsersCanShow'))}
                         </div>
                     </SettingSection>
 
@@ -985,7 +985,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     <SettingSection title={this.nls('settingDrawingStorage')}>
                         <SettingRow>
                             <Label className='w-100'>
-                                Storage Scope:
+                                {this.nls('settingStorageScope')}
                                 <Select
                                     value={config.storageScope || StorageScope.APP_SPECIFIC}
                                     onChange={this.handleStorageScopeChange}
@@ -1001,8 +1001,8 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                         <SettingRow>
                             <Alert type='info' style={{ width: '100%' }}>
                                 {String(config.storageScope) === 'global'
-                                    ? 'Drawings are shared across all Experience Builder applications on this domain.'
-                                    : 'Drawings are isolated to this specific application.'}
+                                    ? this.nls('settingDrawingsAreSharedAcrossAllExperience')
+                                    : this.nls('settingDrawingsAreIsolatedToThisSpecific')}
                             </Alert>
                         </SettingRow>
 
@@ -1012,8 +1012,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                             <div style={{ width: '100%' }}>
                                 <Label style={s.toggleLabel}>{this.nls('settingMaximumSavedDrawings')}</Label>
                                 <p style={s.sub}>
-                                    Limit how many drawings are stored in the browser. Set to 0 for unlimited.
-                                    Large numbers of complex drawings may impact browser performance.
+                                    {this.nls('settingLimitHowManyDrawingsAreStored')}
                                 </p>
                                 <NumericInput
                                     value={config.maxDrawings ?? 0}
@@ -1035,8 +1034,8 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     <SettingSection title={this.nls('settingIntegrations')}>
                         <p style={s.sectionDesc}>{this.nls('settingConnectTheDrawWidgetWith')}</p>
 
-                        {this.renderOptInToggle('enableMailingLabels', 'Mailing Labels',
-                            'Show a button that sends drawing geometry to the Mailing Labels widget for parcel selection. The Mailing Labels widget must also have its Draw Widget integration enabled.')}
+                        {this.renderOptInToggle('enableMailingLabels', this.nls('settingMailingLabels'),
+                            this.nls('settingShowAButtonThatSendsDrawing'))}
 
                         {config.enableMailingLabels === true && (
                             <div style={s.indent}>
@@ -1045,10 +1044,10 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                         <Label style={s.toggleLabel}>{this.nls('settingTargetWidget')}</Label>
                                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '6px' }}>
                                             <Button size="sm" type="primary" onClick={this.scanForWidgets} disabled={this.state.scanning} style={{ whiteSpace: 'nowrap' }}>
-                                                {this.state.scanning ? 'Scanning...' : 'Scan App'}
+                                                {this.state.scanning ? 'Scanning...' : this.nls('settingScanApp')}
                                             </Button>
                                             <span style={s.sub}>
-                                                Reads app config to find widgets
+                                                {this.nls('settingReadsAppConfigToFindWidgets')}
                                             </span>
                                         </div>
                                         {this.state.scanMessage && (
@@ -1070,7 +1069,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                                 size="sm"
                                                 aria-label={this.nls('settingSelectTheMailingLabelsWidget')}
                                             >
-                                                <Option value=''>— Select a widget —</Option>
+                                                <Option value=''>{this.nls('settingSelectAWidget')}</Option>
                                                 {this.state.detectedWidgets.map(w => (
                                                     <Option key={w.id} value={w.id}>{w.label}</Option>
                                                 ))}
@@ -1086,7 +1085,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                             />
                                         )}
                                         {config.mailingLabelsWidgetId && (
-                                            <span style={s.sub}>Widget ID: {config.mailingLabelsWidgetId}</span>
+                                            <span style={s.sub}>{this.nls('settingWidgetIdMailingLabelsWidgetId', { mailingLabelsWidgetId: config.mailingLabelsWidgetId })}</span>
                                         )}
 
                                         <Label style={{ ...s.toggleLabel, marginTop: '10px' }}>{this.nls('settingParentWidgetController')}</Label>
@@ -1097,12 +1096,12 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                                 size="sm"
                                                 aria-label={this.nls('settingSelectTheWidgetControllerContaining')}
                                             >
-                                                <Option value=''>— Select controller —</Option>
+                                                <Option value=''>{this.nls('settingSelectController')}</Option>
                                                 {this.state.detectedWidgets.filter(w => w.label.toLowerCase().includes('controller')).map(w => (
                                                     <Option key={w.id} value={w.id}>{w.label}</Option>
                                                 ))}
                                                 {/* Also show all widgets in case the controller doesn't have "controller" in its name */}
-                                                <Option disabled>─── All Widgets ───</Option>
+                                                <Option disabled>{this.nls('settingAllWidgets')}</Option>
                                                 {this.state.detectedWidgets.map(w => (
                                                     <Option key={`all-${w.id}`} value={w.id}>{w.label}</Option>
                                                 ))}
@@ -1118,22 +1117,21 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                             />
                                         )}
                                         <p style={s.sub}>
-                                            The widget controller / sidebar that contains the Mailing Labels widget.
-                                            This ensures the controller panel opens before sending geometry.
+                                            {this.nls('settingTheWidgetControllerSidebarThatContains')}
                                         </p>
                                     </div>
                                 </SettingRow>
                                 {!config.mailingLabelsWidgetId && (
                                     <Alert type='warning' style={{ width: '100%' }}>
-                                        No widget selected. Click "Scan App" to detect widgets, or enter the widget ID manually.
+                                        {this.nls('settingNoWidgetSelectedClickScanApp')}
                                     </Alert>
                                 )}
                             </div>
                         )}
                     </SettingSection>
 
-                    {this.renderOptInToggle('enableIdentifyByQuery', 'Identify By Query',
-                        'Show a button that sends drawing geometry to the Identify By Query widget for feature identification. The Identify By Query widget must also have its Draw Widget integration enabled.')}
+                    {this.renderOptInToggle('enableIdentifyByQuery', this.nls('settingIdentifyByQuery'),
+                        this.nls('settingShowAButtonThatSendsDrawing2'))}
 
                     {config.enableIdentifyByQuery === true && (
                         <div style={s.indent}>
@@ -1142,10 +1140,10 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                     <Label style={s.toggleLabel}>{this.nls('settingTargetWidget')}</Label>
                                     <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '6px' }}>
                                         <Button size="sm" type="primary" onClick={this.scanForWidgets} disabled={this.state.scanning} style={{ whiteSpace: 'nowrap' }}>
-                                            {this.state.scanning ? 'Scanning...' : 'Scan App'}
+                                            {this.state.scanning ? 'Scanning...' : this.nls('settingScanApp')}
                                         </Button>
                                         <span style={s.sub}>
-                                            Reads app config to find widgets
+                                            {this.nls('settingReadsAppConfigToFindWidgets')}
                                         </span>
                                     </div>
                                     {this.state.scanMessage && (
@@ -1167,7 +1165,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                             size="sm"
                                             aria-label={this.nls('settingSelectTheIdentifyByQuery')}
                                         >
-                                            <Option value=''>— Select a widget —</Option>
+                                            <Option value=''>{this.nls('settingSelectAWidget')}</Option>
                                             {this.state.detectedWidgets.map(w => (
                                                 <Option key={w.id} value={w.id}>{w.label}</Option>
                                             ))}
@@ -1183,7 +1181,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                         />
                                     )}
                                     {config.identifyWidgetId && (
-                                        <span style={s.sub}>Widget ID: {config.identifyWidgetId}</span>
+                                        <span style={s.sub}>{this.nls('settingWidgetIdIdentifyWidgetId', { identifyWidgetId: config.identifyWidgetId })}</span>
                                     )}
 
                                     <Label style={{ ...s.toggleLabel, marginTop: '10px' }}>{this.nls('settingParentWidgetController')}</Label>
@@ -1194,12 +1192,12 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                             size="sm"
                                             aria-label={this.nls('settingSelectTheWidgetControllerContaining2')}
                                         >
-                                            <Option value=''>— Select controller —</Option>
+                                            <Option value=''>{this.nls('settingSelectController')}</Option>
                                             {this.state.detectedWidgets.filter(w => w.label.toLowerCase().includes('controller')).map(w => (
                                                 <Option key={w.id} value={w.id}>{w.label}</Option>
                                             ))}
                                             {/* Also show all widgets in case the controller doesn't have "controller" in its name */}
-                                            <Option disabled>─── All Widgets ───</Option>
+                                            <Option disabled>{this.nls('settingAllWidgets')}</Option>
                                             {this.state.detectedWidgets.map(w => (
                                                 <Option key={`all-${w.id}`} value={w.id}>{w.label}</Option>
                                             ))}
@@ -1215,21 +1213,20 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                         />
                                     )}
                                     <p style={s.sub}>
-                                        The widget controller / sidebar that contains the Identify By Query widget.
-                                        This ensures the controller panel opens before sending geometry.
+                                        {this.nls('settingTheWidgetControllerSidebarThatContains2')}
                                     </p>
                                 </div>
                             </SettingRow>
                             {!config.identifyWidgetId && (
                                 <Alert type='warning' style={{ width: '100%' }}>
-                                    No widget selected. Click "Scan App" to detect widgets, or enter the widget ID manually.
+                                    {this.nls('settingNoWidgetSelectedClickScanApp')}
                                 </Alert>
                             )}
                         </div>
                     )}
 
-                    {this.renderOptInToggle('enableIdentifyIntegration', 'Receive from Identify By Query',
-                        'Allow the Identify By Query widget to send feature geometries to this widget using the "Copy To Draw" button. Received geometries will appear in My Drawings and be saved to storage.')}
+                    {this.renderOptInToggle('enableIdentifyIntegration', this.nls('settingReceiveFromIdentifyByQuery'),
+                        this.nls('settingAllowTheIdentifyByQueryWidget'))}
 
                     {/* ================================================================
                         SECTION 8: MEASUREMENT UNITS
@@ -1238,7 +1235,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                         {!measurementsEnabled ? (
                             <SettingRow>
                                 <Alert type='info' style={{ width: '100%' }}>
-                                    Enable Measurements in Features &amp; Capabilities to configure units.
+                                    {this.nls('settingEnableMeasurementsInFeaturesCapabilitiesTo')}
                                 </Alert>
                             </SettingRow>
                         ) : (
@@ -1246,12 +1243,12 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                 {/* Linear */}
                                 <SettingRow>
                                     <Button onClick={() => this.setState({ linearSidePopper: true })} style={{ width: '100%' }} title={this.nls('settingAddCustomLinearUnitsOr')} aria-label={this.nls('settingAddOrChangeLinearUnits')}>
-                                        Add or Change Linear Units
+                                        {this.nls('settingAddOrChangeLinearUnits2')}
                                     </Button>
                                 </SettingRow>
                                 <SettingRow>
                                     <Label className='w-100'>
-                                        Default Linear Unit:
+                                        {this.nls('settingDefaultLinearUnit2')}
                                         <Select title={this.nls('settingDefaultLinearUnitUsedFor')} aria-label={this.nls('settingDefaultLinearUnit')} onChange={(e) => this.handleDefaultDistance(e.target.value)} value={this.state.defaultDistanceUnit}>
                                             {this.state.availableDistanceUnits.map((unit, index) => (
                                                 <Option key={index} value={index}>{unit.label} ({unit.abbreviation})</Option>
@@ -1266,19 +1263,19 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                 {/* Area */}
                                 <SettingRow>
                                     <Button onClick={() => this.setState({ areaSidePopper: true })} style={{ width: '100%' }} title={this.nls('settingAddCustomAreaUnitsOr')} aria-label={this.nls('settingAddOrChangeAreaUnits')}>
-                                        Add or Change Area Units
+                                        {this.nls('settingAddOrChangeAreaUnits2')}
                                     </Button>
                                 </SettingRow>
                                 <SettingRow>
                                     <Label className='w-100'>
-                                        Default Area Units:
+                                        {this.nls('settingDefaultAreaUnits')}
                                         <Select title={this.nls('settingDefaultAreaUnitUsedFor')} aria-label={this.nls('settingDefaultAreaUnit')} onChange={(e) => this.handleDefaultArea(e.target.value)} value={this.state.defaultAreaUnit}>
                                             {this.state.availableAreaUnits.map((unit, index) => (
                                                 <Option key={index} value={index}>{unit.label} ({unit.abbreviation})</Option>
                                             ))}
                                         </Select>
                                         <span style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #6c757d)' }}>
-                                            Note: superscript characters may not display correctly here but will work in the application.
+                                            {this.nls('settingNoteSuperscriptCharactersMayNotDisplay')}
                                         </span>
                                         {this.state.defaultAreaUnit === null && <Alert type='warning'>{this.nls('settingResetDefaultAreaUnits')}</Alert>}
                                     </Label>
@@ -1310,8 +1307,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                     />
                                 </div>
                                 <p style={s.sub}>
-                                    Tokens: <code>{'{{length}}'}</code>, <code>{'{{lengthUnit}}'}</code>, <code>{'{{area}}'}</code>, <code>{'{{areaUnit}}'}</code>.
-                                    Leave blank to use built-in defaults.
+                                    {this.nls('settingTokens')} <code>{'{{length}}'}</code>, <code>{'{{lengthUnit}}'}</code>, <code>{'{{area}}'}</code>, <code>{'{{areaUnit}}'}</code>{this.nls('settingLeaveBlankToUseBuiltIn')}
                                 </p>
                             </>
                         )}
@@ -1325,7 +1321,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                         {myDrawingsEnabled && (
                             <SettingRow>
                                 <Label className='w-100'>
-                                    Default Tab:
+                                    {this.nls('settingDefaultTab')}
                                     <Select
                                         value={config.defaultTab || 'draw'}
                                         onChange={(e) => this.setConfig('defaultTab', e.target.value)}
@@ -1341,22 +1337,22 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                         )}
 
                         {/* Confirm before clear */}
-                        {this.renderCheck('confirmBeforeClear', 'Require confirmation before clearing all drawings', true, 'Show a confirmation prompt before the Clear All / Delete All action runs.')}
+                        {this.renderCheck('confirmBeforeClear', this.nls('settingRequireConfirmationBeforeClearingAllDrawings'), true, this.nls('settingShowAConfirmationPromptBeforeThe'))}
 
                         {/* Turn off on close */}
                         <div style={{ marginTop: '4px' }}>
-                            {this.renderCheck('turnOffOnClose', 'Stop drawing when widget is closed', false, 'Cancel any active drawing session when the widget panel is closed. Recommended when the widget lives inside a Widget Controller.')}
+                            {this.renderCheck('turnOffOnClose', this.nls('settingStopDrawingWhenWidgetIsClosed'), false, this.nls('settingCancelAnyActiveDrawingSessionWhen'))}
                             <p style={{ ...s.sub, marginLeft: '24px' }}>
-                                Enable when the widget is inside a Widget Controller so active drawings are cancelled on close.
+                                {this.nls('settingEnableWhenTheWidgetIsInside')}
                             </p>
                         </div>
                     </SettingSection>
-                    <SettingSection title='Help'>
-                      <SettingRow tag='label' label='Show help guide'>
+                    <SettingSection title={this.nls('settingHelp')}>
+                      <SettingRow tag='label' label={this.nls('settingShowHelpGuide')}>
                         <Switch
                           checked={this.props.config?.showHelp !== false}
                           onChange={(evt) => { this.props.onSettingChange({ id: this.props.id, config: (this.props.config as any).set('showHelp', evt.target.checked) }) }}
-                          aria-label='Show the question-mark button that opens the widget help guide'
+                          aria-label={this.nls('settingShowTheQuestionMarkButtonThat')}
                         />
                       </SettingRow>
                     </SettingSection>
@@ -1372,10 +1368,10 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     trigger={<span /> as any as HTMLElement}
                 >
                     <Alert>{this.nls('settingTheDefaultLinearUnitMust')}</Alert>
-                    <UnitMaker allUnits={this.state.availableDistanceUnits} handleAddUnit={this.handleAddUnit} type={'linear'} />
+                    <UnitMaker nls={this.nls} allUnits={this.state.availableDistanceUnits} handleAddUnit={this.handleAddUnit} type={'linear'} />
                     {userDistances && userDistances.length > 0 && <div><hr /><h3>{this.nls('settingEditUnits')}</h3></div>}
                     {userDistances && userDistances.map((oldUnit, index) => (
-                        <UnitMaker key={index} allUnits={this.state.availableDistanceUnits} handleChangeUnit={this.handleChangeUnit} type={'linear'} oldUnit={oldUnit} handleDeleteUnit={this.handleDeleteUnit} />
+                        <UnitMaker nls={this.nls} key={index} allUnits={this.state.availableDistanceUnits} handleChangeUnit={this.handleChangeUnit} type={'linear'} oldUnit={oldUnit} handleDeleteUnit={this.handleDeleteUnit} />
                     ))}
                 </SidePopper>
                 <SidePopper
@@ -1386,10 +1382,10 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                     trigger={<span /> as any as HTMLElement}
                 >
                     <Alert>{this.nls('settingTheDefaultAreaUnitMust')}</Alert>
-                    <UnitMaker allUnits={this.state.availableAreaUnits} handleAddUnit={this.handleAddUnit} type={'area'} />
+                    <UnitMaker nls={this.nls} allUnits={this.state.availableAreaUnits} handleAddUnit={this.handleAddUnit} type={'area'} />
                     {userAreas && userAreas.length > 0 && <div><hr /><h3>{this.nls('settingEditUnits')}</h3></div>}
                     {userAreas && userAreas.map((oldUnit, index) => (
-                        <UnitMaker key={index} allUnits={this.state.availableAreaUnits} handleChangeUnit={this.handleChangeUnit} type={'area'} oldUnit={oldUnit} handleDeleteUnit={this.handleDeleteUnit} />
+                        <UnitMaker nls={this.nls} key={index} allUnits={this.state.availableAreaUnits} handleChangeUnit={this.handleChangeUnit} type={'area'} oldUnit={oldUnit} handleDeleteUnit={this.handleDeleteUnit} />
                     ))}
                 </SidePopper>
             </div>

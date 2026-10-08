@@ -120,7 +120,7 @@ export function buildHelpSections (t: T, f: HelpFeatures): HelpSection[] {
     },
     {
       key: 'tips', icon: 'lightbulb', title: t('helpTipsTitle'),
-      body: [t('helpTips1'), t('helpTips2'), ...when(f.measurements, 'helpTips3')]
+      body: [t('helpTips1'), t('helpTips2'), ...when(f.measurements, 'helpTips3'), t('helpTips4')]
     }
   ]
 }

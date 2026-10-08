@@ -56,7 +56,8 @@ $ReleaseOnlyExclude = @(
     "src\*-shims.d.ts",
     "src\editor-shims.d.ts",
     "src\runtime\esri.d.ts",
-    "tools"
+    "tools",
+    "i18n"            # exb-i18n-kit lock + status: for contributors, not for installs
 )
 
 $RepoPath   = $PSScriptRoot

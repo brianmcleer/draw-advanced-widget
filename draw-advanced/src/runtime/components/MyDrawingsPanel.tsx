@@ -663,7 +663,9 @@ export interface MyDrawingsPanel {
 export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, MyDrawingsPanelState> {
     // Translation helper: host widget passes its intl-backed nls; fall back to English defaults.
     nls = (id: string, values?: Record<string, any>): string =>
-        this.props.nls ? this.props.nls(id, values) : ((defaultMessages as any)[id] ?? id);
+        this.props.nls
+            ? this.props.nls(id, values)
+            : String((defaultMessages as any)[id] ?? id).replace(/\{(\w+)\}/g, (m, k) => (values && values[k] != null ? String(values[k]) : m));
 
 
     // ========================================================================
@@ -2389,7 +2391,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             //console.log('Starting Shapefile export with', drawingsToExport.length, 'drawings');
 
             const exportData = await this.generateCompatibleExportData(drawingsToExport);
-            const geoJSON = exportData.geoJSONFormat as any;
+            const geoJSON = exportData.geoJSONFormat as FeatureCollection<Geometry, GeoJsonProperties>;
 
             const zipOut = await shpwrite.zip(geoJSON, {
                 folder: 'myDrawings',
@@ -11862,7 +11864,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
         } catch (error) {
             console.error('❌ Shapefile import error:', error);
-            alert(`Failed to import shapefile: ${error.message}`);
+            alert(this.nls('failedToImportShapefileMessage', { message: error.message }));
             throw error;
         }
     };
@@ -15455,17 +15457,17 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)' }}
             >
                 <h5 id="storageDisclaimerTitle" className="mb-3" tabIndex={-1}>
-                    Important Notice
+                    {this.nls('importantNotice')}
                 </h5>
                 <div id="storageDisclaimerDescription">
                     <p>
-                        Your drawings are saved in your web browser using local storage. This means they're only available on this device and in this browser.
+                        {this.nls('yourDrawingsAreSavedInYour')}
                     </p>
                     <p>
-                        If you clear your browser data, switch to a different browser or computer, or if the application receives an update, your drawings may be lost.
+                        {this.nls('ifYouClearYourBrowserData')}
                     </p>
                     <p>
-                        To keep your work safe, please use the <strong>{this.nls('drawingsImport')}</strong> and <strong>{this.nls('drawingsExport')}</strong> buttons to back up and restore your drawings.
+                        {this.nls('toKeepYourWorkSafePlease')} <strong>{this.nls('drawingsImport')}</strong> {this.nls('helpAnd')} <strong>{this.nls('drawingsExport')}</strong> {this.nls('buttonsToBackUpAndRestore')}
                     </p>
                 </div>
                 <Button
@@ -15481,7 +15483,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         })
                     }
                 >
-                    Continue
+                    {this.nls('continue')}
                 </Button>
             </div>
         );
@@ -17622,7 +17624,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 >
                     <div className="confirmation-dialog-header mb-3">
                         <h5 id="confirmationDialogTitle" tabIndex={-1} className="m-0">
-                            Confirm {confirmDialogType === 'delete' ? 'Delete' : 'Clear All'}
+                            {(confirmDialogType === 'delete' ? this.nls('confirmDelete') : this.nls('confirmClearAll'))}
                         </h5>
                     </div>
                     <div className="confirmation-dialog-body mb-3">
@@ -17638,7 +17640,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsCancelAndCloseTheDialog')}
                             aria-label={this.nls('drawingsCancel')}
                         >
-                            Cancel
+                            {this.nls('drawingsCancel')}
                         </Button>
                         <Button
                             size="sm"
@@ -17647,7 +17649,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsConfirmAndProceed')}
                             aria-label={this.nls('drawingsConfirmAndProceed')}
                         >
-                            OK
+                            {this.nls('ok')}
                         </Button>
                     </div>
                 </div>
@@ -17688,13 +17690,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 >
                     <div className="confirmation-dialog-header mb-3">
                         <h5 id="importDialogTitle" tabIndex={-1} className="m-0">
-                            Import Drawings
+                            {this.nls('importDrawings')}
                         </h5>
                     </div>
                     <div id="importDialogDescription" className="confirmation-dialog-body mb-3">
-                        <p className="m-0">{importFile && `File: ${importFile.name}`}</p>
+                        <p className="m-0">{importFile && this.nls('fileName', { name: importFile.name })}</p>
                         <p className="mt-2 mb-0">
-                            Would you like to replace existing drawings or add to them?
+                            {this.nls('wouldYouLikeToReplaceExisting')}
                         </p>
                     </div>
                     <div className="confirmation-dialog-footer d-flex justify-content-between" role="group" aria-label={this.nls('drawingsImportActionOptions')}>
@@ -17704,7 +17706,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsCancelImportAndCloseDialog')}
                             aria-label={this.nls('drawingsCancelImport')}
                         >
-                            Cancel
+                            {this.nls('drawingsCancel')}
                         </Button>
                         <div>
                             <Button
@@ -17714,7 +17716,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 title={this.nls('drawingsAddImportedDrawingsToExisting')}
                                 aria-label={this.nls('drawingsAddDrawings')}
                             >
-                                Add
+                                {this.nls('add')}
                             </Button>
                             <Button
                                 size="sm"
@@ -17723,7 +17725,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 title={this.nls('drawingsReplaceExistingDrawingsWithImported')}
                                 aria-label={this.nls('drawingsReplaceDrawings')}
                             >
-                                Replace
+                                {this.nls('replace')}
                             </Button>
                         </div>
                     </div>
@@ -17743,7 +17745,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             >
                 <div className="text-center mb-4">
                     <h5 id="permissionDeniedTitle" tabIndex={-1}>
-                        My Drawings Feature Unavailable
+                        {this.nls('myDrawingsFeatureUnavailable')}
                     </h5>
                     <div id="permissionDeniedDescription">
                         <p>{this.nls('drawingsThisFeatureRequiresLocalStorage')}</p>
@@ -17755,7 +17757,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsEnableLocalStorageToUse')}
                             aria-label={this.nls('drawingsAllowLocalStoragePermissionTo')}
                         >
-                            Allow Local Storage Permission
+                            {this.nls('allowLocalStoragePermission')}
                         </Button>
                     </div>
                 </div>
@@ -17788,14 +17790,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)', height: '100%', boxShadow: 'none' }}
             >
                 <h5 id="consentPromptTitle" className="mb-3" tabIndex={-1}>
-                    Storage Permission Required
+                    {this.nls('storagePermissionRequired')}
                 </h5>
                 <div id="consentPromptDescription">
                     <p className="mb-3">
-                        To use the My Drawings panel, you must allow saving drawings in your browser's local storage.
+                        {this.nls('toUseTheMyDrawingsPanel')}
                     </p>
                     <p className="mb-3">
-                        This allows your drawings to be remembered when you return to this page later.
+                        {this.nls('thisAllowsYourDrawingsToBe')}
                     </p>
                 </div>
                 <div className="d-flex justify-content-center mt-3" role="group" aria-label={this.nls('drawingsConsentChoices')}>
@@ -17807,7 +17809,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         title={this.nls('drawingsAllowSavingDrawingsToYour')}
                         aria-label={this.nls('drawingsAllowSavingDrawingsToYour')}
                     >
-                        Allow Local Storage
+                        {this.nls('allowLocalStorage')}
                     </Button>
                     <Button
                         type="danger"
@@ -17816,7 +17818,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         title={this.nls('drawingsDoNotAllowSavingDrawings')}
                         aria-label={this.nls('drawingsDoNotAllowSavingDrawings')}
                     >
-                        Don't Allow
+                        {this.nls('donTAllow')}
                     </Button>
                 </div>
             </div>
@@ -17832,17 +17834,17 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 style={{ backgroundColor: 'var(--calcite-color-foreground-1, #fff)', height: '100%' }}
             >
                 <h5 id="loadPromptTitle" className="mb-3" tabIndex={-1}>
-                    Existing Drawings Found
+                    {this.nls('existingDrawingsFound')}
                 </h5>
                 <div id="loadPromptDescription">
                     <p>{this.nls('drawingsYouHaveDrawingsSavedFrom')}</p>
                     {this.state.hasNewUnsavedDrawings ? (
                         <div>
-                            <p>{this.nls('drawingsYouAlsoHave')}<strong>new drawings</strong> from this session that haven't been saved yet.</p>
-                            <p>What would you like to do?</p>
+                            <p>{this.nls('drawingsYouAlsoHave')}<strong>{this.nls('newDrawings')}</strong> {this.nls('fromThisSessionThatHavenT')}</p>
+                            <p>{this.nls('whatWouldYouLikeToDo')}</p>
                         </div>
                     ) : (
-                        <p>Would you like to load your existing drawings or delete all and start new?</p>
+                        <p>{this.nls('wouldYouLikeToLoadYour')}</p>
                     )}
                 </div>
 
@@ -17861,7 +17863,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsKeepYourNewDrawingsAnd')}
                             aria-label={this.nls('drawingsKeepAllDrawingsByMerging')}
                         >
-                            Keep All (Merge)
+                            {this.nls('keepAllMerge')}
                         </Button>
                         <Button
                             type="default"
@@ -17870,7 +17872,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsKeepOnlyYourNewDrawings')}
                             aria-label={this.nls('drawingsKeepOnlyNewDrawingsAnd')}
                         >
-                            Keep New Only
+                            {this.nls('keepNewOnly')}
                         </Button>
                         <Button
                             type="danger"
@@ -17879,7 +17881,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsDeleteAllDrawingsBothNew')}
                             aria-label={this.nls('drawingsDeleteAllDrawingsAndStart')}
                         >
-                            Delete All and Start New
+                            {this.nls('deleteAllAndStartNew')}
                         </Button>
                     </div>
                 ) : (
@@ -17892,7 +17894,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsLoadYourPreviouslySavedDrawings')}
                             aria-label={this.nls('drawingsLoadPreviouslySavedDrawings')}
                         >
-                            Load Existing Drawings
+                            {this.nls('loadExistingDrawings')}
                         </Button>
                         <Button
                             type="danger"
@@ -17900,7 +17902,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                             title={this.nls('drawingsDeleteAllSavedDrawingsAnd')}
                             aria-label={this.nls('drawingsDeleteAllSavedDrawingsAnd')}
                         >
-                            Delete All and Start New
+                            {this.nls('deleteAllAndStartNew')}
                         </Button>
                     </div>
                 )}
@@ -17933,7 +17935,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 aria-live="polite"
                                 aria-atomic="true"
                             >
-                                {drawings.length} item{drawings.length !== 1 ? 's' : ''}
+                                {(drawings.length !== 1 ? this.nls('drawingsCountItems', { drawingsCount: drawings.length }) : this.nls('drawingsCountItem', { drawingsCount: drawings.length }))}
                             </span>
                             <Button
                                 size="sm"
@@ -17942,10 +17944,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 className="compact-collapse-btn"
                                 aria-expanded={!this.state.toolbarCollapsed}
                                 aria-controls="compact-toolbar-content"
-                                title={this.state.toolbarCollapsed ? "Expand toolbar" : "Collapse toolbar"}
+                                title={this.state.toolbarCollapsed ? this.nls('expandToolbar') : this.nls('collapseToolbar')}
                             >
                                 <span aria-hidden="true">{this.state.toolbarCollapsed ? '▼' : '▲'}</span>
-                                <span className="sr-only">{this.state.toolbarCollapsed ? "Expand toolbar" : "Collapse toolbar"}</span>
+                                <span className="sr-only">{this.state.toolbarCollapsed ? this.nls('expandToolbar') : this.nls('collapseToolbar')}</span>
                             </Button>
                         </div>
                     </div>
@@ -17970,7 +17972,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 marginRight: '4px'
                                             }}
                                         >
-                                            Sort:
+                                            {this.nls('sort')}
                                         </label>
                                         <select
                                             id="compact-sort-select"
@@ -17991,7 +17993,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             htmlFor="compact-filter-input"
                                             className="sr-only"
                                         >
-                                            Filter drawings
+                                            {this.nls('filterDrawings')}
                                         </label>
                                         <span className="compact-filter-icon" aria-hidden="true">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--calcite-color-text-2, #6b7280)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -18008,7 +18010,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             aria-describedby="filter-description"
                                         />
                                         <span id="filter-description" className="sr-only">
-                                            Type to filter drawings by name or type
+                                            {this.nls('typeToFilterDrawingsByName')}
                                         </span>
                                         {this.state.searchFilter && (
                                             <Button
@@ -18078,7 +18080,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     role="menu"
                                                     aria-label={this.nls('drawingsExportOptions')}
                                                 >
-                                                    <div className="compact-dropdown-header" role="presentation">Export All ({drawings.length})</div>
+                                                    <div className="compact-dropdown-header" role="presentation">{this.nls('exportAllDrawingsCount', { drawingsCount: drawings.length })}</div>
                                                     <button
                                                         type="button"
                                                         onClick={(e) => { e.stopPropagation(); this.handleExportWithFormat('geojson'); this.setState({ openDropdownIndex: null }); }}
@@ -18086,7 +18088,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         role="menuitem"
                                                         tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                     >
-                                                        GeoJSON
+                                                        {this.nls('geoJSON')}
                                                     </button>
                                                     <button
                                                         type="button"
@@ -18095,7 +18097,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         role="menuitem"
                                                         tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                     >
-                                                        KML
+                                                        {this.nls('kml')}
                                                     </button>
                                                     <button
                                                         type="button"
@@ -18104,7 +18106,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         role="menuitem"
                                                         tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                     >
-                                                        Shapefile
+                                                        {this.nls('shapefile')}
                                                     </button>
                                                     <button
                                                         type="button"
@@ -18114,19 +18116,19 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                         title={this.nls('drawingsExportAsArcgisJsonCompatible')}
                                                     >
-                                                        JSON
+                                                        {this.nls('json')}
                                                     </button>
                                                     {selectedGraphics.size > 0 && (
                                                         <>
                                                             <div className="compact-dropdown-divider" role="separator" />
-                                                            <div className="compact-dropdown-header" role="presentation">Export Selected ({selectedGraphics.size})</div>
+                                                            <div className="compact-dropdown-header" role="presentation">{this.nls('exportSelectedSelectedGraphicsCount', { selectedGraphicsCount: selectedGraphics.size })}</div>
                                                             <button
                                                                 type="button"
                                                                 onClick={(e) => { e.stopPropagation(); this.handleExportSelectedWithFormat('geojson'); this.setState({ openDropdownIndex: null }); }}
                                                                 role="menuitem"
                                                                 tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                             >
-                                                                GeoJSON
+                                                                {this.nls('geoJSON')}
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -18134,7 +18136,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 role="menuitem"
                                                                 tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                             >
-                                                                KML
+                                                                {this.nls('kml')}
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -18142,7 +18144,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 role="menuitem"
                                                                 tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                             >
-                                                                Shapefile
+                                                                {this.nls('shapefile')}
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -18151,7 +18153,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 tabIndex={this.state.openDropdownIndex === 'export' ? 0 : -1}
                                                                 title={this.nls('drawingsExportAsArcgisJsonCompatible')}
                                                             >
-                                                                JSON
+                                                                {this.nls('json')}
                                                             </button>
                                                         </>
                                                     )}
@@ -18181,7 +18183,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         title={selectedGraphics.size === drawings.length && drawings.length > 0 ? this.nls('drawingsDeselectAllDrawings') : this.nls('drawingsSelectAllDrawings')}
                                     >
                                         <span className="compact-btn-text">
-                                            {selectedGraphics.size === drawings.length && drawings.length > 0 ? 'Deselect' : 'Select All'}
+                                            {selectedGraphics.size === drawings.length && drawings.length > 0 ? this.nls('deselect') : this.nls('selectAll')}
                                         </span>
                                     </Button>
 
@@ -18222,7 +18224,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 role="menuitem"
                                                 tabIndex={this.state.openDropdownIndex === 'delete' ? 0 : -1}
                                             >
-                                                Delete Selected ({selectedGraphics.size})
+                                                {this.nls('deleteSelectedSelectedGraphicsCount', { selectedGraphicsCount: selectedGraphics.size })}
                                             </button>
                                             <button
                                                 type="button"
@@ -18231,7 +18233,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 role="menuitem"
                                                 tabIndex={this.state.openDropdownIndex === 'delete' ? 0 : -1}
                                             >
-                                                Delete All ({drawings.length})
+                                                {this.nls('deleteAllDrawingsCount', { drawingsCount: drawings.length })}
                                             </button>
                                         </div>
                                     </div>
@@ -18253,7 +18255,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     <circle cx="9" cy="12" r="7" />
                                                     <circle cx="15" cy="12" r="7" />
                                                 </svg>
-                                                Merge ({selectedGraphics.size})
+                                                {this.nls('mergeSelectedGraphicsCount', { selectedGraphicsCount: selectedGraphics.size })}
                                             </span>
                                         </Button>
                                     </div>
@@ -18271,7 +18273,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         title={this.state.filterByMapExtent ? this.nls('drawingsShowAllDrawings') : this.nls('drawingsShowOnlyDrawingsInCurrent')}
                                     >
                                         <span className="compact-btn-text">
-                                            {this.state.filterByMapExtent ? 'Show All' : 'In View'}
+                                            {this.state.filterByMapExtent ? this.nls('showAll') : this.nls('inView')}
                                         </span>
                                     </Button>
 
@@ -18313,7 +18315,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             fontWeight: 500,
                                             whiteSpace: 'nowrap'
                                         }}>
-                                            Labels:
+                                            {this.nls('labels')}
                                         </span>
                                         <button
                                             type="button"
@@ -18346,9 +18348,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--calcite-color-text-3, #9ca3af)'}
                                             onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--calcite-color-border-2, #d1d5db)'}
                                         >
-                                            {this.state.drawingLabelOption === 'off' ? 'Off' :
-                                                this.state.drawingLabelOption === 'name' ? 'Name' :
-                                                    this.state.drawingLabelOption === 'notes' ? 'Notes' : 'Both'}
+                                            {this.state.drawingLabelOption === 'off' ? this.nls('off') :
+                                                this.state.drawingLabelOption === 'name' ? this.nls('drawingsName') :
+                                                    this.state.drawingLabelOption === 'notes' ? this.nls('notes') : this.nls('both')}
                                         </button>
                                         {/* Portal the dropdown menu to body to avoid overflow clipping */}
                                         {this.state.openDropdownIndex === 'labels' && ReactDOM.createPortal(
@@ -18408,7 +18410,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
-                                                    Off
+                                                    {this.nls('off')}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -18433,7 +18435,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
-                                                    Name
+                                                    {this.nls('drawingsName')}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -18458,7 +18460,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
-                                                    Notes
+                                                    {this.nls('notes')}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -18483,7 +18485,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f3f4f6)'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
-                                                    Both
+                                                    {this.nls('both')}
                                                 </button>
                                             </div>,
                                             document.body
@@ -18573,7 +18575,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                         <polyline points="9 18 15 12 9 6"></polyline>
                                     </svg>
                                     <span>
-                                        {this.state.collapsedDrawings.size === drawings.length ? 'Expand All' : 'Collapse All'}
+                                        {this.state.collapsedDrawings.size === drawings.length ? this.nls('expandAll') : this.nls('collapseAll')}
                                     </span>
                                 </button>
 
@@ -18621,14 +18623,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             const extGraphic = asExtendedGraphic(graphic);
                                             return extGraphic.visible !== false;
                                         });
-                                        return allVisible ? 'Hide all drawings' : 'Show all drawings';
+                                        return allVisible ? this.nls('hideAllDrawings') : this.nls('drawingsShowAllDrawings');
                                     })()}
                                     title={(() => {
                                         const allVisible = this.state.drawings.every(graphic => {
                                             const extGraphic = asExtendedGraphic(graphic);
                                             return extGraphic.visible !== false;
                                         });
-                                        return allVisible ? 'Hide all drawings' : 'Show all drawings';
+                                        return allVisible ? this.nls('hideAllDrawings') : this.nls('drawingsShowAllDrawings');
                                     })()}
                                     style={{
                                         background: 'transparent',
@@ -18676,7 +18678,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 const extGraphic = asExtendedGraphic(graphic);
                                                 return extGraphic.visible !== false;
                                             });
-                                            return allVisible ? 'Hide All' : 'Show All';
+                                            return allVisible ? this.nls('hideAll') : this.nls('showAll');
                                         })()}
                                     </span>
                                 </button>
@@ -18723,7 +18725,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 </>
                                             )}
                                         </svg>
-                                        <span>{this.state.allDrawingsLocked ? 'Unlock All' : 'Lock All'}</span>
+                                        <span>{this.state.allDrawingsLocked ? this.nls('unlockAll') : this.nls('lockAll')}</span>
                                     </button>
                                 )}
 
@@ -18789,7 +18791,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                     <line x1="3" y1="3" x2="21" y2="21" strokeWidth="2.5"></line>
                                                 )}
                                             </svg>
-                                            <span>{anyMeasurementsVisible ? 'Hide Measurements' : 'Show Measurements'}</span>
+                                            <span>{anyMeasurementsVisible ? this.nls('hideMeasurements') : this.nls('showMeasurements')}</span>
                                         </button>
                                     );
                                 })()}
@@ -18810,7 +18812,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                     {collapseAllButton}
                                     <div style={{ padding: '20px', textAlign: 'center', color: 'var(--calcite-color-text-3, #999)' }}>
                                         <i className="fas fa-search" style={{ fontSize: '24px', marginBottom: '10px' }}></i>
-                                        <div>No drawings match "{searchFilter}"</div>
+                                        <div>{this.nls('noDrawingsMatchSearchFilter', { searchFilter })}</div>
                                         <button
                                             onClick={this.clearSearchFilter}
                                             style={{
@@ -18823,7 +18825,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                 cursor: 'pointer'
                                             }}
                                         >
-                                            Clear Filter
+                                            {this.nls('clearFilter')}
                                         </button>
                                     </div>
                                 </>
@@ -18875,8 +18877,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                         <button
                                                             className="collapse-toggle-btn"
                                                             onClick={(e) => this.toggleDrawingCollapse(index, e)}
-                                                            aria-label={`${this.state.collapsedDrawings.has(index) ? 'Expand' : 'Collapse'} ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
-                                                            title={`${this.state.collapsedDrawings.has(index) ? 'Expand' : 'Collapse'} drawing`}
+                                                            aria-label={(this.state.collapsedDrawings.has(index) ? this.nls('expandName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }) : this.nls('collapseName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }))}
+                                                            title={(this.state.collapsedDrawings.has(index) ? this.nls('expandDrawing') : this.nls('collapseDrawing'))}
                                                             style={{
                                                                 background: 'transparent',
                                                                 border: 'none',
@@ -18926,13 +18928,13 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     className="form-check-input"
                                                                     checked={selectedGraphics.has(index)}
                                                                     onClick={(e) => this.handleToggleSelect(index, e)}
-                                                                    aria-label={`Select drawing: ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
-                                                                    title={`Select ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                    aria-label={this.nls('selectDrawingName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
+                                                                    title={this.nls('selectName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                     id={`checkbox-drawing-${index}`}
                                                                     style={{ margin: 0, verticalAlign: 'middle' }}
                                                                 />
                                                                 <span className="sr-only">
-                                                                    Select {graphic.attributes?.name || `Drawing ${index + 1}`}
+                                                                    {this.nls('selectName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                 </span>
                                                             </label>
                                                         </div>
@@ -18984,7 +18986,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                             title={this.nls('drawingsSaveName')}
                                                                             aria-label={this.nls('drawingsSaveDrawingName')}
                                                                         >
-                                                                            Save
+                                                                            {this.nls('save')}
                                                                         </Button>
                                                                         <Button
                                                                             size="sm"
@@ -18995,7 +18997,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                             title={this.nls('drawingsCancelEditing')}
                                                                             aria-label={this.nls('drawingsCancelNameEditing')}
                                                                         >
-                                                                            Cancel
+                                                                            {this.nls('drawingsCancel')}
                                                                         </Button>
                                                                     </div>
                                                                 </div>
@@ -19005,7 +19007,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         {this.isDrawingLocked(graphic) && <span title={this.nls('drawingsLocked')} style={{ display: 'inline-flex', alignItems: 'center', marginRight: '4px', verticalAlign: 'middle' }}><svg width="10" height="10" viewBox="0 0 24 24" fill="var(--calcite-color-text-3, #999)" stroke="var(--calcite-color-text-3, #999)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none"></path></svg></span>}
                                                                         {(graphic.symbol?.type === 'text' && graphic.symbol?.text) ||
                                                                             graphic.attributes?.name ||
-                                                                            `Drawing ${index + 1}`}
+                                                                            this.nls('drawingIndex', { index: index + 1 })}
                                                                     </span>
                                                                     <span style={{ fontSize: '11px', color: 'var(--calcite-color-text-2, #6c757d)', marginLeft: '8px', display: 'inline' }}>
                                                                         {this.getDrawingTypeLabel(graphic)}
@@ -19026,7 +19028,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     const individualOption = graphic.attributes?.individualLabelOption || 'default';
                                                                     const effectiveLabelOption = individualOption === 'default' ? this.state.drawingLabelOption : individualOption;
                                                                     const hasLabels = effectiveLabelOption !== 'off';
-                                                                    const dropdownId = `label-${index}`;
+                                                                    const dropdownId = this.nls('labelIndex', { index });
                                                                     const isOpen = this.state.openDropdownIndex === dropdownId;
 
                                                                     return (
@@ -19044,8 +19046,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                     e.stopPropagation();
                                                                                     this.toggleDropdown(dropdownId);
                                                                                 }}
-                                                                                aria-label={`Label options for ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
-                                                                                title={`Labels: ${individualOption === 'default' ? `Default (${this.state.drawingLabelOption})` : individualOption}`}
+                                                                                aria-label={this.nls('labelOptionsForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
+                                                                                title={this.nls('labelsIndividualOption', { individualOption: individualOption === 'default' ? this.nls('defaultDrawingLabelOption', { drawingLabelOption: this.state.drawingLabelOption }) : individualOption })}
                                                                                 aria-haspopup="true"
                                                                                 aria-expanded={isOpen}
                                                                                 style={{
@@ -19103,7 +19105,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 <div
                                                                                     className="label-dropdown-menu"
                                                                                     role="menu"
-                                                                                    aria-label={`Label options for ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                                    aria-label={this.nls('labelOptionsForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                                     style={{
                                                                                         position: 'fixed',
                                                                                         top: (() => {
@@ -19159,7 +19161,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
-                                                                                        Default
+                                                                                        {this.nls('default')}
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={(e) => {
@@ -19184,7 +19186,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
-                                                                                        Off
+                                                                                        {this.nls('off')}
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={(e) => {
@@ -19209,7 +19211,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
-                                                                                        Name
+                                                                                        {this.nls('drawingsName')}
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={(e) => {
@@ -19234,7 +19236,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
-                                                                                        Notes
+                                                                                        {this.nls('notes')}
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={(e) => {
@@ -19259,7 +19261,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--calcite-color-foreground-2, #f8f9fa)'}
                                                                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                                     >
-                                                                                        Both
+                                                                                        {this.nls('both')}
                                                                                     </button>
                                                                                 </div>,
                                                                                 document.body
@@ -19271,8 +19273,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 <button
                                                                     className="notes-btn"
                                                                     onClick={(e) => this.openNotesDialog(index, e)}
-                                                                    aria-label={`Notes for ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
-                                                                    title={graphic.attributes?.notes ? 'View/Edit notes (has notes)' : 'Add notes'}
+                                                                    aria-label={this.nls('notesForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
+                                                                    title={graphic.attributes?.notes ? this.nls('viewEditNotesHasNotes') : this.nls('addNotes')}
                                                                     style={{
                                                                         background: 'transparent',
                                                                         border: '1px solid transparent',
@@ -19339,9 +19341,9 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         <button
                                                                             className="measurement-toggle-btn"
                                                                             onClick={(e) => this.toggleMeasurementVisibility(index, e)}
-                                                                            aria-label={`${!hasOrHadMeasurements ? 'Add' : measurementsHidden ? 'Show' : 'Hide'} measurements for ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                            aria-label={(!hasOrHadMeasurements ? this.nls('addMeasurementsForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }) : (measurementsHidden ? this.nls('showMeasurementsForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }) : this.nls('hideMeasurementsForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })))}
                                                                             aria-pressed={isActive}
-                                                                            title={!hasOrHadMeasurements ? 'Add measurements' : measurementsHidden ? 'Show measurements' : 'Hide measurements'}
+                                                                            title={!hasOrHadMeasurements ? this.nls('addMeasurements') : measurementsHidden ? this.nls('showMeasurements2') : this.nls('hideMeasurements2')}
                                                                             style={{
                                                                                 background: 'transparent',
                                                                                 border: '1px solid transparent',
@@ -19405,8 +19407,8 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 <button
                                                                     className="visibility-toggle-btn"
                                                                     onClick={(e) => this.toggleGraphicVisibility(index, e)}
-                                                                    aria-label={`${graphic.visible !== false ? 'Hide' : 'Show'} ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
-                                                                    title={`${graphic.visible !== false ? 'Hide' : 'Show'} drawing`}
+                                                                    aria-label={(graphic.visible !== false ? this.nls('hideName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }) : this.nls('showName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }))}
+                                                                    title={(graphic.visible !== false ? this.nls('hideDrawing') : this.nls('showDrawing'))}
                                                                     style={{
                                                                         background: 'transparent',
                                                                         border: '1px solid transparent',
@@ -19451,7 +19453,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         <button
                                                                             className="lock-toggle-btn"
                                                                             onClick={(e) => this.toggleDrawingLock(index, e)}
-                                                                            aria-label={`${isLocked ? 'Unlock' : 'Lock'} ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                            aria-label={(isLocked ? this.nls('unlockName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }) : this.nls('lockName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) }))}
                                                                             title={isLocked ? this.nls('drawingsUnlockDrawingForEditing') : this.nls('drawingsLockDrawingFromEditing')}
                                                                             style={{
                                                                                 background: 'transparent',
@@ -19498,7 +19500,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 <button
                                                                     className="zoom-to-btn"
                                                                     onClick={(e) => this.zoomToDrawing(index, e)}
-                                                                    aria-label={`Zoom to ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                    aria-label={this.nls('zoomToName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                     title={this.nls('drawingsZoomTo')}
                                                                     style={{
                                                                         background: 'transparent',
@@ -19535,7 +19537,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     className="move-up-btn"
                                                                     onClick={(e) => this.moveDrawingUp(index, e)}
                                                                     disabled={index === 0}
-                                                                    aria-label={`Move ${graphic.attributes?.name || `Drawing ${index + 1}`} up`}
+                                                                    aria-label={this.nls('moveNameUp', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                     title={index === 0 ? this.nls('drawingsAlreadyAtTop') : this.nls('drawingsMoveUp')}
                                                                     style={{
                                                                         background: 'transparent',
@@ -19571,7 +19573,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     className="move-down-btn"
                                                                     onClick={(e) => this.moveDrawingDown(index, e)}
                                                                     disabled={index === this.state.drawings.length - 1}
-                                                                    aria-label={`Move ${graphic.attributes?.name || `Drawing ${index + 1}`} down`}
+                                                                    aria-label={this.nls('moveNameDown', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                     title={index === this.state.drawings.length - 1 ? this.nls('drawingsAlreadyAtBottom') : this.nls('drawingsMoveDown')}
                                                                     style={{
                                                                         background: 'transparent',
@@ -19616,10 +19618,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     this.handleCopyDrawing(index, e);
                                                                 }}
                                                                 className="btn-light"
-                                                                aria-label={`Copy ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                aria-label={this.nls('copyName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                 title={this.nls('drawingsCopy')}
                                                             >
-                                                                Copy
+                                                                {this.nls('drawingsCopy')}
                                                             </Button>
 
                                                             <Button
@@ -19630,10 +19632,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                 }}
                                                                 className="btn-light"
                                                                 disabled={this.isDrawingLocked(graphic)}
-                                                                aria-label={`Rename ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                aria-label={this.nls('renameName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                 title={this.isDrawingLocked(graphic) ? this.nls('drawingsUnlockToRename') : this.nls('drawingsRename')}
                                                             >
-                                                                Rename
+                                                                {this.nls('drawingsRename')}
                                                             </Button>
 
                                                             {/* Export with Dropdown - Click Version */}
@@ -19650,20 +19652,20 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                             e.preventDefault();
                                                                             this.toggleDropdown(index);
                                                                         }}
-                                                                        aria-label={`Export ${graphic.attributes?.name || `Drawing ${index + 1}`} - choose format`}
+                                                                        aria-label={this.nls('exportNameChooseFormat', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                         title={this.nls('drawingsExportClickToToggleMenu')}
                                                                         aria-haspopup="true"
                                                                         aria-expanded={this.state.openDropdownIndex === index}
                                                                         id={`export-btn-${index}`}
                                                                     >
-                                                                        Export
+                                                                        {this.nls('drawingsExport')}
                                                                     </Button>
                                                                     {/* Dropdown content - non-portaled version for reliability */}
                                                                     {this.state.openDropdownIndex === index && (
                                                                         <div
                                                                             className={`export-dropdown-content ${this.state.dropdownOpenUpward.has(index) ? 'open-upward' : ''}`}
                                                                             role="menu"
-                                                                            aria-label={`Export formats for ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                            aria-label={this.nls('exportFormatsForName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                             style={{
                                                                                 display: 'block',
                                                                                 position: 'absolute',
@@ -19705,7 +19707,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-map-marked-alt" aria-hidden="true"></i>
-                                                                                {' '}Export as GeoJSON
+                                                                                {this.nls('exportAsGeoJSON')}
                                                                             </button>
                                                                             <button
                                                                                 onClick={(e) => {
@@ -19731,7 +19733,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-globe" aria-hidden="true"></i>
-                                                                                {' '}Export as KML
+                                                                                {this.nls('exportAsKml')}
                                                                             </button>
                                                                             <button
                                                                                 onClick={(e) => {
@@ -19757,7 +19759,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-layer-group" aria-hidden="true"></i>
-                                                                                {' '}Export as Shapefile
+                                                                                {this.nls('exportAsShapefile')}
                                                                             </button>
                                                                             <button
                                                                                 onClick={(e) => {
@@ -19783,7 +19785,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
                                                                                 <i className="fas fa-file-code" aria-hidden="true"></i>
-                                                                                {' '}Export as JSON
+                                                                                {this.nls('exportAsJson')}
                                                                             </button>
                                                                         </div>
                                                                     )}
@@ -19798,10 +19800,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                     this.handleDeleteGraphic(index, e);
                                                                 }}
                                                                 disabled={this.isDrawingLocked(graphic)}
-                                                                aria-label={`Delete ${graphic.attributes?.name || `Drawing ${index + 1}`}`}
+                                                                aria-label={this.nls('deleteName', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
                                                                 title={this.isDrawingLocked(graphic) ? this.nls('drawingsUnlockToDelete') : this.nls('drawingsDelete')}
                                                             >
-                                                                Delete
+                                                                {this.nls('drawingsDelete')}
                                                             </Button>
                                                         </div>
                                                     )}
@@ -19922,7 +19924,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 color: 'var(--calcite-color-text-1, #1a1a1a)'
                             }}
                         >
-                            Importing GeoJSON
+                            {this.nls('importingGeoJSON')}
                         </h3>
 
                         {/* Progress Bar */}
@@ -19977,7 +19979,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         </p>
 
                         <p style={{ margin: 0, fontSize: '12px', color: 'var(--calcite-color-text-3, #999)', fontStyle: 'italic' }}>
-                            Please wait, do not close this window...
+                            {this.nls('pleaseWaitDoNotCloseThis')}
                         </p>
                     </div>
                 )}
@@ -20087,8 +20089,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                     >
                                         {this.state.notesEditingIndex !== null &&
                                             (this.state.drawings[this.state.notesEditingIndex]?.attributes?.name ||
-                                                `extent ${this.state.notesEditingIndex + 1}`)}{' '}
-                                        - Notes
+                                                this.nls('extentNotesEditingIndex', { notesEditingIndex: this.state.notesEditingIndex + 1 }))}{this.nls('notes2')}
                                     </h3>
                                 </div>
 
@@ -20145,7 +20146,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             title={this.nls('drawingsDeleteThisNoteFromThe')}
                                             style={{ background: 'var(--calcite-color-status-danger, #b3261e)', color: 'var(--calcite-color-foreground-1, #fff)', border: 'none' }}
                                         >
-                                            Delete Note
+                                            {this.nls('deleteNote')}
                                         </Button>
                                     ) : <div />}
 
@@ -20156,7 +20157,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                             aria-label={this.nls('drawingsClose')}
                                             type="primary"
                                         >
-                                            Close
+                                            {this.nls('drawingsClose')}
                                         </Button>
                                     </div>
                                 </div>
@@ -20185,16 +20186,16 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                         aria-labelledby="storageDisclaimerTitle"
                     >
                         <h5 id="storageDisclaimerTitle" className="mb-3" tabIndex={-1}>
-                            Important Notice
+                            {this.nls('importantNotice')}
                         </h5>
                         <p id="storageDisclaimerDescription">
-                            Your drawings are saved in your web browser using local storage. This means they're only available on this device and in this browser.
+                            {this.nls('yourDrawingsAreSavedInYour')}
                         </p>
                         <p>
-                            If you clear your browser data, switch to a different browser or computer, or if the application receives an update, your drawings may be lost.
+                            {this.nls('ifYouClearYourBrowserData')}
                         </p>
                         <p>
-                            To keep your work safe, please use the <strong>{this.nls('drawingsImport')}</strong> and <strong>{this.nls('drawingsExport')}</strong> buttons to back up and restore your drawings.
+                            {this.nls('toKeepYourWorkSafePlease')} <strong>{this.nls('drawingsImport')}</strong> {this.nls('helpAnd')} <strong>{this.nls('drawingsExport')}</strong> {this.nls('buttonsToBackUpAndRestore')}
                         </p>
                         <Button
                             type="primary"
@@ -20210,14 +20211,14 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                 })
                             }
                         >
-                            Continue
+                            {this.nls('continue')}
                         </Button>
                     </div>
                 ) : (
                     /* 4. Finally the main panel */
                     <div role="region" aria-labelledby="drawingPanelHeader">
                         <h2 id="drawingPanelHeader" tabIndex={-1} className="sr-only">
-                            Drawing Panel
+                            {this.nls('drawingPanel')}
                         </h2>
                         {mainPanelContent}
                     </div>
