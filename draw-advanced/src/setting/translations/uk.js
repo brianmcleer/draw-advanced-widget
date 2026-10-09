@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Довільний полігон",
         circle: "Коло",
         triangle: "Трикутник",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Кріплення Інструменти",
+        drawnGraphics: "Малюнок графіки"
       })
     }
   }

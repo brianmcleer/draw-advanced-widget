@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Poligon odręczny",
         circle: "Okrąg",
         triangle: "Trójkąt",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Narzędzia krzywizny",
+        drawnGraphics: "Grafika ciągniona"
       })
     }
   }

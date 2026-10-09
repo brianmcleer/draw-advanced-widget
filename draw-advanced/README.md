@@ -163,3 +163,6 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ## Credits
 
 Created by **Brian McLeer** (City of Grand Junction, CO) and **Jeffrey Thompson** (City of Arlington, TX), building on contributions from Robert Scheitlin, Adrien Hoff, Mattias Ekström, Jérôme Ray, and Nicholas Cramer. Thanks to the Esri Experience Builder community for feedback and testing.
+## Localization verification
+
+The October 2026 i18n pass connects local UI helpers, messages and metadata to the app locale and uses the app locale for date/number formatting. Existing units, currencies and configured format options are preserved. Translation files use Esri wording, shared memory and English fallbacks; machine translations still need language review. Catalog coverage is separate from UI coverage. Changes were checked with the widget’s Experience Builder webpack build and compared against its existing TypeScript diagnostics. Test runtime, settings, accessibility text and locale switching in your target languages.

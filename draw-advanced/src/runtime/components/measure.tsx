@@ -20,7 +20,7 @@ import * as densifyOperator from 'esri/geometry/operators/densifyOperator'
 import Color from 'esri/Color';
 import TextSymbol from 'esri/symbols/TextSymbol';
 import SimpleMarkerSymbol from 'esri/symbols/SimpleMarkerSymbol';
-import { __t } from '../i18n-t'
+import { __locale, __t } from '../i18n-t'
 
 /**
  * ACCESSIBILITY COMPLIANCE NOTES (Section 508 / WCAG 2.1 AA)
@@ -426,7 +426,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		const parts = additionalDistanceUnits
 			.map(name => distanceUnits.find(u => u.unit === name))
 			.filter(u => u && u.unit !== primaryUnitName && u.conversion)
-			.map(u => `${_round(meters * u.conversion, otherRound).toLocaleString()} ${u.abbreviation}`);
+			.map(u => `${_round(meters * u.conversion, otherRound).toLocaleString(__locale())} ${u.abbreviation}`);
 		return parts.length ? ` (${parts.join(', ')})` : '';
 	};
 	const _secondaryAreaSuffix = (primaryValue: number, primaryUnitName: string): string => {
@@ -437,7 +437,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 		const parts = additionalAreaUnits
 			.map(name => areaUnits.find(u => u.unit === name))
 			.filter(u => u && u.unit !== primaryUnitName && u.conversion)
-			.map(u => `${_round(sqMeters * u.conversion, otherRound).toLocaleString()} ${u.abbreviation}`);
+			.map(u => `${_round(sqMeters * u.conversion, otherRound).toLocaleString(__locale())} ${u.abbreviation}`);
 		return parts.length ? ` (${parts.join(', ')})` : '';
 	};
 
@@ -2285,7 +2285,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					// Applies to segment labels too, so per-segment and total agree.
 					const lengthUnitOut = lengthUnitLabel + _secondaryDistanceSuffix(length, currentDistanceUnit);
 					return polylinePattern
-						.replace(/{{length}}/g, _round(length, otherRound).toLocaleString())
+						.replace(/{{length}}/g, _round(length, otherRound).toLocaleString(__locale()))
 						.replace(/{{lengthUnit}}/g, lengthUnitOut);
 				}
 
@@ -2341,16 +2341,16 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					const areaUnitOut = areaUnitLabel + _secondaryAreaSuffix(area, currentAreaUnit);
 					const perimeterUnitOut = perimeterUnitLabel + _secondaryDistanceSuffix(perimeter, currentDistanceUnit);
 					let result = polygonPattern
-						.replace(/{{area}}/g, _round(area, otherRound).toLocaleString())
+						.replace(/{{area}}/g, _round(area, otherRound).toLocaleString(__locale()))
 						.replace(/{{areaUnit}}/g, areaUnitOut)
-						.replace(/{{length}}/g, _round(perimeter, otherRound).toLocaleString())
+						.replace(/{{length}}/g, _round(perimeter, otherRound).toLocaleString(__locale()))
 						.replace(/{{lengthUnit}}/g, perimeterUnitOut);
 
 					if (geometry.rings[0].length === 61 && radiusOn) {
 						const radius = analyticRadius !== null
 							? analyticRadius
 							: Math.abs(perimeter / (2 * Math.PI)); // Ensure positive radius
-						result += `\n${props.nls('measureLabelRadius')}: ${_round(radius, otherRound).toLocaleString()} ${perimeterUnitInfo.abbreviation}${_secondaryDistanceSuffix(radius, currentDistanceUnit)}`;
+						result += `\n${props.nls('measureLabelRadius')}: ${_round(radius, otherRound).toLocaleString(__locale())} ${perimeterUnitInfo.abbreviation}${_secondaryDistanceSuffix(radius, currentDistanceUnit)}`;
 					}
 
 					return result;
@@ -2429,7 +2429,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					prev = end;
 					if (!(segLen > 0)) continue;
 
-					const segText = `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`;
+					const segText = `${_round(segLen, otherRound).toLocaleString(__locale())} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`;
 					const segSym: any = currentTextSymbol.clone();
 					segSym.text = segText;
 					if (!segSym.haloSize) { segSym.haloSize = 2; segSym.haloColor = 'white'; }
@@ -3977,7 +3977,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 					const [p1, p2] = segments[k];
 					const segLen = _calculateSegmentLength(p1, p2, geometry);
 					if (!(segLen > 0)) continue;
-					const segText = `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`;
+					const segText = `${_round(segLen, otherRound).toLocaleString(__locale())} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`;
 					if (isTextSymbol(segLabel.symbol)) (segLabel.symbol as any).text = segText;
 					if (segLabel.attributes) segLabel.attributes.name = segText;
 					if (segLabel.attributes?.segmentInfo) {
@@ -4027,7 +4027,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 							} catch { break; }
 						}
 						const segText = segLen > 0
-							? `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`
+							? `${_round(segLen, otherRound).toLocaleString(__locale())} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`
 							: '';
 						const segAngle = _calculateAngle(p1[0], p1[1], p2[0], p2[1]);
 						const segSym = currentTextSymbol.clone();
@@ -4522,7 +4522,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 
 							const lengthUnitInfo = availableDistanceUnits.find((u) => u.unit === distanceUnit.unit);
 							const lengthUnitLabel = lengthUnitInfo ? lengthUnitInfo.abbreviation : distanceUnit.unit;
-							const segText = `${_round(segLen, otherRound).toLocaleString()} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`;
+							const segText = `${_round(segLen, otherRound).toLocaleString(__locale())} ${lengthUnitLabel}${_secondaryDistanceSuffix(segLen, distanceUnit.unit)}`;
 							const segAngle = _calculateAngle(path[j - 1][0], path[j - 1][1], path[j][0], path[j][1]);
 
 							let segSym = currentTextSymbol.clone();

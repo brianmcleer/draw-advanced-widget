@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Brīvrokas laukums",
         circle: "Aplis",
         triangle: "Trijstūris",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Līknes rīki",
+        drawnGraphics: "Zīmētā grafika"
       })
     }
   }

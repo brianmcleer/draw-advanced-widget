@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Polygón voľnou rukou",
         circle: "Kruh",
         triangle: "Trojuholník",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Nástroje na zakrivenie",
+        drawnGraphics: "Kreslenie grafiky"
       })
     }
   }

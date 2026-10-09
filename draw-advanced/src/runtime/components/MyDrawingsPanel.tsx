@@ -67,7 +67,7 @@ import { Icon } from 'jimu-ui';
 import { TextStyleEditor } from './TextStyleEditor';
 
 import { Alert } from 'jimu-ui';
-import { __setIntl, __t, __tc } from '../i18n-t'
+import { __locale, __setIntl, __t, __tc } from '../i18n-t'
 // Modules loaded eagerly via AMD loader — starts immediately so they're ready before first user action.
 // These cannot be statically imported in ExB 1.20; they require the ArcGIS AMD runtime loader.
 // geometryEngine is sync, pure-JS in JSAPI 4.x/5.x — no WASM required.
@@ -14051,18 +14051,18 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         // Convert technical names to user-friendly labels
         switch (drawMode) {
             case 'point':
-                return 'Point';
+                return __t('point');
             case 'polyline':
                 return __t("line");
             case 'polygon':
-                return 'Polygon';
+                return __t('polygon');
             case 'rectangle':
             case 'extent':
                 return __t("rectangle");
             case 'circle':
                 return __t("circle");
             case 'text':
-                return 'Text';
+                return __t('text');
             default:
                 return drawMode?.charAt(0).toUpperCase() + drawMode?.slice(1) || __t("unknown");
         }
@@ -14092,7 +14092,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             date = new Date();
         }
 
-        return date.toLocaleDateString(undefined, {
+        return date.toLocaleDateString(__locale(), {
             year: 'numeric',
             month: 'short',
             day: 'numeric'

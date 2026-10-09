@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Frihåndspolygon",
         circle: "Sirkel",
         triangle: "Trekant",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "kurveverktøy",
+        drawnGraphics: "Draken grafikk"
       })
     }
   }

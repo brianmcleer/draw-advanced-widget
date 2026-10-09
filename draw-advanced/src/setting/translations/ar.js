@@ -249,7 +249,7 @@ System.register([], function (e) {
         freehandPolygon: "مضلع يدوي",
         circle: "دائرة",
         triangle: "مثلث",
-        curveTools: "Curve Tools",
+        curveTools: "أدوات مسحوق",
         drawnGraphics: "Drawn Graphics"
       })
     }

@@ -59,7 +59,7 @@ import * as areaOperator from 'esri/geometry/operators/areaOperator';
 import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
 import { hooks as __exbI18nHooks } from 'jimu-core';
 import __exbI18nMessages from './translations/default';
-import { __setIntl, __t, __tc } from './i18n-t'
+import { __locale, __setIntl, __t, __tc } from './i18n-t'
 
 
 // EB 1.21's editor occasionally loses ArcGIS static factory members even though
@@ -3180,21 +3180,21 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		const mainDrawings = this.getMainDrawings();
 		if (mainDrawings.length === 0) return __t("drawAShapeFirstThenSend");
 
-		const bufferNote = ' (buffer area will be used for wider parcel selection)';
+		const bufferNote = " " + __t("bufferAreaWillBeUsedFor") + "";
 
 		const sketchGraphic = this.sketchViewModel?.updateGraphics?.getItemAt(0);
 		if (sketchGraphic?.geometry) {
-			return 'Send the selected drawing to Mailing Labels' + (this.hasActiveBuffer(sketchGraphic) ? bufferNote : '');
+			return __t("sendTheSelectedDrawingToMailing", { value1: (this.hasActiveBuffer(sketchGraphic) ? bufferNote : '') });
 		}
 		if (this.state.selectedGraphicIndex != null && mainDrawings[this.state.selectedGraphicIndex]) {
 			const g = mainDrawings[this.state.selectedGraphicIndex];
-			return `Send "${g.attributes?.name || 'selected drawing'}" to Mailing Labels` + (this.hasActiveBuffer(g) ? bufferNote : '');
+			return __t("sendValueToMailingLabels", { value: g.attributes?.name || 'selected drawing' }) + (this.hasActiveBuffer(g) ? bufferNote : '');
 		}
 		if (this.state.selectedGraphics?.size > 0) {
 			return __t("sendSizeSelectedDrawingsToMailing", { size: this.state.selectedGraphics.size });
 		}
 		if (mainDrawings.length === 1) {
-			return `Send "${mainDrawings[0].attributes?.name || 'drawing'}" to Mailing Labels` + (this.hasActiveBuffer(mainDrawings[0]) ? bufferNote : '');
+			return __t("sendValueToMailingLabels", { value: mainDrawings[0].attributes?.name || 'drawing' }) + (this.hasActiveBuffer(mainDrawings[0]) ? bufferNote : '');
 		}
 		return __t("sendAllLengthDrawingsCombinedTo", { length: mainDrawings.length });
 	};
@@ -3363,21 +3363,21 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 		const mainDrawings = this.getMainDrawings();
 		if (mainDrawings.length === 0) return __t("drawAShapeFirstThenSend2");
 
-		const bufferNote = ' (buffer area will be used for feature identification)';
+		const bufferNote = " " + __t("bufferAreaWillBeUsedFor2") + "";
 
 		const sketchGraphic = this.sketchViewModel?.updateGraphics?.getItemAt(0);
 		if (sketchGraphic?.geometry) {
-			return 'Send the selected drawing to Identify By Query' + (this.hasActiveBuffer(sketchGraphic) ? bufferNote : '');
+			return __t("sendTheSelectedDrawingToIdentify", { value1: (this.hasActiveBuffer(sketchGraphic) ? bufferNote : '') });
 		}
 		if (this.state.selectedGraphicIndex != null && mainDrawings[this.state.selectedGraphicIndex]) {
 			const g = mainDrawings[this.state.selectedGraphicIndex];
-			return `Send "${g.attributes?.name || 'selected drawing'}" to Identify By Query` + (this.hasActiveBuffer(g) ? bufferNote : '');
+			return __t("sendValueToIdentifyByQuery", { value: g.attributes?.name || 'selected drawing' }) + (this.hasActiveBuffer(g) ? bufferNote : '');
 		}
 		if (this.state.selectedGraphics?.size > 0) {
 			return __t("sendSizeSelectedDrawingsToIdentify", { size: this.state.selectedGraphics.size });
 		}
 		if (mainDrawings.length === 1) {
-			return `Send "${mainDrawings[0].attributes?.name || 'drawing'}" to Identify By Query` + (this.hasActiveBuffer(mainDrawings[0]) ? bufferNote : '');
+			return __t("sendValueToIdentifyByQuery", { value: mainDrawings[0].attributes?.name || 'drawing' }) + (this.hasActiveBuffer(mainDrawings[0]) ? bufferNote : '');
 		}
 		return __t("sendAllLengthDrawingsCombinedTo2", { length: mainDrawings.length });
 	};
@@ -6179,7 +6179,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	private _tipAreaUnit = (): string => this.sketchViewModel?.valueOptions?.displayUnits?.area || 'square-meters';
 	private _lenAbbr = (u: string): string => (({ meters: 'm', feet: 'ft', miles: 'mi', kilometers: 'km', yards: 'yd', 'nautical-miles': 'NM' } as any)[u] || u);
 	private _areaAbbr = (u: string): string => (({ 'square-meters': 'm\u00B2', 'square-feet': 'ft\u00B2', 'square-miles': 'mi\u00B2', 'square-kilometers': 'km\u00B2', acres: 'ac', hectares: 'ha', 'square-yards': 'yd\u00B2' } as any)[u] || u);
-	private _fmtTip = (n: number): string => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	private _fmtTip = (n: number): string => n.toLocaleString(__locale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 	// Length via operators (geodetic first, planar fallback), matching measure.tsx.
 	// geometryEngine.geodesicLength does not exist in @arcgis/core 5.0.

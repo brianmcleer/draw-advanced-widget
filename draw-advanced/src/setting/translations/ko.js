@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "자유곡선 폴리곤",
         circle: "원",
         triangle: "삼각형",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "곡선 도구",
+        drawnGraphics: "Drawn 그래픽"
       })
     }
   }

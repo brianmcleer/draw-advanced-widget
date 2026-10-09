@@ -1186,7 +1186,19 @@ System.register([], function (e) {
         csvLayer: "CSV sloj",
         selectedLayer2: "selected layer",
         unknownError2: "unknown error",
-        unserializableError: "unserializable error"
+        unserializableError: "unserializable error",
+        distanceUnitDisplayBuffer: "{distance} {unitDisplay} Buffer",
+        mapViewIsNotAvailable: "Map view is not available.",
+        sketchViewModelIsNotAvailable: "SketchViewModel is not available.",
+        noVisibleSnappableLayersFound: "No visible snappable layers found.",
+        snappingFailedMessage: "Snapping failed: {message}",
+        sendTheSelectedDrawingToMailing: "Send the selected drawing to Mailing Labels{value1}",
+        sendTheSelectedDrawingToIdentify: "Send the selected drawing to Identify By Query{value1}",
+        sendValueToMailingLabels: "Send \"{value}\" to Mailing Labels",
+        bufferAreaWillBeUsedFor: "(buffer area will be used for wider parcel selection)",
+        sendValueToIdentifyByQuery: "Send \"{value}\" to Identify By Query",
+        bufferAreaWillBeUsedFor2: "(buffer area will be used for feature identification)",
+        point: "Tačka"
       })
     }
   }

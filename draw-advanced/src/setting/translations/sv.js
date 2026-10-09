@@ -249,7 +249,7 @@ System.register([], function (e) {
         freehandPolygon: "Frihandspolygon",
         circle: "Cirkel",
         triangle: "Triangel",
-        curveTools: "Curve Tools",
+        curveTools: "Curve verktyg",
         drawnGraphics: "Drawn Graphics"
       })
     }

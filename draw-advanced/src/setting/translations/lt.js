@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Laisvai brėžiamas poligonas",
         circle: "Apskritimas",
         triangle: "Trikampis",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Kreivės įrankiai",
+        drawnGraphics: "Nupiešta diagrama"
       })
     }
   }

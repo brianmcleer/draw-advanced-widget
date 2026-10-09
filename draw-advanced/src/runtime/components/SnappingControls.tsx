@@ -8,6 +8,7 @@ import type { JimuMapView } from 'jimu-arcgis';
 import FeatureLayer from 'esri/layers/FeatureLayer';
 import Collection from 'esri/core/Collection';
 import GridControls from 'esri/widgets/support/GridControls';
+import { __t } from '../i18n-t'
 
 interface SnappingControlsProps {
     jimuMapView: JimuMapView;
@@ -212,14 +213,14 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         const sketchVM = props.sketchViewModel;
 
         if (!view) {
-            const errorMsg = 'Map view is not available.';
+            const errorMsg = __t("mapViewIsNotAvailable");
             setError(errorMsg);
             setIsLoading(false);
             announce(t('errorErrorMsg', { errorMsg }), 'assertive');
             return;
         }
         if (!sketchVM) {
-            const errorMsg = 'SketchViewModel is not available.';
+            const errorMsg = __t("sketchViewModelIsNotAvailable");
             setError(errorMsg);
             setIsLoading(false);
             announce(t('errorErrorMsg', { errorMsg }), 'assertive');
@@ -269,7 +270,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
 
             setSnapSourcesCount(snapSources.length);
             if (snapSources.length === 0) {
-                const warningMsg = 'No visible snappable layers found.';
+                const warningMsg = __t("noVisibleSnappableLayersFound");
                 setError(warningMsg);
                 announce(t('warningWarningMsg', { warningMsg }), 'polite');
             } else {
@@ -277,7 +278,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
             }
         } catch (err: any) {
             console.error('Error configuring snapping:', err);
-            const errorMsg = `Snapping failed: ${err.message}`;
+            const errorMsg = __t("snappingFailedMessage", { message: err.message });
             setError(errorMsg);
             announce(t('errorErrorMsg', { errorMsg }), 'assertive');
         } finally {

@@ -16,6 +16,7 @@ import TextSymbol from 'esri/symbols/TextSymbol';
 import Color from 'esri/Color';
 import * as geometryEngine from 'esri/geometry/geometryEngine';
 import * as densifyOperator from 'esri/geometry/operators/densifyOperator';
+import { __t } from '../i18n-t'
 
 interface ExtendedGraphic extends Graphic {
     isBufferDrawing?: boolean;
@@ -810,7 +811,7 @@ export const BufferControls: React.FC<BufferControlsProps> = ({ jimuMapView, ske
 
             // Smart pluralization
             const unitDisplay = formatUnit(distance, unit);
-            const labelText = `${distance} ${unitDisplay} Buffer`;
+            const labelText = __t("distanceUnitDisplayBuffer", { distance: distance, unitDisplay: unitDisplay });
 
             // Use the exterior anchor for stellar cartography
             const labelPoint = getExteriorLabelPoint(bufferGeometry) || getLabelPoint(parent.geometry, bufferGeometry);

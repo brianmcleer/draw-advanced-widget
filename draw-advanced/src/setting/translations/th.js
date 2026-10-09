@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "รูปหลายเหลี่ยมฟรีแฮนด์",
         circle: "วงกลม",
         triangle: "สามเหลี่ยม",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "เครื่องมือเส้นโค้ง",
+        drawnGraphics: "กราฟแสดงความถี่"
       })
     }
   }

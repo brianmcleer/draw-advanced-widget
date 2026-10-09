@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Πολύγωνο ελεύθερης σχεδίασης",
         circle: "Κύκλος",
         triangle: "Τρίγωνο",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Εργαλεία καμπύλης",
+        drawnGraphics: "Σχεδιασμένο γραφικό"
       })
     }
   }

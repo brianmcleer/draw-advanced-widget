@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Szabadkézi polygon",
         circle: "Kör",
         triangle: "Háromszög",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Kerekes szerszámok",
+        drawnGraphics: "Grafikus rajzok"
       })
     }
   }

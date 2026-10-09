@@ -47,35 +47,35 @@ interface SettingState {
 // ============================================================================
 
 const defaultDistanceUnits: Unit[] = [
-    { unit: 'kilometers', label: __t("settingKilometers"), abbreviation: 'km', conversion: 0.001 },
-    { unit: 'miles', label: __t("settingMiles"), abbreviation: 'mi', conversion: 0.000621371 },
-    { unit: 'meters', label: __t("settingMeters"), abbreviation: 'm', conversion: 1 },
-    { unit: 'nautical-miles', label: __t("nauticalMiles"), abbreviation: 'NM', conversion: 0.000539957 },
-    { unit: 'feet', label: __t("settingFeet"), abbreviation: 'ft', conversion: 3.28084 },
-    { unit: 'yards', label: __t("yards"), abbreviation: 'yd', conversion: 1.09361 }
+    { unit: 'kilometers', get label () { return __t("settingKilometers") }, abbreviation: 'km', conversion: 0.001 },
+    { unit: 'miles', get label () { return __t("settingMiles") }, abbreviation: 'mi', conversion: 0.000621371 },
+    { unit: 'meters', get label () { return __t("settingMeters") }, abbreviation: 'm', conversion: 1 },
+    { unit: 'nautical-miles', get label () { return __t("nauticalMiles") }, abbreviation: 'NM', conversion: 0.000539957 },
+    { unit: 'feet', get label () { return __t("settingFeet") }, abbreviation: 'ft', conversion: 3.28084 },
+    { unit: 'yards', get label () { return __t("yards") }, abbreviation: 'yd', conversion: 1.09361 }
 ];
 
 const defaultAreaUnits: Unit[] = [
-    { unit: 'square-kilometers', label: __t("squareKilometers"), abbreviation: 'km\xb2', conversion: 0.000001 },
-    { unit: 'square-miles', label: __t("squareMiles"), abbreviation: 'mi\xb2', conversion: 3.86102e-7 },
-    { unit: 'acres', label: __t("acres"), abbreviation: 'ac', conversion: 0.000247105 },
-    { unit: 'hectares', label: __t("hectares"), abbreviation: 'ha', conversion: 0.0001 },
-    { unit: 'square-meters', label: __t("squareMeters"), abbreviation: 'm\xb2', conversion: 1 },
-    { unit: 'square-feet', label: __t("squareFeet"), abbreviation: 'ft\xb2', conversion: 10.7639 },
-    { unit: 'square-yards', label: __t("squareYards"), abbreviation: 'yd\xb2', conversion: 1.19599 }
+    { unit: 'square-kilometers', get label () { return __t("squareKilometers") }, abbreviation: 'km\xb2', conversion: 0.000001 },
+    { unit: 'square-miles', get label () { return __t("squareMiles") }, abbreviation: 'mi\xb2', conversion: 3.86102e-7 },
+    { unit: 'acres', get label () { return __t("acres") }, abbreviation: 'ac', conversion: 0.000247105 },
+    { unit: 'hectares', get label () { return __t("hectares") }, abbreviation: 'ha', conversion: 0.0001 },
+    { unit: 'square-meters', get label () { return __t("squareMeters") }, abbreviation: 'm\xb2', conversion: 1 },
+    { unit: 'square-feet', get label () { return __t("squareFeet") }, abbreviation: 'ft\xb2', conversion: 10.7639 },
+    { unit: 'square-yards', get label () { return __t("squareYards") }, abbreviation: 'yd\xb2', conversion: 1.19599 }
 ];
 
 const DRAW_TOOLS: Array<{ key: keyof Config; label: string; icon: string; desc: string }> = [
-    { key: 'enablePointTool', label: __t("point"), icon: '\u25CF', desc: 'Place single point markers.' },
-    { key: 'enablePolylineTool', label: __t("polyline"), icon: '\u2571', desc: 'Draw multi-segment lines by clicking vertices.' },
-    { key: 'enableFreePolylineTool', label: __t("freehandLine"), icon: '\u223F', desc: 'Draw freehand lines by dragging.' },
-    { key: 'enableTextTool', label: __t("text"), icon: 'T', desc: 'Place editable text labels on the map.' },
-    { key: 'enableRectangleTool', label: __t("rectangle"), icon: '\u25AD', desc: 'Draw rectangles by dragging.' },
-    { key: 'enablePolygonTool', label: __t("polygon"), icon: '\u2B20', desc: 'Draw multi-vertex polygons by clicking.' },
-    { key: 'enableFreePolygonTool', label: __t("freehandPolygon"), icon: '\u25CC', desc: 'Draw freehand polygons by dragging.' },
-    { key: 'enableCircleTool', label: __t("circle"), icon: '\u25CB', desc: 'Draw circles by dragging from a center point.' },
-    { key: 'enableTriangleTool', label: __t("triangle"), icon: '\u25B3', desc: 'Draw equilateral triangles.' },
-    { key: 'enableCurveTools', label: __t("curveTools"), icon: '\u2312', desc: 'Bezier / arc curve drawing options. Requires a compatible JSAPI Sketch build.' }
+    { key: 'enablePointTool', get label () { return __t("point") }, icon: '\u25CF', desc: 'Place single point markers.' },
+    { key: 'enablePolylineTool', get label () { return __t("polyline") }, icon: '\u2571', desc: 'Draw multi-segment lines by clicking vertices.' },
+    { key: 'enableFreePolylineTool', get label () { return __t("freehandLine") }, icon: '\u223F', desc: 'Draw freehand lines by dragging.' },
+    { key: 'enableTextTool', get label () { return __t("text") }, icon: 'T', desc: 'Place editable text labels on the map.' },
+    { key: 'enableRectangleTool', get label () { return __t("rectangle") }, icon: '\u25AD', desc: 'Draw rectangles by dragging.' },
+    { key: 'enablePolygonTool', get label () { return __t("polygon") }, icon: '\u2B20', desc: 'Draw multi-vertex polygons by clicking.' },
+    { key: 'enableFreePolygonTool', get label () { return __t("freehandPolygon") }, icon: '\u25CC', desc: 'Draw freehand polygons by dragging.' },
+    { key: 'enableCircleTool', get label () { return __t("circle") }, icon: '\u25CB', desc: 'Draw circles by dragging from a center point.' },
+    { key: 'enableTriangleTool', get label () { return __t("triangle") }, icon: '\u25B3', desc: 'Draw equilateral triangles.' },
+    { key: 'enableCurveTools', get label () { return __t("curveTools") }, icon: '\u2312', desc: 'Bezier / arc curve drawing options. Requires a compatible JSAPI Sketch build.' }
 ];
 
 // ============================================================================

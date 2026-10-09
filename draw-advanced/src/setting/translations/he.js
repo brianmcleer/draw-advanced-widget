@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "פוליגון בשרטוט חופשי",
         circle: "מעגל",
         triangle: "משולש",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "כלים",
+        drawnGraphics: "ציורים"
       })
     }
   }

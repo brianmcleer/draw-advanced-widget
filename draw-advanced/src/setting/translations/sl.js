@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Prostoročni poligon",
         circle: "Krog",
         triangle: "Trikotnik",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Orodja za krivulje",
+        drawnGraphics: "Narisana grafika"
       })
     }
   }

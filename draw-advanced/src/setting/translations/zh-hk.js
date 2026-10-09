@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "手繪多邊形",
         circle: "圓形",
         triangle: "三角形",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "曲線工具",
+        drawnGraphics: "繪圖"
       })
     }
   }

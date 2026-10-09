@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Vapaalla kädellä piirretty alue",
         circle: "Ympyrä",
         triangle: "Kolmio",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Kaarityökalut",
+        drawnGraphics: "Piirretty grafiikka"
       })
     }
   }

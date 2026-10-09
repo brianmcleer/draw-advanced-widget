@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Vabakäeline polügoon",
         circle: "Ring",
         triangle: "Kolmnurk",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Kõvera tööriistad",
+        drawnGraphics: "Joonistusgraafika"
       })
     }
   }

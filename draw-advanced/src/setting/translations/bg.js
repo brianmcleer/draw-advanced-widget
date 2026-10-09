@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Произволен полигон",
         circle: "Окръжност",
         triangle: "Триъгълник",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Инструменти за извиване",
+        drawnGraphics: "Нарисувана графика"
       })
     }
   }

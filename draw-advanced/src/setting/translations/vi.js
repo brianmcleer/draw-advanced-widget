@@ -249,8 +249,8 @@ System.register([], function (e) {
         freehandPolygon: "Đa giác vẽ tay",
         circle: "Hình tròn",
         triangle: "Hình tam giác",
-        curveTools: "Curve Tools",
-        drawnGraphics: "Drawn Graphics"
+        curveTools: "Công cụ cong",
+        drawnGraphics: "Đồ họa Vẽ"
       })
     }
   }
