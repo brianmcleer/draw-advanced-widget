@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "위젯이 Widget 컨트롤러 내부에 있을 때 활성화된 그림은 닫히지 않습니다.",
         settingHelp: "도움말",
         settingShowHelpGuide: "공지사항",
-        settingShowTheQuestionMarkButtonThat: "위젯 도움말 가이드를 열 수있는 질문 표시 버튼"
+        settingShowTheQuestionMarkButtonThat: "위젯 도움말 가이드를 열 수있는 질문 표시 버튼",
+        nauticalMiles: "해리",
+        yards: "야드",
+        squareKilometers: "제곱킬로미터",
+        squareMiles: "제곱마일",
+        acres: "에이커",
+        hectares: "헥타르",
+        squareMeters: "제곱미터",
+        squareFeet: "제곱피트",
+        squareYards: "제곱야드",
+        point: "포인트",
+        polyline: "폴리라인",
+        freehandLine: "자유게시판",
+        text: "텍스트",
+        rectangle: "사각형",
+        polygon: "폴리곤",
+        freehandPolygon: "자유곡선 폴리곤",
+        circle: "원",
+        triangle: "삼각형",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "המונחים: shape",
         settingKeepTheActiveToolSelected: "שמור את הכלי הפעיל שנבחר כך שמשתמשים יכולים לצייר צורות מרובות ברציפות.",
         settingDeactivateTheToolAfterEach: "הפעילו את הכלי לאחר שכל צורה הושלמה.",
-        settingImportExportSettings: "המונחים: Export Settings",
+        settingImportExportSettings: "יבוא / ייצוא הגדרות",
         settingExport: "יצוא",
         settingBuildAnXmlDocumentFrom: "בנה מסמך XML מההגדרות הנוכחיות ולהראות אותו למטה.",
         settingGenerateSettingsXml: "יצירת הגדרות XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "ניתן כאשר widget הוא בתוך הבקר Widget כך רישומים פעילים מבוטלים על קרוב.",
         settingHelp: "עזרה",
         settingShowHelpGuide: "מדריך עזרה",
-        settingShowTheQuestionMarkButtonThat: "הצג את לחצן סימן שאלה פותח את מדריך העזרה widget"
+        settingShowTheQuestionMarkButtonThat: "הצג את לחצן סימן שאלה פותח את מדריך העזרה widget",
+        nauticalMiles: "מיילים ימיים",
+        yards: "יארד",
+        squareKilometers: "קילומטרים רבועים",
+        squareMiles: "מיילים רבועים",
+        acres: "אקרים",
+        hectares: "הקטרים",
+        squareMeters: "מטרים רבועים",
+        squareFeet: "רגליים רבועות",
+        squareYards: "יארדים רבועים",
+        point: "נקודה",
+        polyline: "פולי קו",
+        freehandLine: "קו חופשי",
+        text: "טקסט",
+        rectangle: "מלבן",
+        polygon: "פוליגון",
+        freehandPolygon: "פוליגון בשרטוט חופשי",
+        circle: "מעגל",
+        triangle: "משולש",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

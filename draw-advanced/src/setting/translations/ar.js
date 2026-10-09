@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "أسلوب الخلق",
         settingKeepTheActiveToolSelected: "أبقوا الأداة الناشطة مختارين حتى يستطيع المستعملون رسم أشكال متعددة على التوالي",
         settingDeactivateTheToolAfterEach: "إبطال مفعول الأداة بعد اكتمال كل شكل.",
-        settingImportExportSettings: "الواردات/الصادرات",
+        settingImportExportSettings: "مناطق الاستيراد/الصادرات",
         settingExport: "تصدير",
         settingBuildAnXmlDocumentFrom: "(ج) بناء وثيقة XML من السياقات الحالية وعرضها أدناه.",
         settingGenerateSettingsXml: "Generate settings XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "يُمكنُ عندما يَكُونُ المستعارُ داخل a مُراقبِ ويدجي لذا رسوماتِ نشطةِ تُلغى قريباً.",
         settingHelp: "المساعدة",
         settingShowHelpGuide: "دليل المساعدة",
-        settingShowTheQuestionMarkButtonThat: "اظهر زر التساؤل الذي يفتح المرشد"
+        settingShowTheQuestionMarkButtonThat: "اظهر زر التساؤل الذي يفتح المرشد",
+        nauticalMiles: "أميال بحرية",
+        yards: "ياردة",
+        squareKilometers: "كيلو متر مربع",
+        squareMiles: "ميل مربع",
+        acres: "فدان",
+        hectares: "هكتار",
+        squareMeters: "متر مربع",
+        squareFeet: "قدم مربع",
+        squareYards: "ياردة مربعة",
+        point: "نقطة",
+        polyline: "متعدد الخطوط",
+        freehandLine: "الخط الحر",
+        text: "النص",
+        rectangle: "مستطيل",
+        polygon: "مضلع",
+        freehandPolygon: "مضلع يدوي",
+        circle: "دائرة",
+        triangle: "مثلث",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

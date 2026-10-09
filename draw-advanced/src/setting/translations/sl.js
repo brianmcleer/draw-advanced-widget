@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Omogoči, ko je gradnik znotraj krmilnika gradnikov, tako da so aktivne risbe preklicane na koncu.",
         settingHelp: "Pomoč",
         settingShowHelpGuide: "Prikaži vodnik za pomoč",
-        settingShowTheQuestionMarkButtonThat: "Prikaži gumb z vprašanji, ki odpre widget pomoč vodnik"
+        settingShowTheQuestionMarkButtonThat: "Prikaži gumb z vprašanji, ki odpre widget pomoč vodnik",
+        nauticalMiles: "Navtične milje",
+        yards: "Jardi",
+        squareKilometers: "Kvadratni kilometri",
+        squareMiles: "Kvadratne milje",
+        acres: "Akri",
+        hectares: "Hektarji",
+        squareMeters: "Kvadratni metri",
+        squareFeet: "Kvadratni čevlji",
+        squareYards: "Kvadratni jardi",
+        point: "Točka",
+        polyline: "Polilinija",
+        freehandLine: "Prosta črta",
+        text: "Besedilo",
+        rectangle: "Pravokotnik",
+        polygon: "Poligon",
+        freehandPolygon: "Prostoročni poligon",
+        circle: "Krog",
+        triangle: "Trikotnik",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

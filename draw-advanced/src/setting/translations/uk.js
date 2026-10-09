@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Режим створення креслення",
         settingKeepTheActiveToolSelected: "Зберігайте вибраний інструмент, щоб користувачі могли вивести декілька форм в рядку.",
         settingDeactivateTheToolAfterEach: "Визначте інструмент після кожної заповненої форми.",
-        settingImportExportSettings: "Параметри імпорту / експорту",
+        settingImportExportSettings: "Імпорт / експорт",
         settingExport: "Експорт",
         settingBuildAnXmlDocumentFrom: "Побудувати XML-документ з поточних налаштувань і показати його нижче.",
         settingGenerateSettingsXml: "Налаштування Generate XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Увімкнути, коли віджет знаходиться всередині контролера Widget, так активні малюнки скасовані на близькості.",
         settingHelp: "Довідка",
         settingShowHelpGuide: "Показати посібник",
-        settingShowTheQuestionMarkButtonThat: "Показати натис-mark, який відкриває посібник з підтримки віджету"
+        settingShowTheQuestionMarkButtonThat: "Показати натис-mark, який відкриває посібник з підтримки віджету",
+        nauticalMiles: "Морські милі",
+        yards: "Ярди",
+        squareKilometers: "Квадратні кілометри",
+        squareMiles: "Квадратні милі",
+        acres: "Акри",
+        hectares: "Гектари",
+        squareMeters: "Квадратні метри",
+        squareFeet: "Квадратні фути",
+        squareYards: "Квадратні ярди",
+        point: "Точка",
+        polyline: "Полілінія",
+        freehandLine: "Безкоштовна лінія",
+        text: "Текст",
+        rectangle: "Прямокутник",
+        polygon: "Полігон",
+        freehandPolygon: "Довільний полігон",
+        circle: "Коло",
+        triangle: "Трикутник",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

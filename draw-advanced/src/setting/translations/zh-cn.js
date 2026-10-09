@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "当部件在部件控制器内时, 关闭时会取消如此活跃的绘图 。",
         settingHelp: "帮助",
         settingShowHelpGuide: "显示帮助指南",
-        settingShowTheQuestionMarkButtonThat: "显示打开部件帮助指南的问题标记按钮"
+        settingShowTheQuestionMarkButtonThat: "显示打开部件帮助指南的问题标记按钮",
+        nauticalMiles: "海里",
+        yards: "码",
+        squareKilometers: "平方千米",
+        squareMiles: "平方英里",
+        acres: "英亩",
+        hectares: "公顷",
+        squareMeters: "平方米",
+        squareFeet: "平方英尺",
+        squareYards: "平方码",
+        point: "点",
+        polyline: "折线",
+        freehandLine: "空手线",
+        text: "文本",
+        rectangle: "矩形",
+        polygon: "面",
+        freehandPolygon: "手绘面",
+        circle: "圆形",
+        triangle: "三角形",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

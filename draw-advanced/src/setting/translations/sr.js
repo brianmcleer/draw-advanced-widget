@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Enable when the widget is inside a Widget Controller so active drawings are cancelled on close.",
         settingHelp: "Pomoć",
         settingShowHelpGuide: "Show help guide",
-        settingShowTheQuestionMarkButtonThat: "Show the question-mark button that opens the widget help guide"
+        settingShowTheQuestionMarkButtonThat: "Show the question-mark button that opens the widget help guide",
+        nauticalMiles: "Nautičke milje",
+        yards: "Jardi",
+        squareKilometers: "Kvadratni kilometri",
+        squareMiles: "Kvadratne milje",
+        acres: "Acre",
+        hectares: "Hektari",
+        squareMeters: "Kvadratni metri",
+        squareFeet: "Kvadratne stope",
+        squareYards: "Kvadratne jarde",
+        point: "Tačka",
+        polyline: "Poligon",
+        freehandLine: "Freehand Line",
+        text: "Tekst",
+        rectangle: "Pravougaonik",
+        polygon: "Polilinija",
+        freehandPolygon: "Poligon slobodnom rukom",
+        circle: "Krug",
+        triangle: "Trougao",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

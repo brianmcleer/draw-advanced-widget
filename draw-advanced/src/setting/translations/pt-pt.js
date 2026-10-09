@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Modo de criação de desenho",
         settingKeepTheActiveToolSelected: "Mantenha a ferramenta ativa selecionada para que os usuários possam desenhar várias formas em uma linha.",
         settingDeactivateTheToolAfterEach: "Desativar a ferramenta após cada forma completada.",
-        settingImportExportSettings: "Configuração da Importação / Exportação",
+        settingImportExportSettings: "Importar / exportar configurações",
         settingExport: "Exportar",
         settingBuildAnXmlDocumentFrom: "Compilar um documento XML a partir das configurações atuais e mostrá- lo abaixo.",
         settingGenerateSettingsXml: "Gerar configurações XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Habilite quando o widget estiver dentro de um Controlador de Widget para que desenhos ativos sejam cancelados ao fechar.",
         settingHelp: "Ajuda",
         settingShowHelpGuide: "Mostrar guia de ajuda",
-        settingShowTheQuestionMarkButtonThat: "Mostrar o botão de marca de perguntas que abre o guia de ajuda do elemento"
+        settingShowTheQuestionMarkButtonThat: "Mostrar o botão de marca de perguntas que abre o guia de ajuda do elemento",
+        nauticalMiles: "Milhas náuticas",
+        yards: "Jardas",
+        squareKilometers: "Quilómetros quadrados",
+        squareMiles: "Milhas quadradas",
+        acres: "Acres",
+        hectares: "Hectares",
+        squareMeters: "Metros quadrados",
+        squareFeet: "Pés quadrados",
+        squareYards: "Jardas quadradas",
+        point: "Ponto",
+        polyline: "Polilinha",
+        freehandLine: "Linha de mão livre",
+        text: "Texto",
+        rectangle: "Retângulo",
+        polygon: "Polígono",
+        freehandPolygon: "Polígono à mão livre",
+        circle: "Círculo",
+        triangle: "Triângulo",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

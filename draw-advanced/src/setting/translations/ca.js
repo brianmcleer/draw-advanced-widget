@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Mode de creació de dibuix",
         settingKeepTheActiveToolSelected: "Mantén l' eina activa seleccionada per a que els usuaris puguin dibuixar múltiples formes en una fila.",
         settingDeactivateTheToolAfterEach: "Desactiva l' eina després de cada forma finalitzada.",
-        settingImportExportSettings: "Importa / Exporta els arranjaments",
+        settingImportExportSettings: "Importa / exporta els arranjaments",
         settingExport: "Exporta",
         settingBuildAnXmlDocumentFrom: "Construeix un document XML des de l' arranjament actual i mostra- lo a sota.",
         settingGenerateSettingsXml: "Genera arranjaments XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Habilita quan l' estri està dins d' un controlador d' estri per a que els dibuixos actius es cancel· lin a prop.",
         settingHelp: "Ajuda",
         settingShowHelpGuide: "Mostra la guia d' ajuda",
-        settingShowTheQuestionMarkButtonThat: "Mostra el botó Pregunta- marca que obre la guia d' ajuda de l' estri"
+        settingShowTheQuestionMarkButtonThat: "Mostra el botó Pregunta- marca que obre la guia d' ajuda de l' estri",
+        nauticalMiles: "Milles nàutiques",
+        yards: "Iardes",
+        squareKilometers: "Quilòmetres quadrats",
+        squareMiles: "Milles quadrades",
+        acres: "Acresstar name",
+        hectares: "Hectàrees",
+        squareMeters: "Metres quadrats",
+        squareFeet: "Peus quadrats",
+        squareYards: "Iardes quadrades",
+        point: "Punt",
+        polyline: "Polilínia",
+        freehandLine: "Línia a mà alçada",
+        text: "Text",
+        rectangle: "Rectangle",
+        polygon: "Polígon",
+        freehandPolygon: "Polígon a mà alçada",
+        circle: "Cercle",
+        triangle: "Triangle",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "วาดโหมดการสร้าง",
         settingKeepTheActiveToolSelected: "เก็บเครื่องมือที่เลือกไว้ เพื่อให้ผู้ใช้สามารถวาดได้หลายรูปทรงในแถว",
         settingDeactivateTheToolAfterEach: "ยกเลิกการทํางานเครื่องมือหลังจากที่แต่ละรูปทรงเสร็จสมบูรณ์",
-        settingImportExportSettings: "ตั้งค่าต่าง ๆ ของแฟ้ม / ส่งออก",
+        settingImportExportSettings: "ตั้งค่า/ ส่งออก",
         settingExport: "ส่งออก",
         settingBuildAnXmlDocumentFrom: "สร้างเอกสาร XML จากการตั้งค่าปัจจุบัน และแสดงด้านล่างนี้",
         settingGenerateSettingsXml: "สร้างการตั้งค่า XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "เปิดใช้งานเมื่อวิดเจ็ตอยู่ภายในตัวควบคุมวิดเจ็ต ดังนั้นภาพวาดที่ทํางานอยู่จึงถูกยกเลิกเมื่อปิดการทํางาน",
         settingHelp: "ตัวช่วย",
         settingShowHelpGuide: "แสดงคําแนะนํา",
-        settingShowTheQuestionMarkButtonThat: "แสดงปุ่ม เครื่องหมายคําถามที่เปิดวิดเจ็ตคําแนะนํา"
+        settingShowTheQuestionMarkButtonThat: "แสดงปุ่ม เครื่องหมายคําถามที่เปิดวิดเจ็ตคําแนะนํา",
+        nauticalMiles: "ไมล์ทะเล",
+        yards: "หลา",
+        squareKilometers: "ตารางกิโลเมตร",
+        squareMiles: "ตารางไมล์",
+        acres: "เอเคอร์",
+        hectares: "เฮคเตอร์",
+        squareMeters: "ตารางเมตร",
+        squareFeet: "ตารางฟุต",
+        squareYards: "ตารางหลา",
+        point: "จุด",
+        polyline: "เส้นหลายรูปแบบ",
+        freehandLine: "เส้นอิสระ",
+        text: "ข้อความ",
+        rectangle: "สี่เหลี่ยมผืนผ้า",
+        polygon: "พื้นที่",
+        freehandPolygon: "รูปหลายเหลี่ยมฟรีแฮนด์",
+        circle: "วงกลม",
+        triangle: "สามเหลี่ยม",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

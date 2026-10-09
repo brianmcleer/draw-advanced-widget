@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Režim vytváření výkresů",
         settingKeepTheActiveToolSelected: "Udržujte aktivní nástroj vybrán tak, aby uživatelé mohli kreslit více tvarů v řadě.",
         settingDeactivateTheToolAfterEach: "Deaktivujte nástroj po každém dokončeném tvaru.",
-        settingImportExportSettings: "Nastavení importu / exportu",
+        settingImportExportSettings: "Nastavení dovozu / vývozu",
         settingExport: "Exportovat",
         settingBuildAnXmlDocumentFrom: "Vytvořit XML dokument z aktuálního nastavení a zobrazit jej níže.",
         settingGenerateSettingsXml: "Vytvořit nastavení XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Povolit, když widget je uvnitř Widget Controller tak aktivní výkresy jsou zrušeny na blízko.",
         settingHelp: "Nápověda",
         settingShowHelpGuide: "Zobrazit nápovědu",
-        settingShowTheQuestionMarkButtonThat: "Zobrazit tlačítko question- mark, které otevře nápovědu widget"
+        settingShowTheQuestionMarkButtonThat: "Zobrazit tlačítko question- mark, které otevře nápovědu widget",
+        nauticalMiles: "Námořní míle",
+        yards: "Yardy",
+        squareKilometers: "Kilometry čtvereční",
+        squareMiles: "Míle čtvereční",
+        acres: "Akry",
+        hectares: "Hektary",
+        squareMeters: "Metry čtvereční",
+        squareFeet: "Stopy čtvereční",
+        squareYards: "Yardy čtvereční",
+        point: "Bod",
+        polyline: "Polylinie",
+        freehandLine: "Freehand Line",
+        text: "Text",
+        rectangle: "Obdélník",
+        polygon: "Polygon",
+        freehandPolygon: "Polygon od ruky",
+        circle: "Kruh",
+        triangle: "Trojúhelník",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

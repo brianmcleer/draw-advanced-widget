@@ -20,6 +20,7 @@ import * as densifyOperator from 'esri/geometry/operators/densifyOperator'
 import Color from 'esri/Color';
 import TextSymbol from 'esri/symbols/TextSymbol';
 import SimpleMarkerSymbol from 'esri/symbols/SimpleMarkerSymbol';
+import { __t } from '../i18n-t'
 
 /**
  * ACCESSIBILITY COMPLIANCE NOTES (Section 508 / WCAG 2.1 AA)
@@ -275,22 +276,22 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 
 	//Built-in units
 	const defaultAreaUnits = [
-		{ unit: 'square-kilometers', label: props.nls('squareKilometers') || 'Square Kilometers', abbreviation: 'km²', conversion: 0.000001 },
-		{ unit: 'square-miles', label: props.nls('squareMiles') || 'Square Miles', abbreviation: 'mi²', conversion: 3.86102e-7 },
-		{ unit: 'acres', label: props.nls('acres') || 'Acres', abbreviation: 'ac', conversion: 0.000247105 },
-		{ unit: 'hectares', label: props.nls('hectares') || 'Hectares', abbreviation: 'ha', conversion: 0.0001 },
-		{ unit: 'square-meters', label: props.nls('squareMeters') || 'Square Meters', abbreviation: 'm²', conversion: 1 },
-		{ unit: 'square-feet', label: props.nls('squareFeet') || 'Square Feet', abbreviation: 'ft²', conversion: 10.7639 },
-		{ unit: 'square-yards', label: props.nls('squareYards') || 'Square Yards', abbreviation: 'yd²', conversion: 1.19599 }
+		{ unit: 'square-kilometers', label: props.nls('squareKilometers') || __t("squareKilometers"), abbreviation: 'km²', conversion: 0.000001 },
+		{ unit: 'square-miles', label: props.nls('squareMiles') || __t("squareMiles"), abbreviation: 'mi²', conversion: 3.86102e-7 },
+		{ unit: 'acres', label: props.nls('acres') || __t("acres"), abbreviation: 'ac', conversion: 0.000247105 },
+		{ unit: 'hectares', label: props.nls('hectares') || __t("hectares"), abbreviation: 'ha', conversion: 0.0001 },
+		{ unit: 'square-meters', label: props.nls('squareMeters') || __t("squareMeters"), abbreviation: 'm²', conversion: 1 },
+		{ unit: 'square-feet', label: props.nls('squareFeet') || __t("squareFeet"), abbreviation: 'ft²', conversion: 10.7639 },
+		{ unit: 'square-yards', label: props.nls('squareYards') || __t("squareYards"), abbreviation: 'yd²', conversion: 1.19599 }
 	];
 
 	const defaultDistanceUnits = [
-		{ unit: 'kilometers', label: props.nls('kilometers') || 'Kilometers', abbreviation: 'km', conversion: 0.001 },
-		{ unit: 'miles', label: props.nls('miles') || 'Miles', abbreviation: 'mi', conversion: 0.000621371 },
-		{ unit: 'meters', label: props.nls('meters') || 'Meters', abbreviation: 'm', conversion: 1 },
-		{ unit: 'nautical-miles', label: props.nls('nauticals') || 'Nautical Miles', abbreviation: 'NM', conversion: 0.000539957 },
-		{ unit: 'feet', label: props.nls('feet') || 'Feet', abbreviation: 'ft', conversion: 3.28084 },
-		{ unit: 'yards', label: props.nls('yards') || 'Yards', abbreviation: 'yd', conversion: 1.09361 }
+		{ unit: 'kilometers', label: props.nls('kilometers') || __t("kilometers"), abbreviation: 'km', conversion: 0.001 },
+		{ unit: 'miles', label: props.nls('miles') || __t("miles"), abbreviation: 'mi', conversion: 0.000621371 },
+		{ unit: 'meters', label: props.nls('meters') || __t("meters"), abbreviation: 'm', conversion: 1 },
+		{ unit: 'nautical-miles', label: props.nls('nauticals') || __t("nauticals"), abbreviation: 'NM', conversion: 0.000539957 },
+		{ unit: 'feet', label: props.nls('feet') || __t("feet"), abbreviation: 'ft', conversion: 3.28084 },
+		{ unit: 'yards', label: props.nls('yards') || __t("yards"), abbreviation: 'yd', conversion: 1.09361 }
 	];
 
 	//combine built-in and user defined units
@@ -2361,7 +2362,7 @@ const Measure = forwardRef<MeasureRef, MeasureProps>((props, ref) => {
 			}
 		} catch (error) {
 			console.error('Error calculating measurement:', error);
-			return 'Error calculating measurement';
+			return __t("errorCalculatingMeasurement");
 		}
 	};
 

@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Aktiver når widgeten er inne i en Widget-kontroll så aktive tegninger kanselleres ved avslutning.",
         settingHelp: "Hjelp",
         settingShowHelpGuide: "Vis hjelpguide",
-        settingShowTheQuestionMarkButtonThat: "Vis spørsmålsmerkeknappen som åpner widget-hjelpeguiden"
+        settingShowTheQuestionMarkButtonThat: "Vis spørsmålsmerkeknappen som åpner widget-hjelpeguiden",
+        nauticalMiles: "Nautiske mil",
+        yards: "Yard",
+        squareKilometers: "Kvadratkilometer",
+        squareMiles: "Kvadratmiles",
+        acres: "Acre",
+        hectares: "Hektar",
+        squareMeters: "Kvadratmeter",
+        squareFeet: "Kvadratfot",
+        squareYards: "Kvadratyard",
+        point: "Punkt",
+        polyline: "Polylinje",
+        freehandLine: "Freehand Line",
+        text: "Tekst",
+        rectangle: "Rektangel",
+        polygon: "Polygon",
+        freehandPolygon: "Frihåndspolygon",
+        circle: "Sirkel",
+        triangle: "Trekant",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

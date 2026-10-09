@@ -67,6 +67,7 @@ import { Icon } from 'jimu-ui';
 import { TextStyleEditor } from './TextStyleEditor';
 
 import { Alert } from 'jimu-ui';
+import { __setIntl, __t, __tc } from '../i18n-t'
 // Modules loaded eagerly via AMD loader — starts immediately so they're ready before first user action.
 // These cannot be statically imported in ExB 1.20; they require the ArcGIS AMD runtime loader.
 // geometryEngine is sync, pure-JS in JSAPI 4.x/5.x — no WASM required.
@@ -2774,7 +2775,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                     properties.text = text.text || '';
                     properties.text_color = text.color?.toHex() || '#000000';
                     properties.text_size = text.font?.size || 12;
-                    properties.text_font = text.font?.family || 'Arial';
+                    properties.text_font = __tc(text.font?.family, "textStyleArial");
                     // Preserve font style customizations
                     if (text.font?.weight && text.font.weight !== 'normal') {
                         properties.text_weight = text.font.weight;
@@ -2900,7 +2901,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         const bufProps: any = {
             id: `${parentId}_buffer`,
             name: `${parentName} Buffer`,
-            description: 'Buffer',
+            description: __t("buffer"),
             type: 'Buffer',
             isBuffer: true,
             parentId,
@@ -10187,7 +10188,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             for (let index = 0; index < placemarks.length; index++) {
                 const placemark = placemarks[index];
                 try {
-                    const name = placemark.querySelector('name')?.textContent?.trim() || `Imported Feature ${index + 1}`;
+                    const name = placemark.querySelector('name')?.textContent?.trim() || __t("importedFeatureValue", { value: index + 1 });
                     const description = placemark.querySelector('description')?.textContent?.trim() || '';
                     const geometry = await this.parseKMLGeometry(placemark);
                     if (geometry) {
@@ -10872,7 +10873,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             let importedCount = 0;
 
             for (const placemark of Array.from(placemarks)) {
-                const name = placemark.querySelector('name')?.textContent || `Imported Feature ${importedCount + 1}`;
+                const name = placemark.querySelector('name')?.textContent || __t("importedFeatureValue", { value: importedCount + 1 });
                 const description = this.extractKMLDescription(placemark);
 
                 // Parse geometry
@@ -11220,7 +11221,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 importProgressMessage: ''
             });
 
-            this.showLocalAlert(`Import failed: ${error.message || 'Unknown error'}`, 'error');
+            this.showLocalAlert(`Import failed: ${__tc(error.message, "unknownError")}`, 'error');
             throw error;
         }
     };
@@ -14052,18 +14053,18 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             case 'point':
                 return 'Point';
             case 'polyline':
-                return 'Line';
+                return __t("line");
             case 'polygon':
                 return 'Polygon';
             case 'rectangle':
             case 'extent':
-                return 'Rectangle';
+                return __t("rectangle");
             case 'circle':
-                return 'Circle';
+                return __t("circle");
             case 'text':
                 return 'Text';
             default:
-                return drawMode?.charAt(0).toUpperCase() + drawMode?.slice(1) || 'Unknown';
+                return drawMode?.charAt(0).toUpperCase() + drawMode?.slice(1) || __t("unknown");
         }
     }
 
@@ -14201,7 +14202,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 // Text properties
                 fontColor: symbolColor,
                 fontSize: fontSize,
-                fontFamily: textSymbol.font?.family || 'Arial',
+                fontFamily: __tc(textSymbol.font?.family, "textStyleArial"),
                 fontRotation: fontRotation,
                 // Opacity values (from alpha channel)
                 fontOpacity: textSymbol.color?.a || 1,
@@ -15427,6 +15428,7 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
 
 
     render() {
+    __setIntl((this.props as any).intl)
         const {
             drawings, selectedGraphicIndex, sortOption, editingGraphicIndex,
             alertMessage, alertType, showAlert, consentGranted,
@@ -15435,10 +15437,10 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         } = this.state;
 
         const verticalMap: Record<VerticalAlign, { label: string; stateKey: keyof MyDrawingsPanelState }> = {
-            top: { label: 'Top', stateKey: 'vAlignTopActive' },
-            middle: { label: 'Middle', stateKey: 'vAlignMidActive' },
-            bottom: { label: 'Bottom', stateKey: 'vAlignBotActive' },
-            baseline: { label: 'Base', stateKey: 'vAlignBaseActive' }
+            top: { label: __t("top"), stateKey: 'vAlignTopActive' },
+            middle: { label: __t("middle"), stateKey: 'vAlignMidActive' },
+            bottom: { label: __t("bottom"), stateKey: 'vAlignBotActive' },
+            baseline: { label: __t("base"), stateKey: 'vAlignBaseActive' }
         };
 
         // Custom styles to override any gray backgrounds

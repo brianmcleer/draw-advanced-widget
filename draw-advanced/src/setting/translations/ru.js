@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Режим создания рисунков",
         settingKeepTheActiveToolSelected: "Держите активный инструмент выбранным, чтобы пользователи могли рисовать несколько форм подряд.",
         settingDeactivateTheToolAfterEach: "Деактивировать инструмент после каждой заполненной формы.",
-        settingImportExportSettings: "Настройки импорта / экспорта",
+        settingImportExportSettings: "Условия импорта/экспорта",
         settingExport: "Экспорт",
         settingBuildAnXmlDocumentFrom: "Создайте XML-документ из текущих настроек и покажите его ниже.",
         settingGenerateSettingsXml: "Создание настроек XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Включите, когда виджет находится внутри контроллера виджета, чтобы активные чертежи отменялись при закрытии.",
         settingHelp: "Справка",
         settingShowHelpGuide: "Показать справочник",
-        settingShowTheQuestionMarkButtonThat: "Покажите кнопку вопрос-марка, которая открывает руководство по помощи виджета"
+        settingShowTheQuestionMarkButtonThat: "Покажите кнопку вопрос-марка, которая открывает руководство по помощи виджета",
+        nauticalMiles: "Морские мили",
+        yards: "Ярды",
+        squareKilometers: "Квадратные километры",
+        squareMiles: "Квадратные мили",
+        acres: "Акры",
+        hectares: "Гектары",
+        squareMeters: "Квадратные метры",
+        squareFeet: "Квадратные футы",
+        squareYards: "Квадратные ярды",
+        point: "Точка",
+        polyline: "Полилиния",
+        freehandLine: "Линия свободной руки",
+        text: "Текст",
+        rectangle: "Прямоугольник",
+        polygon: "Полигон",
+        freehandPolygon: "Произвольный полигон",
+        circle: "Круг",
+        triangle: "Треугольник",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

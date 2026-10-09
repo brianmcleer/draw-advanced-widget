@@ -47,7 +47,7 @@ System.register([], function (e) {
         settingInitialBufferDistance: "Khoảng cách đệm ban đầu.",
         settingDefaultBufferUnit: "Bộ đệm mặc định",
         settingInitialBufferDistanceUnit: "Đơn vị đệm đầu tiên.",
-        settingFeet: "Feet",
+        settingFeet: "Bộ",
         settingMeters: "Mét",
         settingMiles: "Dặm",
         settingKilometers: "Kilômét",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Bật khi ô điều khiển bên trong bộ điều khiển điều khiển hoạt động, thì việc vẽ bị hủy bỏ khi kết thúc.",
         settingHelp: "Trợ giúp",
         settingShowHelpGuide: "Hiện hướng dẫn trợ giúp",
-        settingShowTheQuestionMarkButtonThat: "Hiển thị nút đánh dấu câu hỏi để mở hướng dẫn trợ giúp ô điều khiển"
+        settingShowTheQuestionMarkButtonThat: "Hiển thị nút đánh dấu câu hỏi để mở hướng dẫn trợ giúp ô điều khiển",
+        nauticalMiles: "Hải lý",
+        yards: "Yard",
+        squareKilometers: "Ki-lô-mét vuông",
+        squareMiles: "Dặm vuông",
+        acres: "Acre",
+        hectares: "Hecta",
+        squareMeters: "Mét vuông",
+        squareFeet: "Feet vuông",
+        squareYards: "Yard vuông",
+        point: "Điểm",
+        polyline: "Đường",
+        freehandLine: "Đường tay",
+        text: "Văn bản",
+        rectangle: "Hình chữ nhật",
+        polygon: "Vùng",
+        freehandPolygon: "Đa giác vẽ tay",
+        circle: "Hình tròn",
+        triangle: "Hình tam giác",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

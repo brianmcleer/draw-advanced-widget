@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Activer lorsque le widget est à l'intérieur d'un contrôleur Widget afin que les dessins actifs soient annulés à la fermeture.",
         settingHelp: "Aide",
         settingShowHelpGuide: "Afficher le guide d'aide",
-        settingShowTheQuestionMarkButtonThat: "Afficher le bouton question-marque qui ouvre le guide d'aide du widget"
+        settingShowTheQuestionMarkButtonThat: "Afficher le bouton question-marque qui ouvre le guide d'aide du widget",
+        nauticalMiles: "Milles nautiques",
+        yards: "Fils",
+        squareKilometers: "Kilomètres carrés",
+        squareMiles: "Miles carrés",
+        acres: "Acres anglo-saxonnes",
+        hectares: "Hectares",
+        squareMeters: "Mètres carrés",
+        squareFeet: "Pieds carrés",
+        squareYards: "Yards carrés",
+        point: "Remarque",
+        polyline: "Polyligne",
+        freehandLine: "Ligne libre",
+        text: "Texte",
+        rectangle: "Rectangle",
+        polygon: "Polygone",
+        freehandPolygon: "Polygone à main levée",
+        circle: "Cercle",
+        triangle: "Triangle",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

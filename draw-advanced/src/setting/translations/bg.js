@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Режим на създаване",
         settingKeepTheActiveToolSelected: "Дръжте избрания активен инструмент така, че потребителите да могат да начертаят няколко форми в ред.",
         settingDeactivateTheToolAfterEach: "Деактивирайте инструмента след всяка завършена форма.",
-        settingImportExportSettings: "Импортиране / експортиране на настройките",
+        settingImportExportSettings: "Настройки за импортиране/ експортиране",
         settingExport: "Експорт",
         settingBuildAnXmlDocumentFrom: "Изграждане на XML документ от текущите настройки и да го покаже по-долу.",
         settingGenerateSettingsXml: "Генериране на настройки XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Включване, когато джаджата е вътре в контролера на джаджата, така активните чертежи се анулират при затваряне.",
         settingHelp: "Помощ",
         settingShowHelpGuide: "Показване на ръководство за помощ",
-        settingShowTheQuestionMarkButtonThat: "Показване на бутона въпрос-марка, която отваря джаджа помощ ръководство"
+        settingShowTheQuestionMarkButtonThat: "Показване на бутона въпрос-марка, която отваря джаджа помощ ръководство",
+        nauticalMiles: "Морски мили",
+        yards: "Ярда",
+        squareKilometers: "Квадратни километри",
+        squareMiles: "Квадратни мили",
+        acres: "Акра",
+        hectares: "Хектари",
+        squareMeters: "Квадратни метри",
+        squareFeet: "Квадратни фута",
+        squareYards: "Квадратни ярда",
+        point: "Точка",
+        polyline: "Полилиния",
+        freehandLine: "Линия на свободна ръка",
+        text: "Текст",
+        rectangle: "Правоъгълник",
+        polygon: "Полигон",
+        freehandPolygon: "Произволен полигон",
+        circle: "Окръжност",
+        triangle: "Триъгълник",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

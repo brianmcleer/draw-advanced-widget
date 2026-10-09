@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "當元件在元件控制器內時啟用 。",
         settingHelp: "說明",
         settingShowHelpGuide: "顯示說明指南",
-        settingShowTheQuestionMarkButtonThat: "顯示開啟元件說明指導的問題標鍵"
+        settingShowTheQuestionMarkButtonThat: "顯示開啟元件說明指導的問題標鍵",
+        nauticalMiles: "海浬",
+        yards: "碼",
+        squareKilometers: "平方公里",
+        squareMiles: "平方英里",
+        acres: "英畝",
+        hectares: "公頃",
+        squareMeters: "平方公尺",
+        squareFeet: "平方英呎",
+        squareYards: "平方碼",
+        point: "點",
+        polyline: "折線",
+        freehandLine: "手列",
+        text: "文字",
+        rectangle: "矩形",
+        polygon: "多邊形",
+        freehandPolygon: "手繪多邊形",
+        circle: "圓形",
+        triangle: "三角形",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

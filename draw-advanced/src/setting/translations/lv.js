@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Ieslēdziet, kad logdaļa atrodas logdaļu kontrollerī, tāpēc aizverot tiek atcelti aktīvi zīmējumi.",
         settingHelp: "Palīdzība",
         settingShowHelpGuide: "Rādīt palīdzības ceļvedi",
-        settingShowTheQuestionMarkButtonThat: "Rādīt jautājumu zīmes pogu, kas atver logdaļu palīdzības rokasgrāmatu"
+        settingShowTheQuestionMarkButtonThat: "Rādīt jautājumu zīmes pogu, kas atver logdaļu palīdzības rokasgrāmatu",
+        nauticalMiles: "Jūras jūdzes",
+        yards: "Jardi",
+        squareKilometers: "Kvadrātkilometri",
+        squareMiles: "Kvadrātjūdzes",
+        acres: "Akri",
+        hectares: "Hektāri",
+        squareMeters: "Kvadrātmetri",
+        squareFeet: "Kvadrātpēdas",
+        squareYards: "Kvadrātjardi",
+        point: "Punkts",
+        polyline: "Polilīnija",
+        freehandLine: "Brīvrokas rinda",
+        text: "Teksts",
+        rectangle: "Taisnstūris",
+        polygon: "Laukums",
+        freehandPolygon: "Brīvrokas laukums",
+        circle: "Aplis",
+        triangle: "Trijstūris",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

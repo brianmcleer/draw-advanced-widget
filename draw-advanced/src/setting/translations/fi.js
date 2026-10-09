@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Piirustuksen luontitila",
         settingKeepTheActiveToolSelected: "Pidä aktiivinen työkalu valittuna, jotta käyttäjät voivat piirtää useita muotoja peräkkäin.",
         settingDeactivateTheToolAfterEach: "Poista työkalu jokaisen valmiin muodon jälkeen.",
-        settingImportExportSettings: "Tuo tai vie asetukset",
+        settingImportExportSettings: "Tuonti-/vientiasetukset",
         settingExport: "Vie",
         settingBuildAnXmlDocumentFrom: "Rakenna XML-asiakirja nykyisistä asetuksista ja näytä se alla.",
         settingGenerateSettingsXml: "Luo asetukset XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Ota käyttöön, kun widget on sisällä Widget Controller joten aktiiviset piirustukset peruutetaan lähellä.",
         settingHelp: "Ohje",
         settingShowHelpGuide: "Näytä ohje",
-        settingShowTheQuestionMarkButtonThat: "Näytä kysymys-merkki-painike, joka avaa widget ohjeen"
+        settingShowTheQuestionMarkButtonThat: "Näytä kysymys-merkki-painike, joka avaa widget ohjeen",
+        nauticalMiles: "Meripeninkulmaa",
+        yards: "Jaardia",
+        squareKilometers: "Neliökilometriä",
+        squareMiles: "Neliömailia",
+        acres: "Eekkeriä",
+        hectares: "Hehtaaria",
+        squareMeters: "Neliömetriä",
+        squareFeet: "Neliöjalkaa",
+        squareYards: "Neliöjaardia",
+        point: "Piste",
+        polyline: "Taiteviiva",
+        freehandLine: "Freehand Line",
+        text: "Teksti",
+        rectangle: "Suorakulmio",
+        polygon: "Aluekohde",
+        freehandPolygon: "Vapaalla kädellä piirretty alue",
+        circle: "Ympyrä",
+        triangle: "Kolmio",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

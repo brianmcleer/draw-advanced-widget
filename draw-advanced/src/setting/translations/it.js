@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Disegno modalità di creazione",
         settingKeepTheActiveToolSelected: "Mantenere lo strumento attivo selezionato in modo che gli utenti possano disegnare più forme di fila.",
         settingDeactivateTheToolAfterEach: "Disattivare lo strumento dopo ogni forma completata.",
-        settingImportExportSettings: "Import / Esporta impostazioni",
+        settingImportExportSettings: "Importazione / esportazione",
         settingExport: "Esporta",
         settingBuildAnXmlDocumentFrom: "Costruisci un documento XML dalle impostazioni attuali e mostralo di seguito.",
         settingGenerateSettingsXml: "Genera impostazioni XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Abilitare quando il widget è all'interno di un controller Widget in modo che i disegni attivi vengono cancellati da vicino.",
         settingHelp: "Guida",
         settingShowHelpGuide: "Mostra la guida",
-        settingShowTheQuestionMarkButtonThat: "Mostra il pulsante di punto interrogativo che apre la guida di aiuto widget"
+        settingShowTheQuestionMarkButtonThat: "Mostra il pulsante di punto interrogativo che apre la guida di aiuto widget",
+        nauticalMiles: "Miglia nautiche",
+        yards: "Iarde",
+        squareKilometers: "Chilometri quadrati",
+        squareMiles: "Miglia quadrate",
+        acres: "Acri",
+        hectares: "Ettari",
+        squareMeters: "Metri quadrati",
+        squareFeet: "Piedi quadrati",
+        squareYards: "Iarde quadrate",
+        point: "Punto",
+        polyline: "Polilinea",
+        freehandLine: "Linea di trasporto",
+        text: "Testo",
+        rectangle: "Rettangolo",
+        polygon: "Poligono",
+        freehandPolygon: "Poligono a mano libera",
+        circle: "Cerchio",
+        triangle: "Triangolo",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

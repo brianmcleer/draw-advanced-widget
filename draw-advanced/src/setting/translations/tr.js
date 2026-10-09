@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Çizim modu modu",
         settingKeepTheActiveToolSelected: "Aktif aracı seçin, böylece kullanıcılar bir satırda birden fazla şekil çizebilir.",
         settingDeactivateTheToolAfterEach: "Her bir tamamlanma şeklinden sonra aracı iptal edin.",
-        settingImportExportSettings: "İthalat / İhracat Ayarları",
+        settingImportExportSettings: "İthalat / ihracat ayarları",
         settingExport: "Dışa Aktar",
         settingBuildAnXmlDocumentFrom: "Mevcut ayarlardan bir XML belgesi oluşturun ve aşağıda gösterir.",
         settingGenerateSettingsXml: "Genrate settings XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Widget bir Widget Controller içinde olduğunda enable, bu kadar aktif çizimler yakın zamanda iptal edilir.",
         settingHelp: "Yardım",
         settingShowHelpGuide: "Show help guide",
-        settingShowTheQuestionMarkButtonThat: "widget'ı açan soru işaret düğmesine göster"
+        settingShowTheQuestionMarkButtonThat: "Widget'ı açan soru işaret düğmesine göster",
+        nauticalMiles: "Deniz mili",
+        yards: "Yarda",
+        squareKilometers: "Kilometrekare",
+        squareMiles: "Milkare",
+        acres: "Akre",
+        hectares: "Hektar",
+        squareMeters: "Metrekare",
+        squareFeet: "Fitkare",
+        squareYards: "Yardakare",
+        point: "Nokta",
+        polyline: "Çoklu çizgi",
+        freehandLine: "Freehand Line",
+        text: "Metin",
+        rectangle: "Dikdörtgen",
+        polygon: "Cokgen",
+        freehandPolygon: "Serbest çizim çokgen",
+        circle: "Daire",
+        triangle: "Üçgen",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

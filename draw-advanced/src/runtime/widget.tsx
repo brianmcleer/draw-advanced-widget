@@ -59,6 +59,7 @@ import * as areaOperator from 'esri/geometry/operators/areaOperator';
 import * as geodeticAreaOperator from 'esri/geometry/operators/geodeticAreaOperator';
 import { hooks as __exbI18nHooks } from 'jimu-core';
 import __exbI18nMessages from './translations/default';
+import { __setIntl, __t, __tc } from './i18n-t'
 
 
 // EB 1.21's editor occasionally loses ArcGIS static factory members even though
@@ -1883,7 +1884,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 				type: 'esriTS',
 				verticalAlignment: 'middle',
 				font: { family: 'Avenir Next LT Pro' },
-				text: 'Text',
+				text: __t("text"),
 				lineWidth: 9999
 			}),
 			undoBtnActive: false,
@@ -2308,7 +2309,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 					if (!graphic.geometry) continue;
 
 					const layer = (result as any).layer || null;
-					const layerTitle = layer?.title || 'Graphics Layer';
+					const layerTitle = __tc(layer?.title, "graphicsLayer");
 					const geomType = graphic.geometry.type === 'extent' ? 'rectangle' : graphic.geometry.type;
 					hitTestHits.push({ graphic, layer, layerTitle, geomType });
 				}
@@ -2363,7 +2364,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							for (const feature of result.features) {
 								if (feature.geometry) {
 									const geomType = feature.geometry.type === 'extent' ? 'rectangle' : feature.geometry.type;
-									candidates.push({ graphic: feature, layerTitle: featureLayer.title || 'Feature Layer', geometryType: geomType });
+									candidates.push({ graphic: feature, layerTitle: __tc(featureLayer.title, "featureLayer"), geometryType: geomType });
 								}
 							}
 						}
@@ -2373,7 +2374,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 				// 3. Query map-image sublayers
 				const mapImageLayers = allLayers.filter(l => l.type === 'map-image' && isLayerVisible(l)) as any[];
 				for (const mapImageLayer of mapImageLayers) {
-					const allSublayers = collectSublayers(mapImageLayer.sublayers, mapImageLayer.title || 'Map Service');
+					const allSublayers = collectSublayers(mapImageLayer.sublayers, __tc(mapImageLayer.title, "mapService"));
 					for (const { sublayer, title } of allSublayers) {
 						try {
 							const query = (sublayer as any).createQuery?.();
@@ -2415,7 +2416,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							for (const feature of result.features) {
 								if (feature.geometry) {
 									const geomType = feature.geometry.type === 'extent' ? 'rectangle' : feature.geometry.type;
-									candidates.push({ graphic: feature, layerTitle: (layer as any).title || 'Layer', geometryType: geomType });
+									candidates.push({ graphic: feature, layerTitle: (layer as any).title || __t("layer"), geometryType: geomType });
 								}
 							}
 						}
@@ -2427,7 +2428,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			if (candidates.length === 0) {
 				if (selectedCopyLayerId) {
 					const selectedLayer = copyableLayers.find(l => l.id === selectedCopyLayerId);
-					const layerName = selectedLayer?.title || 'the selected layer';
+					const layerName = __tc(selectedLayer?.title, "theSelectedLayer");
 					this.showCopyPasteToast(`No feature found from "${layerName}" at click location.`, 'info');
 					this.announceToScreenReader(`No feature found from ${layerName}. Try clicking on a visible feature.`);
 				} else {
@@ -3152,32 +3153,32 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	/** Returns dynamic button label based on current selection state */
 	private getMailingLabelsButtonText = (): string => {
 		const mainDrawings = this.getMainDrawings();
-		if (mainDrawings.length === 0) return 'Mailing Labels';
+		if (mainDrawings.length === 0) return __t("mailingLabels");
 
 		// Check if something is specifically selected
 		const sketchGraphic = this.sketchViewModel?.updateGraphics?.getItemAt(0);
 		if (sketchGraphic?.geometry) {
-			return this.hasActiveBuffer(sketchGraphic) ? 'Send Buffer → Labels' : 'Send Selected → Labels';
+			return this.hasActiveBuffer(sketchGraphic) ? __t("sendBufferLabels") : __t("sendSelectedLabels");
 		}
 		if (this.state.selectedGraphicIndex != null && mainDrawings[this.state.selectedGraphicIndex]) {
 			const g = mainDrawings[this.state.selectedGraphicIndex];
-			return this.hasActiveBuffer(g) ? 'Send Buffer → Labels' : 'Send Selected → Labels';
+			return this.hasActiveBuffer(g) ? __t("sendBufferLabels") : __t("sendSelectedLabels");
 		}
 		if (this.state.selectedGraphics?.size > 0) {
-			return `Send ${this.state.selectedGraphics.size} Selected → Labels`;
+			return __t("sendSizeSelectedLabels", { size: this.state.selectedGraphics.size });
 		}
 
 		// Nothing selected — will send all
 		if (mainDrawings.length === 1) {
-			return this.hasActiveBuffer(mainDrawings[0]) ? 'Send Buffer → Labels' : 'Send Drawing → Labels';
+			return this.hasActiveBuffer(mainDrawings[0]) ? __t("sendBufferLabels") : __t("sendDrawingLabels");
 		}
-		return `Send All (${mainDrawings.length}) → Labels`;
+		return __t("sendAllLengthLabels", { length: mainDrawings.length });
 	};
 
 	/** Returns tooltip explaining what the button will do */
 	private getMailingLabelsButtonTooltip = (): string => {
 		const mainDrawings = this.getMainDrawings();
-		if (mainDrawings.length === 0) return 'Draw a shape first, then send to Mailing Labels';
+		if (mainDrawings.length === 0) return __t("drawAShapeFirstThenSend");
 
 		const bufferNote = ' (buffer area will be used for wider parcel selection)';
 
@@ -3190,12 +3191,12 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			return `Send "${g.attributes?.name || 'selected drawing'}" to Mailing Labels` + (this.hasActiveBuffer(g) ? bufferNote : '');
 		}
 		if (this.state.selectedGraphics?.size > 0) {
-			return `Send ${this.state.selectedGraphics.size} selected drawings to Mailing Labels`;
+			return __t("sendSizeSelectedDrawingsToMailing", { size: this.state.selectedGraphics.size });
 		}
 		if (mainDrawings.length === 1) {
 			return `Send "${mainDrawings[0].attributes?.name || 'drawing'}" to Mailing Labels` + (this.hasActiveBuffer(mainDrawings[0]) ? bufferNote : '');
 		}
-		return `Send all ${mainDrawings.length} drawings combined to Mailing Labels for parcel selection`;
+		return __t("sendAllLengthDrawingsCombinedTo", { length: mainDrawings.length });
 	};
 
 	private sendToMailingLabels = async () => {
@@ -3338,29 +3339,29 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	/** Returns dynamic button label for Identify By Query based on current selection state */
 	private getIdentifyButtonText = (): string => {
 		const mainDrawings = this.getMainDrawings();
-		if (mainDrawings.length === 0) return 'Identify By Query';
+		if (mainDrawings.length === 0) return __t("identifyByQuery");
 
 		// Check if something is specifically selected
 		const sketchGraphic = this.sketchViewModel?.updateGraphics?.getItemAt(0);
 		if (sketchGraphic?.geometry) {
-			return this.hasActiveBuffer(sketchGraphic) ? 'Send Buffer → Identify' : 'Send Selected → Identify';
+			return this.hasActiveBuffer(sketchGraphic) ? __t("sendBufferIdentify") : __t("sendSelectedIdentify");
 		}
 		if (this.state.selectedGraphicIndex != null && mainDrawings[this.state.selectedGraphicIndex]) {
 			const g = mainDrawings[this.state.selectedGraphicIndex];
-			return this.hasActiveBuffer(g) ? 'Send Buffer → Identify' : 'Send Selected → Identify';
+			return this.hasActiveBuffer(g) ? __t("sendBufferIdentify") : __t("sendSelectedIdentify");
 		}
 		if (this.state.selectedGraphics?.size > 0) {
-			return `Send ${this.state.selectedGraphics.size} Selected → Identify`;
+			return __t("sendSizeSelectedIdentify", { size: this.state.selectedGraphics.size });
 		}
 
 		// Nothing selected → send all drawings
-		return mainDrawings.length === 1 ? 'Send Drawing → Identify' : `Send All (${mainDrawings.length}) → Identify`;
+		return mainDrawings.length === 1 ? __t("sendDrawingIdentify") : __t("sendAllLengthIdentify", { length: mainDrawings.length });
 	};
 
 	/** Returns tooltip explaining what the Identify button will do */
 	private getIdentifyButtonTooltip = (): string => {
 		const mainDrawings = this.getMainDrawings();
-		if (mainDrawings.length === 0) return 'Draw a shape first, then send to Identify By Query';
+		if (mainDrawings.length === 0) return __t("drawAShapeFirstThenSend2");
 
 		const bufferNote = ' (buffer area will be used for feature identification)';
 
@@ -3373,12 +3374,12 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			return `Send "${g.attributes?.name || 'selected drawing'}" to Identify By Query` + (this.hasActiveBuffer(g) ? bufferNote : '');
 		}
 		if (this.state.selectedGraphics?.size > 0) {
-			return `Send ${this.state.selectedGraphics.size} selected drawings to Identify By Query`;
+			return __t("sendSizeSelectedDrawingsToIdentify", { size: this.state.selectedGraphics.size });
 		}
 		if (mainDrawings.length === 1) {
 			return `Send "${mainDrawings[0].attributes?.name || 'drawing'}" to Identify By Query` + (this.hasActiveBuffer(mainDrawings[0]) ? bufferNote : '');
 		}
-		return `Send all ${mainDrawings.length} drawings combined to Identify By Query for feature identification`;
+		return __t("sendAllLengthDrawingsCombinedTo2", { length: mainDrawings.length });
 	};
 
 	private sendToIdentifyByQuery = async () => {
@@ -3883,7 +3884,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 									const geomType = feature.geometry.type === 'extent' ? 'rectangle' : feature.geometry.type;
 									candidates.push({
 										graphic: feature,
-										layerTitle: (layer as any).title || 'Layer',
+										layerTitle: (layer as any).title || __t("layer"),
 										geometryType: geomType
 									});
 								}
@@ -3911,7 +3912,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 										const geomType = feature.geometry.type === 'extent' ? 'rectangle' : feature.geometry.type;
 										candidates.push({
 											graphic: feature,
-											layerTitle: sublayer.title || 'Sublayer',
+											layerTitle: __tc(sublayer.title, "sublayer"),
 											geometryType: geomType
 										});
 									}
@@ -4063,7 +4064,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			} else if (layer.type === 'map-image') {
 				// Map image layer — expand sublayers in TOC order (reverse)
 				const mapImageLayer = layer as any;
-				const parentTitle = mapImageLayer.title || 'Map Service';
+				const parentTitle = __tc(mapImageLayer.title, "mapService");
 
 				const collectSublayers = (sublayers: any | null, fallbackTitle: string): void => {
 					if (!sublayers) return;
@@ -4079,7 +4080,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							if (typeof (sublayer as any).createQuery === 'function') {
 								layers.push({
 									id: `${mapImageLayer.id}-${sublayer.id}`,
-									title: sublayer.title || 'Sublayer',
+									title: __tc(sublayer.title, "sublayer"),
 									type: 'map-image-sublayer',
 									layerRef: sublayer as any,
 									parentTitle
@@ -4092,21 +4093,21 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			} else if (layer.type === 'feature') {
 				layers.push({
 					id: layer.id,
-					title: layer.title || 'Feature Layer',
+					title: __tc(layer.title, "featureLayer"),
 					type: 'feature',
 					layerRef: layer
 				});
 			} else if (layer.type === 'geojson') {
 				layers.push({
 					id: layer.id,
-					title: (layer as any).title || 'GeoJSON Layer',
+					title: (layer as any).title || __t("geoJSONLayer"),
 					type: 'geojson',
 					layerRef: layer
 				});
 			} else if (layer.type === 'csv') {
 				layers.push({
 					id: layer.id,
-					title: (layer as any).title || 'CSV Layer',
+					title: (layer as any).title || __t("csvLayer"),
 					type: 'csv',
 					layerRef: layer
 				});
@@ -4115,7 +4116,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 				if (gl.graphics && gl.graphics.length > 0) {
 					layers.push({
 						id: layer.id,
-						title: layer.title || 'Graphics Layer',
+						title: __tc(layer.title, "graphicsLayer"),
 						type: 'graphics',
 						layerRef: layer
 					});
@@ -4181,7 +4182,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	 */
 	private enterCopyModeForLayer = (selectionMode: 'single' | 'multiple') => {
 		const selectedLayer = this.state.copyableLayers.find(l => l.id === this.state.selectedCopyLayerId);
-		const layerTitle = selectedLayer?.title || 'selected layer';
+		const layerTitle = __tc(selectedLayer?.title, "selectedLayer2");
 
 		this.setState({
 			showCopyModePrompt: false,
@@ -10398,6 +10399,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 	}
 
 	render() {
+    __setIntl((this.props as any).intl)
 		const { config } = this.props;
 		const {
 			fontColor, fontSize, fontHalo, fontRotation, fontWeight, fontStyle, fontDecoration,

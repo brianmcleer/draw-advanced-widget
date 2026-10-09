@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "ウィジェットコントローラ内のウィジェットが終了時に有効にするため、有効に描画が解除されます。",
         settingHelp: "ヘルプ",
         settingShowHelpGuide: "ヘルプガイドを表示",
-        settingShowTheQuestionMarkButtonThat: "ウィジェットヘルプガイドを開く質問のボタンを表示する"
+        settingShowTheQuestionMarkButtonThat: "ウィジェットヘルプガイドを開く質問のボタンを表示する",
+        nauticalMiles: "海里",
+        yards: "ヤード",
+        squareKilometers: "平方キロメートル",
+        squareMiles: "平方マイル",
+        acres: "エーカー",
+        hectares: "ヘクタール",
+        squareMeters: "平方メートル",
+        squareFeet: "平方フィート",
+        squareYards: "平方ヤード",
+        point: "ポイント",
+        polyline: "ポリライン",
+        freehandLine: "フリーハンドライン",
+        text: "テキスト",
+        rectangle: "四角形",
+        polygon: "ポリゴン",
+        freehandPolygon: "フリーハンド ポリゴン",
+        circle: "円",
+        triangle: "三角形",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

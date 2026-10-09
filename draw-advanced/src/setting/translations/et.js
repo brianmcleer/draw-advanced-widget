@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Loomisrežiimi joonistamine",
         settingKeepTheActiveToolSelected: "Hoidke aktiivne tööriist valitud, et kasutajad saaksid joonistada mitu kujundit järjest.",
         settingDeactivateTheToolAfterEach: "Deaktiveerige tööriist pärast iga lõpetatud kujundit.",
-        settingImportExportSettings: "Impordi / ekspordi seadistused",
+        settingImportExportSettings: "Impordi/ ekspordi seadistused",
         settingExport: "Ekspordi",
         settingBuildAnXmlDocumentFrom: "Ehita XML-dokument aktiivsetest seadistustest ja näita seda allpool.",
         settingGenerateSettingsXml: "Seadistuste genereerimine XML",
@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Sisselülitamisel, kui vidin asub vidina kontrolleris, tühistatakse aktiivsed joonised sulgemisel.",
         settingHelp: "Abi",
         settingShowHelpGuide: "Abijuhendi näitamine",
-        settingShowTheQuestionMarkButtonThat: "Küsimusemärgi nupu näitamine, mis avab vidina abi juhendi"
+        settingShowTheQuestionMarkButtonThat: "Küsimusemärgi nupu näitamine, mis avab vidina abi juhendi",
+        nauticalMiles: "Meremiili",
+        yards: "Jardi",
+        squareKilometers: "Ruutkilomeetrit",
+        squareMiles: "Ruutmiili",
+        acres: "Aakrit",
+        hectares: "Hektarit",
+        squareMeters: "Ruutmeetrit",
+        squareFeet: "Ruutjalga",
+        squareYards: "Ruutjardi",
+        point: "Punkt",
+        polyline: "Murdjoon",
+        freehandLine: "Freehand Line",
+        text: "Tekst",
+        rectangle: "Ristkülik",
+        polygon: "Hulknurk",
+        freehandPolygon: "Vabakäeline polügoon",
+        circle: "Ring",
+        triangle: "Kolmnurk",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

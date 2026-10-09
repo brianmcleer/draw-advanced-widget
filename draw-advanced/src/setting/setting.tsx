@@ -7,6 +7,7 @@ import { Select, Option, defaultMessages as jimuUIDefaultMessages, Checkbox, Tex
 import { SidePopper } from 'jimu-ui/advanced/setting-components'
 import { ColorPicker } from 'jimu-ui/basic/color-picker'
 import UnitMaker from './components/unitMaker';
+import { __setIntl, __t, __tc } from './i18n-t'
 
 // ============================================================================
 // Types
@@ -46,35 +47,35 @@ interface SettingState {
 // ============================================================================
 
 const defaultDistanceUnits: Unit[] = [
-    { unit: 'kilometers', label: 'Kilometers', abbreviation: 'km', conversion: 0.001 },
-    { unit: 'miles', label: 'Miles', abbreviation: 'mi', conversion: 0.000621371 },
-    { unit: 'meters', label: 'Meters', abbreviation: 'm', conversion: 1 },
-    { unit: 'nautical-miles', label: 'Nautical Miles', abbreviation: 'NM', conversion: 0.000539957 },
-    { unit: 'feet', label: 'Feet', abbreviation: 'ft', conversion: 3.28084 },
-    { unit: 'yards', label: 'Yards', abbreviation: 'yd', conversion: 1.09361 }
+    { unit: 'kilometers', label: __t("settingKilometers"), abbreviation: 'km', conversion: 0.001 },
+    { unit: 'miles', label: __t("settingMiles"), abbreviation: 'mi', conversion: 0.000621371 },
+    { unit: 'meters', label: __t("settingMeters"), abbreviation: 'm', conversion: 1 },
+    { unit: 'nautical-miles', label: __t("nauticalMiles"), abbreviation: 'NM', conversion: 0.000539957 },
+    { unit: 'feet', label: __t("settingFeet"), abbreviation: 'ft', conversion: 3.28084 },
+    { unit: 'yards', label: __t("yards"), abbreviation: 'yd', conversion: 1.09361 }
 ];
 
 const defaultAreaUnits: Unit[] = [
-    { unit: 'square-kilometers', label: 'Square Kilometers', abbreviation: 'km\xb2', conversion: 0.000001 },
-    { unit: 'square-miles', label: 'Square Miles', abbreviation: 'mi\xb2', conversion: 3.86102e-7 },
-    { unit: 'acres', label: 'Acres', abbreviation: 'ac', conversion: 0.000247105 },
-    { unit: 'hectares', label: 'Hectares', abbreviation: 'ha', conversion: 0.0001 },
-    { unit: 'square-meters', label: 'Square Meters', abbreviation: 'm\xb2', conversion: 1 },
-    { unit: 'square-feet', label: 'Square Feet', abbreviation: 'ft\xb2', conversion: 10.7639 },
-    { unit: 'square-yards', label: 'Square Yards', abbreviation: 'yd\xb2', conversion: 1.19599 }
+    { unit: 'square-kilometers', label: __t("squareKilometers"), abbreviation: 'km\xb2', conversion: 0.000001 },
+    { unit: 'square-miles', label: __t("squareMiles"), abbreviation: 'mi\xb2', conversion: 3.86102e-7 },
+    { unit: 'acres', label: __t("acres"), abbreviation: 'ac', conversion: 0.000247105 },
+    { unit: 'hectares', label: __t("hectares"), abbreviation: 'ha', conversion: 0.0001 },
+    { unit: 'square-meters', label: __t("squareMeters"), abbreviation: 'm\xb2', conversion: 1 },
+    { unit: 'square-feet', label: __t("squareFeet"), abbreviation: 'ft\xb2', conversion: 10.7639 },
+    { unit: 'square-yards', label: __t("squareYards"), abbreviation: 'yd\xb2', conversion: 1.19599 }
 ];
 
 const DRAW_TOOLS: Array<{ key: keyof Config; label: string; icon: string; desc: string }> = [
-    { key: 'enablePointTool', label: 'Point', icon: '\u25CF', desc: 'Place single point markers.' },
-    { key: 'enablePolylineTool', label: 'Polyline', icon: '\u2571', desc: 'Draw multi-segment lines by clicking vertices.' },
-    { key: 'enableFreePolylineTool', label: 'Freehand Line', icon: '\u223F', desc: 'Draw freehand lines by dragging.' },
-    { key: 'enableTextTool', label: 'Text', icon: 'T', desc: 'Place editable text labels on the map.' },
-    { key: 'enableRectangleTool', label: 'Rectangle', icon: '\u25AD', desc: 'Draw rectangles by dragging.' },
-    { key: 'enablePolygonTool', label: 'Polygon', icon: '\u2B20', desc: 'Draw multi-vertex polygons by clicking.' },
-    { key: 'enableFreePolygonTool', label: 'Freehand Polygon', icon: '\u25CC', desc: 'Draw freehand polygons by dragging.' },
-    { key: 'enableCircleTool', label: 'Circle', icon: '\u25CB', desc: 'Draw circles by dragging from a center point.' },
-    { key: 'enableTriangleTool', label: 'Triangle', icon: '\u25B3', desc: 'Draw equilateral triangles.' },
-    { key: 'enableCurveTools', label: 'Curve Tools', icon: '\u2312', desc: 'Bezier / arc curve drawing options. Requires a compatible JSAPI Sketch build.' }
+    { key: 'enablePointTool', label: __t("point"), icon: '\u25CF', desc: 'Place single point markers.' },
+    { key: 'enablePolylineTool', label: __t("polyline"), icon: '\u2571', desc: 'Draw multi-segment lines by clicking vertices.' },
+    { key: 'enableFreePolylineTool', label: __t("freehandLine"), icon: '\u223F', desc: 'Draw freehand lines by dragging.' },
+    { key: 'enableTextTool', label: __t("text"), icon: 'T', desc: 'Place editable text labels on the map.' },
+    { key: 'enableRectangleTool', label: __t("rectangle"), icon: '\u25AD', desc: 'Draw rectangles by dragging.' },
+    { key: 'enablePolygonTool', label: __t("polygon"), icon: '\u2B20', desc: 'Draw multi-vertex polygons by clicking.' },
+    { key: 'enableFreePolygonTool', label: __t("freehandPolygon"), icon: '\u25CC', desc: 'Draw freehand polygons by dragging.' },
+    { key: 'enableCircleTool', label: __t("circle"), icon: '\u25CB', desc: 'Draw circles by dragging from a center point.' },
+    { key: 'enableTriangleTool', label: __t("triangle"), icon: '\u25B3', desc: 'Draw equilateral triangles.' },
+    { key: 'enableCurveTools', label: __t("curveTools"), icon: '\u2312', desc: 'Bezier / arc curve drawing options. Requires a compatible JSAPI Sketch build.' }
 ];
 
 // ============================================================================
@@ -639,6 +640,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
     // ========================================================================
 
     render() {
+    __setIntl((this.props as any).intl)
         const { useMapWidgetIds, config } = this.props
         const userDistances = toMutableUnits(config.userDistances)
         const userAreas = toMutableUnits(config.userAreas)
@@ -965,7 +967,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                 <TextInput
                                     type='text'
                                     required
-                                    defaultValue={config.title || 'Drawn Graphics'}
+                                    defaultValue={__tc(config.title, "drawnGraphics")}
                                     onChange={(e) => this.handleTitle(e.target.value)}
                                     aria-label={this.nls('settingDefaultDrawLayerName')}
                                     title={this.nls('settingNameAppliedToTheGraphics')}

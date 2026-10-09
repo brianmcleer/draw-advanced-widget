@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Włącz, gdy widżet jest wewnątrz kontrolera Widget tak aktywne rysunki są anulowane w pobliżu.",
         settingHelp: "Pomoc",
         settingShowHelpGuide: "Pokaż przewodnik pomocy",
-        settingShowTheQuestionMarkButtonThat: "Pokaż przycisk question- mark, który otwiera przewodnik pomocy widget"
+        settingShowTheQuestionMarkButtonThat: "Pokaż przycisk question- mark, który otwiera przewodnik pomocy widget",
+        nauticalMiles: "Mile morskie",
+        yards: "Jardy",
+        squareKilometers: "Kilometry kwadratowe",
+        squareMiles: "Mile kwadratowe",
+        acres: "Akry",
+        hectares: "Hektary",
+        squareMeters: "Metry kwadratowe",
+        squareFeet: "Stopy kwadratowe",
+        squareYards: "Jardy kwadratowe",
+        point: "Punkt",
+        polyline: "Polilinia",
+        freehandLine: "Linia Freehand",
+        text: "Tekst",
+        rectangle: "Prostokąt",
+        polygon: "Poligon",
+        freehandPolygon: "Poligon odręczny",
+        circle: "Okrąg",
+        triangle: "Trójkąt",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }

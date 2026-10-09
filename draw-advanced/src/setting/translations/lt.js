@@ -230,7 +230,27 @@ System.register([], function (e) {
         settingEnableWhenTheWidgetIsInside: "Įjungti, kai valdiklis yra widget valdiklio viduje, todėl aktyvūs piešiniai yra anuliuojami iš arti.",
         settingHelp: "Pagalba",
         settingShowHelpGuide: "Rodyti pagalbos vadovą",
-        settingShowTheQuestionMarkButtonThat: "Rodyti klausimų žymėjimo mygtuką, kuris atveria valdikliui skirtą pagalbos vadovą"
+        settingShowTheQuestionMarkButtonThat: "Rodyti klausimų žymėjimo mygtuką, kuris atveria valdikliui skirtą pagalbos vadovą",
+        nauticalMiles: "Jūrmylės",
+        yards: "Jardai",
+        squareKilometers: "Kvadratiniai kilometrai",
+        squareMiles: "Kvadratinės mylios",
+        acres: "Akrai",
+        hectares: "Hektarai",
+        squareMeters: "Kvadratiniai metrai",
+        squareFeet: "Kvadratinės pėdos",
+        squareYards: "Kvadratiniai jardai",
+        point: "Taškas",
+        polyline: "Linija",
+        freehandLine: "Freehand linija",
+        text: "Tekstas",
+        rectangle: "Stačiakampis",
+        polygon: "Plotas",
+        freehandPolygon: "Laisvai brėžiamas poligonas",
+        circle: "Apskritimas",
+        triangle: "Trikampis",
+        curveTools: "Curve Tools",
+        drawnGraphics: "Drawn Graphics"
       })
     }
   }
