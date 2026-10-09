@@ -981,7 +981,7 @@ System.register([], function (e) {
         selectTheUnitOfMeasurementFor2: "Select the unit of measurement for linear distances such as length and perimeter",
         noneSelected: "none selected",
         additionalLinearUnitsJoin: "Additional linear units: {join}",
-        none: "Ništa",
+        none: "Nijedan",
         hideLabelAbbreviation: "Hide {label} ({abbreviation})",
         showLabelAbbreviation: "Show {label} ({abbreviation})",
         areaUnits: "Area Units:",
