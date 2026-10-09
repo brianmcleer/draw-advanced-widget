@@ -1205,16 +1205,16 @@
       },
       "locales": {
         "ar": {
-          "file": "64737fb9872b",
+          "file": "629aa3c3cd84",
           "counts": {
             "esri": 148,
             "esri-check": 13,
             "community": 0,
-            "manual": 0,
+            "manual": 10,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1020,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -6311,20 +6311,75 @@
               "t": "طبقة مختارة",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "وليس هناك رأي في الخرائط.",
+              "src": "manual",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "(سكيتشفيو موديل) غير متاح",
+              "src": "manual",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "لا توجد طبقات مرئية",
+              "src": "manual",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "وفشلت عملية الاختطاف: {message}",
+              "src": "manual",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "أرسل اللوحة المختارة إلى \"مايلين لابلز\"{value1}",
+              "src": "manual",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "أرسل الرسم المختار للتعرف عليه من قبل كويري{value1}",
+              "src": "manual",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "أرسل{value}\"إلى \"مايلينج لابلز",
+              "src": "manual",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(يستخدم مجال التعبئة لاختيار حزم أوسع)",
+              "src": "manual",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "أرسل{value}\"للتعرف من قِبل \"كوراي",
+              "src": "manual",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(يستخدم مجال التعبئة لتحديد السمات)",
+              "src": "manual",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "bg": {
-          "file": "1d61db88462b",
+          "file": "1b6590aa1367",
           "counts": {
             "esri": 148,
             "esri-check": 15,
             "community": 0,
-            "manual": 0,
+            "manual": 11,
             "existing": 0,
             "machine": 1017,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -11411,6 +11466,61 @@
               "t": "избран слой",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Буфер",
+              "src": "manual",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Картата не е налична.",
+              "src": "manual",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel не е на разположение.",
+              "src": "manual",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Не са открити видими счупени слоеве.",
+              "src": "manual",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Грешка при откъсване: {message}",
+              "src": "manual",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Изпращане на избраната рисунка на пощенски етикети{value1}",
+              "src": "manual",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Изпращане на избраната рисунка за идентифициране по запитване{value1}",
+              "src": "manual",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Изпрати \"{value}\" на пощенски етикети",
+              "src": "manual",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(буферната площ ще се използва за по-широк избор на парцел)",
+              "src": "manual",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Изпрати \"{value}\"да се идентифицира по запитване",
+              "src": "manual",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(буферната област ще се използва за идентификация на функция)",
+              "src": "manual",
+              "h": "52fb9e5053c4"
             }
           }
         },
@@ -11429,16 +11539,16 @@
           "entries": {}
         },
         "ca": {
-          "file": "8075c0ba604b",
+          "file": "ef5de9367948",
           "counts": {
             "esri": 146,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1024,
+            "machine": 1035,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -16560,20 +16670,75 @@
               "t": "Capa seleccionada",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Memòria intermèdia",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "La vista del mapa no està disponible.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "No està disponible SketViewModel.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "No s' han trobat capes espepables visibles.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Ha fallat l' ajustament: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Envia el dibuix seleccionat a etiquetes de correu{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Envia el dibuix seleccionat a la identificació per la consulta{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Envia \"{value}\" a les etiquetes de correu",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(l' àrea de liquidació s' usarà per a una selecció de paquet més àmplia)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Envia \"{value}\"a Identificar per la consulta",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(l' àrea de gifer s' usarà per a la identificació de característiques)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "cs": {
-          "file": "b412090b8dd6",
+          "file": "b9fe02710c3a",
           "counts": {
             "esri": 150,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -21670,20 +21835,75 @@
               "t": "zvolená vrstva",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Zobrazit mapu není k dispozici.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel není k dispozici.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Žádné viditelné zabroušené vrstvy.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping selhal: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Poslat vybranou kresbu na štítky Mailing{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Poslat vybraný obrázek k identifikaci dotazem{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Odeslat \"{value}\"na poštovní štítky",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(nárazníková plocha bude použita pro širší výběr balíků)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Odeslat \"{value}\"identifikovat dotazem",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(pro identifikaci funkce bude použita oblast bufferu)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "da": {
-          "file": "88720b499fd0",
+          "file": "ccec2d825efa",
           "counts": {
             "esri": 144,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1027,
+            "machine": 1038,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -26820,20 +27040,75 @@
               "t": "valgt lag",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer Formand",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Kortvisning er ikke tilgængelig.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel er ikke tilgængelig.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Ingen synlige snappable lag fundet.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping mislykkedes: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Send den markerede tegning til mailingetiketter{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Send den markerede tegning for at identificere ved forespørgsel{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Send \"{value}\"til postmærker",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(bufferareal vil blive brugt til bredere parcel udvælgelse)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Send \"{value}\"at identificere ved forespørgsel",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(bufferområdet vil blive anvendt til identifikation af funktioner)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "de": {
-          "file": "144700e4b478",
+          "file": "23cd8a81f3ca",
           "counts": {
             "esri": 148,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1024,
+            "machine": 1035,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -31955,20 +32230,75 @@
               "t": "ausgewählte Schicht",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Puffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Die Kartenansicht ist nicht verfügbar.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel ist nicht verfügbar.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Keine sichtbaren schnappbaren Schichten gefunden.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping fehlgeschlagen: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Senden Sie die ausgewählte Zeichnung an Mailing Labels{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Senden Sie die ausgewählte Zeichnung an Identifizieren nach Abfrage{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Senden Sie{value}Auf Mailing Labels",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(Pufferbereich wird für eine breitere Paketauswahl verwendet)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Senden Sie{value}Identifizieren nach Query",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(Pufferbereich wird zur Merkmalsidentifikation verwendet)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "el": {
-          "file": "3264b719a08f",
+          "file": "fec6fdd1825f",
           "counts": {
             "esri": 149,
             "esri-check": 12,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -37065,20 +37395,75 @@
               "t": "επιλεγμένο στρώμα",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Διακόπτης",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Η προβολή χάρτη δεν είναι διαθέσιμη.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "Το SketchViewModel δεν είναι διαθέσιμο.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Δεν βρέθηκαν ορατά στρώματα snappable.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Η λήψη απέτυχε: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Αποστολή του επιλεγμένου σχεδίου στις ετικέτες αλληλογραφίας{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Αποστολή του επιλεγμένου σχεδίου για αναγνώριση με ερώτηση{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Αποστολή \"{value}\" στις ετικέτες αλληλογραφίας",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(θα χρησιμοποιηθεί η περιοχή του ρυθμιστή για την ευρύτερη επιλογή δεμάτων)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Αποστολή \"{value}\" να προσδιορίσει με ερώτηση",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(Η περιοχή του ρυθμιστή θα χρησιμοποιηθεί για την αναγνώριση χαρακτηριστικών)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "es": {
-          "file": "298a721a5982",
+          "file": "1964b8c44f49",
           "counts": {
             "esri": 148,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1023,
+            "machine": 1034,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -42195,20 +42580,75 @@
               "t": "capa seleccionada",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "La vista de mapa no está disponible.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel no está disponible.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "No se encuentran capas visibles.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Resolver falló: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Enviar el dibujo seleccionado a etiquetas de correo{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Enviar el dibujo seleccionado para identificar por consulta{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Enviar \"{value}\"a las etiquetas de correo",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(La zona de amortiguación se utilizará para una selección más amplia de paquetes)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Enviar \"{value}\"para identificar por consulta",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(El área de amortiguación se utilizará para la identificación de características)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "et": {
-          "file": "cbc9affcc78f",
+          "file": "858b77719b4e",
           "counts": {
             "esri": 143,
             "esri-check": 18,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -47305,20 +47745,75 @@
               "t": "valitud kiht",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Puhver",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Kaardivaade pole saadaval.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel ei ole saadaval.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nähtavaid murduvaid kihte ei leitud.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Haaramine nurjus: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Saada valitud joonis e- posti siltidele{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Valitud joonise saatmine päringu abil tuvastamiseks{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Saada.{value}\" meililistidele",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(puhverpinda kasutatakse laiema pakivaliku jaoks)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Saada.{value}\" Identifitseerimiseks päringu abil\"",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(puhverala kasutatakse tunnuse tuvastamiseks)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "fi": {
-          "file": "79d61d857209",
+          "file": "0b7ba54041a4",
           "counts": {
             "esri": 155,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1028,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -52405,20 +52900,75 @@
               "t": "valittu kerros",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Puskuri",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Karttanäkymää ei ole saatavilla.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel ei ole saatavilla.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Näkyviä napsautettavia kerroksia ei löytynyt.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Napsautus epäonnistui: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Lähetä valittu piirustus postitusetiketteihin{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Lähetä valittu piirustus Tunnista kyselyn perusteella{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Lähetä \"{value}\" postimerkkien",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(puskurialuetta käytetään laajempaan pakettien valintaan)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Lähetä \"{value}\" tunnistaa kyselyn",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(ominaisuuden tunnistamiseen käytetään puskurialuetta)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "fr": {
-          "file": "9caab3018abf",
+          "file": "eecd54ebb119",
           "counts": {
             "esri": 146,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1025,
+            "machine": 1036,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -57541,6 +58091,61 @@
               "src": "machine",
               "h": "54678a49ab0d"
             },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "La carte n'est pas disponible.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel n'est pas disponible.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Aucune couche visible n'a été trouvée.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Le snapping a échoué : {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Envoyer le dessin sélectionné aux étiquettes d'envoi{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Envoyer le dessin sélectionné pour identifier par requête{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Envoyer \"{value}\" aux étiquettes postales",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(La zone tampon sera utilisée pour une plus grande sélection de colis)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Envoyer \"{value}\" pour identifier par requête",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(la zone tampon sera utilisée pour l'identification des caractéristiques)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
+            },
             "point": {
               "t": "Remarque",
               "src": "machine",
@@ -57549,16 +58154,16 @@
           }
         },
         "he": {
-          "file": "baf00a6cccc6",
+          "file": "142469a70ff5",
           "counts": {
             "esri": 144,
             "esri-check": 17,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -62655,6 +63260,61 @@
               "t": "שכבה שנבחרה",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "נוף מפה אינו זמין.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel אינו זמין.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "לא נמצאו שכבות מדהימות.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping נכשלה: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "שלח את הציור שנבחר להודעות דואר{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "שלח את הציור שנבחר כדי לזהות באמצעות Query{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "שלח \"{value}\"לכתוב תוויות",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(אזור החילוף ישמש לבחירה רחבה יותר)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "שלח \"{value}לזהות באמצעות Query",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(אזור החילוף ישמש לזיהוי תכונה)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
@@ -62673,16 +63333,16 @@
           "entries": {}
         },
         "hu": {
-          "file": "a9b9554ffbd1",
+          "file": "47a46d279e90",
           "counts": {
             "esri": 151,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -67779,20 +68439,75 @@
               "t": "kijelölt réteg",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} PufferName",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "A térkép nem található.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel nem elérhető.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nem található látható felragasztható réteg.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "A csatolás nem sikerült: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "A kiválasztott rajz küldése a Levelezési Címkékbe{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "A kijelölt rajz küldése a lekérdezés alapján{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Küldés \"{value}\"Mailing Labels",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(a pufferterületet szélesebb körű csomagkiválasztáshoz fogják használni)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Küldés \"{value}\"hogy azonosítsa a lekérdezés",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(pufferterület lesz használva a funkció azonosítására)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "id": {
-          "file": "25e121dbe831",
+          "file": "acde8586f710",
           "counts": {
             "esri": 139,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1041,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -72944,20 +73659,75 @@
               "t": "lapis yang dipilih",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Penyangga",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Tampilan peta tidak tersedia.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel tidak tersedia.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Lapisan yang dapat snappable terlihat tidak ditemukan.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping gagal: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Kirim gambar yang dipilih ke Label Mailing{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Kirim gambar yang dipilih ke Identifikasi Dengan Query{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Kirim...{value}\"ke Label Mailing",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(area penyangga akan digunakan untuk pemilihan paket yang lebih luas)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Kirim...{value}\"to Identifikasi By Query",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(area penyangga akan digunakan untuk identifikasi fitur)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "it": {
-          "file": "cd3f07b7cb85",
+          "file": "fef1d86149f7",
           "counts": {
             "esri": 148,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1022,
+            "machine": 1033,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -78069,20 +78839,75 @@
               "t": "strato selezionato",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Mappa non è disponibile.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel non è disponibile.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Non sono presenti strati a scatto visibili.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping fallito: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Invia il disegno selezionato a Etichette di Mailing{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Invia il disegno selezionato per Identificare da query{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Invia \"{value}\" a Mailing Labels",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(l'area di offerta sarà utilizzata per la più ampia selezione dei pacchi)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Invia \"{value}\" a Identificare da query",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(l'area di offerta sarà utilizzata per l'identificazione delle caratteristiche)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "ja": {
-          "file": "67b678a9a682",
+          "file": "adcdb37ccddc",
           "counts": {
             "esri": 152,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -83174,20 +83999,75 @@
               "t": "選択したレイヤー",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} バッファ",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "地図表示はできません。",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModelは使用できません。",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "可視性の可視層が見つかりません。",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "急な失敗: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "選択した図面をメーリングラベルに送信{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "クエリで識別するために選択した図面を送信{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "送信する{value}「ラベルを郵送する」",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(より広い小包の選択のために緩衝区域が使用されます)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "送信する{value}「クエリで識別する」",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(バッファエリアは機能識別に使用されます)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "ko": {
-          "file": "97fd05c8ecd3",
+          "file": "71422d412a4d",
           "counts": {
             "esri": 152,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -88279,20 +89159,75 @@
               "t": "선택 층",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} 제품정보",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "지도보기는 사용할 수 없습니다.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel는 사용할 수 없습니다.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "눈에 보이는 snappable 층 없음.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping 실패: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Mailing Labels에 선택된 그림을 보내십시오{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Query로 Identify로 선택한 그림 보내기{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "메시지 보내기{value}\"메일링 라벨",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(부퍼 지역은 더 넓은 소포 선택을 위해 사용될 것입니다)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "메시지 보내기{value}Query로 식별하기",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(부퍼 지역은 특징 ID를 위해 사용될 것입니다)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "lt": {
-          "file": "c2e0238d763a",
+          "file": "818315fcc24a",
           "counts": {
             "esri": 151,
             "esri-check": 12,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1028,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -93379,20 +94314,75 @@
               "t": "pasirinktas sluoksnis",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buferis",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Žemėlapio rodinys negalimas.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel nėra.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nerasta matomų plonų sluoksnių.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "@ info: whatsthis {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Siųsti pasirinktą brėžinį į pašto ženklus{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Siųsti pažymėtą brėžinį į Nustatyti užklausa{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Siųsti \"{value}\"iki pašto ženklų",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(buferinė teritorija bus naudojama platesnei siuntinių atrankai)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Siųsti \"{value}\"Nustatyti pagal užklausą",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(Savybių identifikavimui bus naudojama buferinė zona)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "lv": {
-          "file": "d9c83c1d9eac",
+          "file": "7a11e8b61fb8",
           "counts": {
             "esri": 149,
             "esri-check": 14,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1028,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -98479,20 +99469,75 @@
               "t": "izvēlēts slānis",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buferis",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Kartes skats nav pieejams.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel nav pieejams.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nav atrasti redzami atslēdzami slāņi.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Neizdevās atrast attēlu: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Sūtīt izvēlēto zīmējumu vēstkopai{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Sūtīt izvēlēto zīmējumu, lai noteiktu pēc vaicājuma{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Sūtīt \"{value}\"uz vēstkopām",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(buferplatību izmantos plašākai zemes gabalu atlasei)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Sūtīt \"{value}\"lai identificētu pēc vaicājuma",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(pazīmju identifikācijai izmanto buferlaukumu)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "no": {
-          "file": "a5dcf16a49f9",
+          "file": "2cf6f8587050",
           "counts": {
             "esri": 145,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1025,
+            "machine": 1036,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -103619,20 +104664,75 @@
               "t": "merket lag",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Kartvisning er ikke tilgjengelig.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel er ikke tilgjengelig.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Ingen synlige snappable lag funnet.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping mislyktes: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Send den valgte tegningen til e-postetiketter{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Send den valgte tegningen til Identifiser etter spørring{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Send{value}\" Å sende etiketter",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(Buffer område vil bli brukt til bredere pakkevalg)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Send{value}\" å identifisere ved forespørsel",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(Bufferområde vil bli brukt til identifikasjon av funksjoner)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "nl": {
-          "file": "958f5c82d21c",
+          "file": "829616dbac88",
           "counts": {
             "esri": 145,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1027,
+            "machine": 1038,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -108769,20 +109869,75 @@
               "t": "geselecteerde laag",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Kaartweergave is niet beschikbaar.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel is niet beschikbaar.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Geen zichtbare snappable lagen gevonden.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Knappen is mislukt: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "De geselecteerde tekening naar mailinglabels sturen{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "De geselecteerde tekening naar Identificeren op zoek sturen{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Verzenden \"{value}\" naar postetiketten",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(buffergebied wordt gebruikt voor een bredere pakketselectie)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Verzenden \"{value}\" te identificeren op zoek",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(buffergebied wordt gebruikt voor functieidentificatie)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "pl": {
-          "file": "8aadd69996ad",
+          "file": "eb8f23a474bc",
           "counts": {
             "esri": 148,
             "esri-check": 14,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -113874,20 +115029,75 @@
               "t": "wybrana warstwa",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Bufor",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Widok mapy nie jest dostępny.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel nie jest dostępny.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nie znaleziono widocznych warstw.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Pstrykanie nie powiodło się: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Wyślij wybrany rysunek do etykiet pocztowych{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Wyślij wybrany rysunek do identyfikacji przez zapytanie{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Wyślij \"{value}\"do etykiet pocztowych",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(obszar bufora zostanie wykorzystany do szerszego wyboru działek)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Wyślij \"{value}\"do identyfikacji przez pytanie",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(obszar bufora zostanie wykorzystany do identyfikacji funkcji)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "pt-br": {
-          "file": "bc65654bb983",
+          "file": "88816684f101",
           "counts": {
             "esri": 147,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1022,
+            "machine": 1033,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -118999,20 +120209,75 @@
               "t": "Camada selecionada",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "O mapa não está disponível.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel não está disponível.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nenhuma camada visível encontrada.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "A quebra falhou. {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Envie o desenho selecionado para o Mailing Labels{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Envie o desenho selecionado para Identificar por Consulta{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Enviar\"{value}\"para Etiquetas de Correio",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(A área do buffer será usada para uma seleção mais ampla de parcelas)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Enviar\"{value}\"Identificar por Consulta",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(A área do buffer será usada para identificação do recurso)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "pt-pt": {
-          "file": "bb5897e4a64a",
+          "file": "5ac55d87ad41",
           "counts": {
             "esri": 151,
             "esri-check": 7,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1022,
+            "machine": 1033,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -124124,20 +125389,75 @@
               "t": "camada selecionada",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "A visualização do mapa não está disponível.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "O SketchViewModel não está disponível.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nenhuma camada visível foi encontrada.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Falha no snap: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Enviar o desenho seleccionado para as Etiquetas de E- mail{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Enviar o desenho seleccionado para Identificar por Consulta{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Enviar{value}\"para as Etiquetas de Correio",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(a área do buffer será utilizada para uma selecção mais ampla das parcelas)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Enviar{value}\" Identificar por Consulta",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(A área do buffer será usada para identificação de recursos)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "ro": {
-          "file": "bc713bed6d07",
+          "file": "b8c35f9565c1",
           "counts": {
             "esri": 147,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1024,
+            "machine": 1035,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -129259,20 +130579,75 @@
               "t": "strat selectat",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Harta nu este disponibilă.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel nu este disponibil.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nu s-au găsit straturi vizibile fisurabile.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping a eșuat: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Trimite desenul selectat la etichetele de mail{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Trimite desenul selectat pentru a identifica prin întrebare{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Trimite \"{value}\" la etichetele de mail",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(suprafaţa va fi utilizată pentru selectarea mai largă a parcelelor)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Trimite \"{value}\" pentru a identifica prin întrebare",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(zona tampon va fi utilizată pentru identificarea caracteristicilor)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "ru": {
-          "file": "3eee711662ce",
+          "file": "afbf83ee024a",
           "counts": {
             "esri": 153,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1028,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -134359,20 +135734,75 @@
               "t": "выбранный слой",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} буфер",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Карта просмотра недоступна.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel недоступен.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Никаких видимых щелчков не найдено.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Похищение провалилось: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Отправьте выбранный рисунок на почтовые этикетки{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Отправьте выбранный рисунок для идентификации по запросу{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Отправить \"{value}\"Почтовые этикетки",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(буферная зона будет использоваться для более широкого выбора посылок)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Отправить \"{value}\"Определить по запросу",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(буферная зона используется для идентификации характеристик)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "sk": {
-          "file": "375b65b95935",
+          "file": "11ac4e1ca51d",
           "counts": {
             "esri": 149,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 17
+            "missing": 6
           },
           "entries": {
             "drawFreeLine": {
@@ -139469,20 +140899,75 @@
               "t": "zvolená vrstva",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Nárazník",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Zobrazenie mapy nie je k dispozícii.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel nie je k dispozícii.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Nenašli sa žiadne viditeľné snímateľné vrstvy.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping zlyhal: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Poslať vybraný výkres na e-mailové etikety{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Poslať vybraný výkres na identifikáciu podľa otázky{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Poslať \"{value}\" posielať štítky",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(pre širší výber parciel sa použije oblasť buffer)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Poslať \"{value}\" identifikovať podľa otázky",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(pre identifikáciu prvkov sa použije bufferová oblasť)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "sl": {
-          "file": "512cff5cd31e",
+          "file": "af23af1765b4",
           "counts": {
             "esri": 155,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1016,
+            "machine": 1027,
             "stale": 0,
-            "missing": 17
+            "missing": 6
           },
           "entries": {
             "drawFreeLine": {
@@ -144564,6 +146049,61 @@
               "t": "izbrana plast",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Pogled na zemljevid ni na voljo.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel ni na voljo.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Ni bilo najdenih vidnih snappable plasti.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping ni uspel: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Pošlji izbrano risbo poštnim oznakam{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Pošlji izbrano risbo za identifikacijo po poizvedbi{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Pošlji \"{value}\" na poštne oznake",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(površina bo uporabljena za širšo izbiro paketov)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Pošlji \"{value}\"za identifikacijo po poizvedbi",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(območje bo uporabljeno za identifikacijo lastnosti)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
@@ -144582,16 +146122,16 @@
           "entries": {}
         },
         "sv": {
-          "file": "c4cc878b2a71",
+          "file": "8c418816586c",
           "counts": {
             "esri": 148,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1024,
+            "machine": 1035,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -149713,20 +151253,75 @@
               "t": "Valt lager",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffert",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Kartvy är inte tillgänglig.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel är inte tillgänglig.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Inga synliga snappable skikt hittades.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping misslyckades: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Skicka den valda ritningen till Mailing Labels{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Skicka den valda ritningen för att identifiera genom Query{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Skicka \"{value}Till Mailing Labels",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(buffertområde kommer att användas för bredare paketval)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Skicka \"{value}För att identifiera genom Query",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(buffertområde kommer att användas för identifiering av funktionen)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "th": {
-          "file": "60f76d8d5898",
+          "file": "01c958b4078b",
           "counts": {
             "esri": 151,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -154818,20 +156413,75 @@
               "t": "เลเยอร์ถัดไป",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} บัฟเฟอร์",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "ไม่พบมุมมองแผนที่",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "ไม่พบ SketchView Model",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "ไม่พบเลเยอร์ที่จับได้",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "การจับภาพล้มเหลว: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "ส่งรูปภาพที่เลือกไว้ไปยังรายการจดหมายเวียน{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "ส่งภาพที่เลือกไว้เพื่อระบุตัวโดยการค้นหา{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "ส่ง \"{value}ไปยังจดหมายเวียน",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(พื้นที่บัฟเฟอร์จะใช้สําหรับการเลือกแพกเกจกว้างกว่า)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "ส่ง \"{value}\"เพื่อระบุตัวตน โดยการค้นหา",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(พื้นที่บัฟเฟอร์จะถูกใช้สําหรับการแสดงตัวของคุณสมบัติ)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "tr": {
-          "file": "fd59ebf56323",
+          "file": "9703f6a185be",
           "counts": {
             "esri": 150,
             "esri-check": 13,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1028,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -159918,20 +161568,75 @@
               "t": "Seçilen katman",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Buffer",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Map view mevcut değildir.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchView, mevcut değil.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Görülemez tabakalar bulunamadı.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping başarısız oldu: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Mailing Etiketler için seçilen çizimi gönderin{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Sorgula Tanımlamak için seçilen çizimi gönderin{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Gönder \"{value}“ Mailing Etiketler",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(buffer alanı daha geniş parsel seçim için kullanılacaktır)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Gönder \"{value}\"In Query By Query",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(buffer alanı özel kimlik için kullanılacaktır)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "zh-cn": {
-          "file": "c6717db33073",
+          "file": "bd32fec3b13e",
           "counts": {
             "esri": 150,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1019,
+            "machine": 1030,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -165028,20 +166733,75 @@
               "t": "选中的层",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} 缓冲",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "地图视图不可用 。",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "无法使用 SketchViewModel 。",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "未找到可见的可分解层 。",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "抓取失败 : {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "将选中的绘图发送给邮件标签{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "将选中的绘图发送到通过查询识别{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "发送 \"{value}\" 投递标签",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(缓冲区将用于更广泛的包裹选择)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "发送 \"{value}\" 以查询方式识别",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(缓冲区将用于特征识别)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "uk": {
-          "file": "bf6889c9db91",
+          "file": "013c9f7b5874",
           "counts": {
             "esri": 155,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1028,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -170128,20 +171888,75 @@
               "t": "обраний шар",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Буфер",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Перегляд карти не доступний.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel не доступний.",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Не знайдено видимих знімних шарів.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Не вдалося: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Відправте вибране креслення до етикеток розсилки{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Відправте вибране креслення для ідентифікації за запитом{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Надіслати{value}\" для розсилки етикеток",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(загальна зона буде використовуватися для широкого вибору посилок)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Надіслати{value}\"Визначити за запитом\"",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(біляційна зона використовується для ідентифікації функцій)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "vi": {
-          "file": "f3358cc2df16",
+          "file": "f9abb7a25d2c",
           "counts": {
             "esri": 152,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -175233,20 +177048,75 @@
               "t": "Lớp đã chọn",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} Bộ đệm",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "Ô xem sơ đồ không sẵn sàng.",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "Không sẵn sàng vẽ ảnh",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "Không tìm thấy lớp tạo ra được.",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "Snapping thất bại: {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "Gửi bản vẽ đã chọn tới nhãn thư mục{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "Gửi bản vẽ đã chọn để xác định bởi Truy vấn{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "Gửi \"{value}\"cho nhãn hiệu thư",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(Bộ đệm sẽ được dùng cho việc chọn gói lớn hơn)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "Gửi \"{value}\"để xác định bởi truy vấn",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "( Vùng đệm sẽ được dùng để nhận diện tính năng)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "zh-hk": {
-          "file": "960a427baa3c",
+          "file": "f9b2a3747861",
           "counts": {
             "esri": 153,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -180338,20 +182208,75 @@
               "t": "選擇層次",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} 缓冲",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "沒有地圖檢視 。",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel 不可用 。",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "找不到可见的突顯層 。",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "抓取失敗 : {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "傳送所選取的圖片到郵件標籤{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "將所選取的圖片送至查詢區域{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "傳送 \"{value}\" 寄出標籤",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(缓冲區將用於更寬的包裹選擇)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "傳送 \"{value}\" 以查詢來辨識",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(缓冲区將用於特征辨識)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         },
         "zh-tw": {
-          "file": "960a427baa3c",
+          "file": "f9b2a3747861",
           "counts": {
             "esri": 153,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1018,
+            "machine": 1029,
             "stale": 0,
-            "missing": 16
+            "missing": 5
           },
           "entries": {
             "drawFreeLine": {
@@ -185443,6 +187368,61 @@
               "t": "選擇層次",
               "src": "machine",
               "h": "54678a49ab0d"
+            },
+            "distanceUnitDisplayBuffer": {
+              "t": "{distance} {unitDisplay} 缓冲",
+              "src": "machine",
+              "h": "5ea7cf1ad697"
+            },
+            "mapViewIsNotAvailable": {
+              "t": "沒有地圖檢視 。",
+              "src": "machine",
+              "h": "e99a191433a3"
+            },
+            "sketchViewModelIsNotAvailable": {
+              "t": "SketchViewModel 不可用 。",
+              "src": "machine",
+              "h": "f197c7feb50b"
+            },
+            "noVisibleSnappableLayersFound": {
+              "t": "找不到可见的突顯層 。",
+              "src": "machine",
+              "h": "d6b3241599ef"
+            },
+            "snappingFailedMessage": {
+              "t": "抓取失敗 : {message}",
+              "src": "machine",
+              "h": "967dec4ae531"
+            },
+            "sendTheSelectedDrawingToMailing": {
+              "t": "傳送所選取的圖片到郵件標籤{value1}",
+              "src": "machine",
+              "h": "a3a18bd63b22"
+            },
+            "sendTheSelectedDrawingToIdentify": {
+              "t": "將所選取的圖片送至查詢區域{value1}",
+              "src": "machine",
+              "h": "c824f4fba02b"
+            },
+            "sendValueToMailingLabels": {
+              "t": "傳送 \"{value}\" 寄出標籤",
+              "src": "machine",
+              "h": "9acdfa9e22c5"
+            },
+            "bufferAreaWillBeUsedFor": {
+              "t": "(缓冲區將用於更寬的包裹選擇)",
+              "src": "machine",
+              "h": "22e60955217e"
+            },
+            "sendValueToIdentifyByQuery": {
+              "t": "傳送 \"{value}\" 以查詢來辨識",
+              "src": "machine",
+              "h": "8ee584be2f2c"
+            },
+            "bufferAreaWillBeUsedFor2": {
+              "t": "(缓冲区將用於特征辨識)",
+              "src": "machine",
+              "h": "52fb9e5053c4"
             }
           }
         }
