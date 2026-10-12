@@ -11525,14 +11525,14 @@
           }
         },
         "bs": {
-          "file": "93ab630904ac",
+          "file": "ef128484777a",
           "counts": {
-            "esri": 144,
+            "esri": 154,
             "esri-check": 7,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 996,
+            "machine": 986,
             "stale": 0,
             "missing": 49
           },
@@ -13777,25 +13777,10 @@
               "src": "machine",
               "h": "b3572d626c55"
             },
-            "helpNoMatches": {
-              "t": "Ništa u vodiču ne odgovara toj riječi.",
-              "src": "machine",
-              "h": "3fe179f75330"
-            },
-            "firstRunTitle": {
-              "t": "Novi ovdje?",
-              "src": "machine",
-              "h": "b81f2e17e001"
-            },
             "firstRunBody": {
               "t": "Izaberite oblik na karti Draw, kliknite na kartu da je postavite i kliknite dva puta da završite.",
               "src": "machine",
               "h": "dff95dd1b6fd"
-            },
-            "firstRunHelpLink": {
-              "t": "Otvori vodič.",
-              "src": "machine",
-              "h": "2447dd6134ea"
             },
             "firstRunDismiss": {
               "t": "Odbaci ovaj nagovještaj",
@@ -13806,11 +13791,6 @@
               "t": "Moji crteži",
               "src": "machine",
               "h": "34ea63359aa6"
-            },
-            "helpStartTitle": {
-              "t": "Počnite ovdje: tri koraka",
-              "src": "machine",
-              "h": "789320b4831d"
             },
             "helpStart1": {
               "t": "Na kartici Crtaj, kliknite dugme oblika: tačka, linija, područje ili tekst.",
@@ -14037,11 +14017,6 @@
               "src": "machine",
               "h": "6518c0357fd9"
             },
-            "helpTroubleTitle": {
-              "t": "Ako nešto nije u redu",
-              "src": "machine",
-              "h": "6f7fec3ff1e0"
-            },
             "helpTroubleNoShape": {
               "t": "Ništa se ne događa kada kliknem na kartu: nije izabrano dugme oblika. Prvo kliknite na karticu Draw.",
               "src": "machine",
@@ -14066,11 +14041,6 @@
               "t": "Još uvijek zapeo? Kontaktirajte svoj GIS tim i spomenite Draw Advanced widget i ovu aplikaciju.",
               "src": "machine",
               "h": "88d72f8ecfa7"
-            },
-            "helpTipsTitle": {
-              "t": "Dobro je znati.",
-              "src": "machine",
-              "h": "79fc372dc790"
             },
             "helpTips1": {
               "t": "Zumiraj prije nego crtaš. Klikovi su precizniji izbliza.",
@@ -14401,11 +14371,6 @@
               "t": "KML",
               "src": "machine",
               "h": "c5bd90689147"
-            },
-            "shapefile": {
-              "t": "Snimi datoteku",
-              "src": "machine",
-              "h": "1e21d10d2150"
             },
             "json": {
               "t": "JSON",
@@ -16352,11 +16317,6 @@
               "src": "machine",
               "h": "e34f6aebb627"
             },
-            "unknownError": {
-              "t": "Nepoznata greška",
-              "src": "machine",
-              "h": "e5fd9aa24c94"
-            },
             "graphicsLayer": {
               "t": "Sloj grafika",
               "src": "machine",
@@ -16451,16 +16411,6 @@
               "t": "Izabrani sloj",
               "src": "machine",
               "h": "54678a49ab0d"
-            },
-            "unknownError2": {
-              "t": "nepoznata greška",
-              "src": "machine",
-              "h": "af6321ca7a8b"
-            },
-            "unserializableError": {
-              "t": "Neserijalizacijska greška",
-              "src": "machine",
-              "h": "76e73551597a"
             },
             "distanceUnitDisplayBuffer": {
               "t": "{distance} {unitDisplay} Buffer",
@@ -68300,14 +68250,14 @@
           }
         },
         "hr": {
-          "file": "867d615712cb",
+          "file": "41a80db34d97",
           "counts": {
-            "esri": 144,
+            "esri": 154,
             "esri-check": 7,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1031,
+            "machine": 1021,
             "stale": 0,
             "missing": 14
           },
@@ -70602,25 +70552,10 @@
               "src": "machine",
               "h": "b3572d626c55"
             },
-            "helpNoMatches": {
-              "t": "Ništa u vodiču ne odgovara toj riječi. Pokušajte drugi, ili otvorite dijelove iznad.",
-              "src": "machine",
-              "h": "3fe179f75330"
-            },
-            "firstRunTitle": {
-              "t": "Novi ovdje?",
-              "src": "machine",
-              "h": "b81f2e17e001"
-            },
             "firstRunBody": {
               "t": "Odaberite oblik na Draw karticu, kliknite na kartu da ga stavite, i dvostruki klik za završiti.",
               "src": "machine",
               "h": "dff95dd1b6fd"
-            },
-            "firstRunHelpLink": {
-              "t": "Otvori vodič.",
-              "src": "machine",
-              "h": "2447dd6134ea"
             },
             "firstRunDismiss": {
               "t": "Odbaci ovaj savjet",
@@ -70631,11 +70566,6 @@
               "t": "Moji crteži",
               "src": "machine",
               "h": "34ea63359aa6"
-            },
-            "helpStartTitle": {
-              "t": "Počnite ovdje: tri koraka",
-              "src": "machine",
-              "h": "789320b4831d"
             },
             "helpStart1": {
               "t": "Na kartici Crtaj, kliknite gumb oblika: točka, linija, područje ili tekst.",
@@ -70862,11 +70792,6 @@
               "src": "machine",
               "h": "6518c0357fd9"
             },
-            "helpTroubleTitle": {
-              "t": "Ako nešto izgleda loše",
-              "src": "machine",
-              "h": "6f7fec3ff1e0"
-            },
             "helpTroubleNoShape": {
               "t": "Ništa se ne događa kada kliknem na kartu: nije odabran gumb za oblikovanje. Kliknite prvo na karticu Crtaj.",
               "src": "machine",
@@ -70891,11 +70816,6 @@
               "t": "Još uvijek zaglavi? Kontaktirajte svoj GIS tim i spomenuti Draw Advanced widget i ovu aplikaciju.",
               "src": "machine",
               "h": "88d72f8ecfa7"
-            },
-            "helpTipsTitle": {
-              "t": "Dobro je znati.",
-              "src": "machine",
-              "h": "79fc372dc790"
             },
             "helpTips1": {
               "t": "Zumiraj prije nego što nacrtaš. Klikovi su precizniji izbliza.",
@@ -71231,11 +71151,6 @@
               "t": "KML",
               "src": "machine",
               "h": "c5bd90689147"
-            },
-            "shapefile": {
-              "t": "Oblik datoteke",
-              "src": "machine",
-              "h": "1e21d10d2150"
             },
             "json": {
               "t": "JSON",
@@ -73292,11 +73207,6 @@
               "src": "machine",
               "h": "aaf683ce17f5"
             },
-            "unknownError": {
-              "t": "Nepoznata greška",
-              "src": "machine",
-              "h": "e5fd9aa24c94"
-            },
             "graphicsLayer": {
               "t": "Sloj grafike",
               "src": "machine",
@@ -73401,16 +73311,6 @@
               "t": "Odabrani sloj",
               "src": "machine",
               "h": "54678a49ab0d"
-            },
-            "unknownError2": {
-              "t": "nepoznata greška",
-              "src": "machine",
-              "h": "af6321ca7a8b"
-            },
-            "unserializableError": {
-              "t": "Neserijalizacijska greška",
-              "src": "machine",
-              "h": "76e73551597a"
             },
             "distanceUnitDisplayBuffer": {
               "t": "{distance} {unitDisplay} Buffer",
@@ -156245,14 +156145,14 @@
           }
         },
         "sr": {
-          "file": "875044081561",
+          "file": "c962965af2c5",
           "counts": {
-            "esri": 140,
+            "esri": 150,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1020,
             "stale": 0,
             "missing": 16
           },
@@ -158547,25 +158447,10 @@
               "src": "machine",
               "h": "b3572d626c55"
             },
-            "helpNoMatches": {
-              "t": "Ništa u vodièu ne odgovara toj reèi.",
-              "src": "machine",
-              "h": "3fe179f75330"
-            },
-            "firstRunTitle": {
-              "t": "Novi ovde?",
-              "src": "machine",
-              "h": "b81f2e17e001"
-            },
             "firstRunBody": {
               "t": "Odaberite oblik na karti Draw, kliknite na kartu da je postavite i kliknite dva puta da završite.",
               "src": "machine",
               "h": "dff95dd1b6fd"
-            },
-            "firstRunHelpLink": {
-              "t": "Otvori vodiè.",
-              "src": "machine",
-              "h": "2447dd6134ea"
             },
             "firstRunDismiss": {
               "t": "Odbaci ovaj nagoveštaj",
@@ -158576,11 +158461,6 @@
               "t": "Moji crteži",
               "src": "machine",
               "h": "34ea63359aa6"
-            },
-            "helpStartTitle": {
-              "t": "Poènite ovde: tri koraka.",
-              "src": "machine",
-              "h": "789320b4831d"
             },
             "helpStart1": {
               "t": "Na kartici Crtaj, kliknite dugme oblika: tačka, linija, oblast ili tekst.",
@@ -158807,11 +158687,6 @@
               "src": "machine",
               "h": "6518c0357fd9"
             },
-            "helpTroubleTitle": {
-              "t": "Ako nešto nije u redu",
-              "src": "machine",
-              "h": "6f7fec3ff1e0"
-            },
             "helpTroubleNoShape": {
               "t": "Ništa se ne dešava kada kliknem na mapu: nije odabrano dugme za oblikovanje. Klikni prvo na karticu Draw.",
               "src": "machine",
@@ -158836,11 +158711,6 @@
               "t": "Još uvek zaglavljen? Kontaktirajte svoj GIS tim i pomenite Draw Advanced widget i ovu aplikaciju.",
               "src": "machine",
               "h": "88d72f8ecfa7"
-            },
-            "helpTipsTitle": {
-              "t": "Dobro je znati.",
-              "src": "machine",
-              "h": "79fc372dc790"
             },
             "helpTips1": {
               "t": "Zumiraj pre nego što nacrtaš.",
@@ -159186,11 +159056,6 @@
               "t": "КМЛGenericName",
               "src": "machine",
               "h": "c5bd90689147"
-            },
-            "shapefile": {
-              "t": "ОбликDescription",
-              "src": "machine",
-              "h": "1e21d10d2150"
             },
             "json": {
               "t": "JSON",
@@ -161247,11 +161112,6 @@
               "src": "machine",
               "h": "aaf683ce17f5"
             },
-            "unknownError": {
-              "t": "Nepoznata greška",
-              "src": "machine",
-              "h": "e5fd9aa24c94"
-            },
             "graphicsLayer": {
               "t": "Слој графике@ info: whatsthis",
               "src": "machine",
@@ -161341,16 +161201,6 @@
               "t": "odabrani sloj",
               "src": "machine",
               "h": "54678a49ab0d"
-            },
-            "unknownError2": {
-              "t": "nepoznata greška",
-              "src": "machine",
-              "h": "af6321ca7a8b"
-            },
-            "unserializableError": {
-              "t": "Neserijalizacijska greška",
-              "src": "machine",
-              "h": "76e73551597a"
             },
             "distanceUnitDisplayBuffer": {
               "t": "{distance} {unitDisplay} Bafer",
@@ -205071,14 +204921,14 @@
           }
         },
         "bs": {
-          "file": "f0c66ec998cf",
+          "file": "0dbec84875c7",
           "counts": {
-            "esri": 37,
+            "esri": 41,
             "esri-check": 0,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 211,
+            "machine": 207,
             "stale": 0,
             "missing": 0
           },
@@ -205102,11 +204952,6 @@
               "t": "Deaktiviraj alat nakon svakog završenog oblika.",
               "src": "machine",
               "h": "03e11e9baecd"
-            },
-            "settingImportExportSettings": {
-              "t": "Uvezi / Izvezi postavke",
-              "src": "machine",
-              "h": "d043722e9071"
             },
             "settingBuildAnXmlDocumentFrom": {
               "t": "Napravi XML dokument iz trenutnih postavki i prikaži ga ispod.",
@@ -205983,11 +205828,6 @@
               "src": "machine",
               "h": "f3df1dbcbb3d"
             },
-            "settingSelectAWidget": {
-              "t": "_Izaberi grafički element",
-              "src": "machine",
-              "h": "755320bd0c62"
-            },
             "settingWidgetIdMailingLabelsWidgetId": {
               "t": "ID grafičkog elementa: {mailingLabelsWidgetId}",
               "src": "machine",
@@ -206112,16 +205952,6 @@
               "t": "Uključi kada je grafički element unutar upravljača grafičkim elementom tako da su aktivni crteži otkazani pri zatvaranju.",
               "src": "machine",
               "h": "9fdf1419117b"
-            },
-            "settingShowHelpGuide": {
-              "t": "Pokaži vodič za pomoć",
-              "src": "machine",
-              "h": "03e9f0b81336"
-            },
-            "settingShowTheQuestionMarkButtonThat": {
-              "t": "Pokaži dugme sa znakom pitanja koje otvara vodič za pomoć grafičkog elementa",
-              "src": "machine",
-              "h": "62c4e81a84ca"
             },
             "freehandLine": {
               "t": "Freehand Linija",
@@ -216748,12 +216578,12 @@
         "hr": {
           "file": "def691e70187",
           "counts": {
-            "esri": 37,
+            "esri": 41,
             "esri-check": 0,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 211,
+            "machine": 207,
             "stale": 0,
             "missing": 0
           },
@@ -216777,11 +216607,6 @@
               "t": "Deaktivirajte alat nakon svakog dovršenog oblika.",
               "src": "machine",
               "h": "03e11e9baecd"
-            },
-            "settingImportExportSettings": {
-              "t": "Postavke uvoza / izvoza",
-              "src": "machine",
-              "h": "d043722e9071"
             },
             "settingBuildAnXmlDocumentFrom": {
               "t": "Izradi XML dokument iz trenutnih postavki i prikaži ga ispod.",
@@ -217658,11 +217483,6 @@
               "src": "machine",
               "h": "f3df1dbcbb3d"
             },
-            "settingSelectAWidget": {
-              "t": "— Odaberite widget —",
-              "src": "machine",
-              "h": "755320bd0c62"
-            },
             "settingWidgetIdMailingLabelsWidgetId": {
               "t": "ID grafičkog elementa: {mailingLabelsWidgetId}",
               "src": "machine",
@@ -217787,16 +217607,6 @@
               "t": "Omogući kada je widget unutar Widget Controllera tako da su aktivni crteži otkazani pri zatvaranju.",
               "src": "machine",
               "h": "9fdf1419117b"
-            },
-            "settingShowHelpGuide": {
-              "t": "Prikaži vodič pomoći",
-              "src": "machine",
-              "h": "03e9f0b81336"
-            },
-            "settingShowTheQuestionMarkButtonThat": {
-              "t": "Prikaži gumb s upitnikom koji otvara vodič za pomoć widgetu",
-              "src": "machine",
-              "h": "62c4e81a84ca"
             },
             "freehandLine": {
               "t": "Freehand linija",
@@ -234706,14 +234516,14 @@
           }
         },
         "sr": {
-          "file": "b83e5ae03a56",
+          "file": "099c10137b0a",
           "counts": {
-            "esri": 36,
+            "esri": 40,
             "esri-check": 1,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 211,
+            "machine": 207,
             "stale": 0,
             "missing": 0
           },
@@ -234737,11 +234547,6 @@
               "t": "Deaktivirajte alat nakon svakog završenog oblika.",
               "src": "machine",
               "h": "03e11e9baecd"
-            },
-            "settingImportExportSettings": {
-              "t": "Увези / Извози поставкеQShortcut",
-              "src": "machine",
-              "h": "d043722e9071"
             },
             "settingBuildAnXmlDocumentFrom": {
               "t": "Napravite XML dokument iz trenutnih postavki i prikažite ga ispod.",
@@ -235618,11 +235423,6 @@
               "src": "machine",
               "h": "f3df1dbcbb3d"
             },
-            "settingSelectAWidget": {
-              "t": "— Izaberi grafički element —",
-              "src": "machine",
-              "h": "755320bd0c62"
-            },
             "settingWidgetIdMailingLabelsWidgetId": {
               "t": "Widget ID: {mailingLabelsWidgetId}",
               "src": "machine",
@@ -235747,16 +235547,6 @@
               "t": "Uključi kada je grafički element unutar Widget Controllera tako da su aktivni crteži otkazani pri zatvaranju.",
               "src": "machine",
               "h": "9fdf1419117b"
-            },
-            "settingShowHelpGuide": {
-              "t": "Pokaži vodič za pomoć",
-              "src": "machine",
-              "h": "03e9f0b81336"
-            },
-            "settingShowTheQuestionMarkButtonThat": {
-              "t": "Prikaži dugme sa znakom pitanja koje otvara vodič za pomoć grafičkom elementu",
-              "src": "machine",
-              "h": "62c4e81a84ca"
             },
             "freehandLine": {
               "t": "Freehand Line",

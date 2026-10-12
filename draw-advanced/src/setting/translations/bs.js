@@ -12,7 +12,7 @@ System.register([], function (e) {
         settingDrawingCreationMode: "Crtam način stvaranja",
         settingKeepTheActiveToolSelected: "Zadržite odabrane aktivne alate tako da korisnici mogu crtati više oblika u nizu.",
         settingDeactivateTheToolAfterEach: "Deaktiviraj alat nakon svakog završenog oblika.",
-        settingImportExportSettings: "Uvezi / Izvezi postavke",
+        settingImportExportSettings: "Uvezi postavke za / izvoz",
         settingExport: "Izvezi",
         settingBuildAnXmlDocumentFrom: "Napravi XML dokument iz trenutnih postavki i prikaži ga ispod.",
         settingGenerateSettingsXml: "Generiraj postavke XML",

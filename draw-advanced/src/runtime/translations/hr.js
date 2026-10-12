@@ -609,7 +609,7 @@ System.register([], function (e) {
         helpTroubleGone: "Moji crteži su nestali: podaci preglednika su izbrisani, ili je ovo drugi preglednik ili računalo. Uvezite datoteku ako ste ga izvezli.",
         helpTroubleSnap: "Moji klikovi zemljišta gdje nisam kliknuo: snapping ih vuče na obližnju liniju. Isključite Omogući snapping.",
         helpTroubleContact: "Još uvijek zaglavi? Kontaktirajte svoj GIS tim i spomenuti Draw Advanced widget i ovu aplikaciju.",
-        helpTipsTitle: "Dobro je znati.",
+        helpTipsTitle: "Dobro je znati",
         helpTips1: "Zumiraj prije nego što nacrtaš. Klikovi su precizniji izbliza.",
         helpTips2: "Dvostruki klik uvijek završi liniju ili područje, a Esc uvijek otkaže jedan.",
         helpTips3: "Mjerenja prate udaljenost karte u stvarnom svijetu, tako da oznaka kruga odgovara veličini koju ste upisali.",
