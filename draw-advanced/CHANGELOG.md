@@ -2,6 +2,11 @@
 
 Newest first. Every release bumps `manifest.json` and `package.json` together.
 
+## 4.6.1 (2026-11-17)
+
+- Fix shapefile import when a ZIP holds more than one shapefile. Only the first `.prj` was stripped before parsing, so the other layers were reprojected to WGS84 by shpjs and then projected a second time, landing far from their real location. Every `.prj` is now stripped and matched to its own layer, and layers with different coordinate systems import separately.
+- Dependency: proj4 2.22.0 to 2.23.0.
+
 ## 4.6.0 (2026-10-08)
 
 - Localization: the widget and its settings panel follow the app language in all 39 Experience Builder locales, including the out-of-the-box Language Switcher widget and the `?locale=` URL parameter. `manifest.json` lists every locale in `translatedLocales`.

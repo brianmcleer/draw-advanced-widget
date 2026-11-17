@@ -11762,36 +11762,51 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         }, 500);
     };
 
+    /**
+     * Normalize a shapefile layer name so a .prj entry and a shpjs FeatureCollection
+     * fileName can be matched: drop folder path and the given extension, lowercase.
+     */
+    private shapefileLayerKey = (name: string, ext: RegExp): string => {
+        const base = (name || '').replace(/\\/g, '/').split('/').pop() || '';
+        return base.replace(ext, '').toLowerCase();
+    };
+
     handleShapefileImport = async (file: File) => {
         try {
             const arrayBuffer = await file.arrayBuffer();
 
-            // Step 1: Extract the PRJ WKT and create a PRJ-stripped ZIP.
+            // Step 1: Extract EVERY .prj WKT and create a PRJ-stripped ZIP.
             // shpjs uses proj4 internally which MISPROJECTS ESRI-specific CRS
             // (e.g., Krovak with X_Scale/Y_Scale/XY_Plane_Rotation produces
             // valid-looking but WRONG WGS84 coordinates). By removing the .prj
-            // file before giving the ZIP to shpjs, we get raw un-reprojected
+            // files before giving the ZIP to shpjs, we get raw un-reprojected
             // coordinates that we can project correctly ourselves.
-            let prjWkt: string | null = null;
+            // A ZIP can hold several shapefiles, each with its own .prj. All of
+            // them must be stripped: a .prj left behind makes shpjs reproject that
+            // layer to WGS84, and it then gets projected a second time below.
+            const prjByLayer = new Map<string, string>();
+            let firstPrjWkt: string | null = null;
             let parseBuffer = arrayBuffer; // Default: use original ZIP
 
             try {
                 const zip = await JSZip.loadAsync(arrayBuffer);
 
-                // Find and extract the PRJ file
-                let prjFilename: string | null = null;
+                const prjFilenames: string[] = [];
                 for (const [filename, zipEntry] of Object.entries(zip.files) as Array<[string, any]>) {
-                    if (filename.toLowerCase().endsWith('.prj') && !zipEntry.dir
-                        && !filename.toLowerCase().includes('__macosx')) {
-                        prjWkt = await zipEntry.async('text');
-                        prjFilename = filename;
-                        break;
+                    const lowerName = filename.toLowerCase();
+                    if (lowerName.endsWith('.prj') && !zipEntry.dir && !lowerName.includes('__macosx')) {
+                        const wkt: string = await zipEntry.async('text');
+                        prjFilenames.push(filename);
+                        if (wkt && wkt.trim()) {
+                            prjByLayer.set(this.shapefileLayerKey(filename, /\.prj$/i), wkt);
+                            if (!firstPrjWkt) firstPrjWkt = wkt;
+                        }
                     }
                 }
 
-                // If we found a PRJ, create a new ZIP without it
-                if (prjFilename && prjWkt) {
-                    zip.remove(prjFilename);
+                // If we found any PRJ, create a new ZIP without them
+                if (prjFilenames.length > 0) {
+                    prjFilenames.forEach(name => zip.remove(name));
                     parseBuffer = await zip.generateAsync({ type: 'arraybuffer' });
                 }
             } catch (zipErr) {
@@ -11802,66 +11817,88 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
             // Without a .prj file, shpjs returns raw coordinates as-is.
             const shpModule: any = await import('shpjs');
             const shp: any = shpModule.default || shpModule;
-            let geoJSON = await shp(parseBuffer);
+            const parsed = await shp(parseBuffer);
 
-            // Normalize to single FeatureCollection
-            if (Array.isArray(geoJSON)) {
-                const allFeatures = geoJSON.flatMap((fc: any) => fc.features || []);
-                geoJSON = { type: 'FeatureCollection', features: allFeatures };
-            }
-            if (!geoJSON.type || geoJSON.type !== 'FeatureCollection') {
-                geoJSON = {
+            // Normalize to a list of per-layer FeatureCollections (keep fileName for PRJ matching)
+            const layers: any[] = (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.type === 'FeatureCollection'
+                ? parsed
+                : [parsed]
+            ).map((fc: any) => {
+                if (fc && fc.type === 'FeatureCollection') return fc;
+                return {
                     type: 'FeatureCollection',
-                    features: Array.isArray(geoJSON) ? geoJSON : [geoJSON]
+                    features: Array.isArray(fc) ? fc : (fc ? [fc] : []),
+                    fileName: fc?.fileName
                 };
-            }
-            if (!geoJSON.features || geoJSON.features.length === 0) {
+            }).filter((fc: any) => Array.isArray(fc.features) && fc.features.length > 0);
+
+            if (layers.length === 0) {
                 throw new Error('No features found in shapefile');
             }
 
-            // Step 3: Determine coordinate state and set CRS accordingly.
-            const isWGS84 = this.coordinatesLookLikeWGS84(geoJSON);
-            const testCoord = this.getFirstCoordinate(geoJSON);
+            // Step 3: Per layer, determine coordinate state and set CRS accordingly.
+            const mapSR = this.props.jimuMapView?.view?.spatialReference;
+            const mapWkid = mapSR?.wkid;
+            const prepared: any[] = [];
 
-            if (isWGS84 && !prjWkt) {
-                // No PRJ and coords look WGS84 — assume WGS84
-                delete geoJSON.crs;
-            } else if (isWGS84 && prjWkt) {
-                // Coords are WGS84 even though we stripped the PRJ.
-                // This means the source CRS IS WGS84 (or very close).
-                delete geoJSON.crs;
-            } else if (!isWGS84 && prjWkt) {
-                // Raw source coordinates (shpjs didn't reproject because we stripped PRJ).
-                // Since the ArcGIS client-side PE doesn't work in ExB, use the ArcGIS
-                // Geometry Service (server-side REST) to project all coordinates at once.
-                const mapSR = this.props.jimuMapView?.view?.spatialReference;
-                const mapWkid = mapSR?.wkid;
-                let projectedViaService = false;
+            for (const layer of layers) {
+                let geoJSON: any = { type: 'FeatureCollection', features: layer.features };
+                const layerKey = this.shapefileLayerKey(layer.fileName || '', /\.shp$/i);
+                const prjWkt: string | null = (layerKey && prjByLayer.get(layerKey)) || firstPrjWkt;
+                const isWGS84 = this.coordinatesLookLikeWGS84(geoJSON);
 
-                if (mapWkid) {
-                    try {
-                        const projected = await this.projectGeoJSONViaGeometryService(geoJSON, prjWkt, mapWkid);
-                        if (projected) {
-                            geoJSON = projected;
-                            geoJSON.crs = { type: 'name', properties: { name: `EPSG:${mapWkid}` } };
-                            projectedViaService = true;
+                if (isWGS84) {
+                    // Coords are WGS84 (with or without a PRJ) — source CRS IS WGS84 (or very close).
+                    delete geoJSON.crs;
+                } else if (prjWkt) {
+                    // Raw source coordinates (shpjs didn't reproject because we stripped PRJ).
+                    // Since the ArcGIS client-side PE doesn't work in ExB, use the ArcGIS
+                    // Geometry Service (server-side REST) to project all coordinates at once.
+                    let projectedViaService = false;
+
+                    if (mapWkid) {
+                        try {
+                            const projected = await this.projectGeoJSONViaGeometryService(geoJSON, prjWkt, mapWkid);
+                            if (projected) {
+                                geoJSON = projected;
+                                geoJSON.crs = { type: 'name', properties: { name: `EPSG:${mapWkid}` } };
+                                projectedViaService = true;
+                            }
+                        } catch (gsError) {
+                            console.warn('⚠️ Geometry Service projection failed:', gsError);
                         }
-                    } catch (gsError) {
-                        console.warn('⚠️ Geometry Service projection failed:', gsError);
                     }
+
+                    if (!projectedViaService) {
+                        // Fallback: pass WKT to convertGeoJSONGeometry to try ArcGIS PE
+                        geoJSON.crs = { type: 'name', properties: { name: prjWkt } };
+                    }
+                } else {
+                    // Not WGS84, no PRJ — can't determine CRS
+                    console.warn('⚠️ No .prj file and coordinates are not WGS84.');
+                    delete geoJSON.crs;
                 }
 
-                if (!projectedViaService) {
-                    // Fallback: pass WKT to convertGeoJSONGeometry to try ArcGIS PE
-                    geoJSON.crs = { type: 'name', properties: { name: prjWkt } };
-                }
-            } else {
-                // Not WGS84, no PRJ — can't determine CRS
-                console.warn('⚠️ No .prj file and coordinates are not WGS84.');
-                delete geoJSON.crs;
+                prepared.push(geoJSON);
             }
 
-            await this.importGeoJSON(geoJSON);
+            // Import layers that share a CRS together; separate CRS groups import separately.
+            const groups = new Map<string, any>();
+            for (const fc of prepared) {
+                const crsKey = fc.crs?.properties?.name || '';
+                const existing = groups.get(crsKey);
+                if (existing) {
+                    existing.features.push(...fc.features);
+                } else {
+                    groups.set(crsKey, fc.crs
+                        ? { type: 'FeatureCollection', crs: fc.crs, features: [...fc.features] }
+                        : { type: 'FeatureCollection', features: [...fc.features] });
+                }
+            }
+
+            for (const group of groups.values()) {
+                await this.importGeoJSON(group);
+            }
 
         } catch (error) {
             console.error('❌ Shapefile import error:', error);
