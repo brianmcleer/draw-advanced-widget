@@ -7,7 +7,9 @@ import type { JimuMapView } from 'jimu-arcgis';
 // FeatureSnappingLayerSource removed in JSAPI 5.0 - featureSources autocasts
 import FeatureLayer from 'esri/layers/FeatureLayer';
 import Collection from 'esri/core/Collection';
-import GridControls from 'esri/widgets/support/GridControls';
+import Color from 'esri/Color';
+// Registers <arcgis-grid-controls> through Experience Builder's shared bundle (nothing is bundled here).
+import 'arcgis-map-components';
 import { __t } from '../i18n-t'
 
 interface SnappingControlsProps {
@@ -69,7 +71,16 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         } catch { /* quota or privacy mode: settings simply don't persist */ }
     }, [enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap]);
     const [gridPlacementActive, setGridPlacementActive] = React.useState(false);
-    const gridControlsRef = React.useRef<GridControls | null>(null);
+    // The view's grid is driven through a hidden <arcgis-grid-controls> element.
+    // It replaces the GridControls widget class, which Esri deprecated in SDK 5.0.
+    // This panel draws its own controls, so the element is never shown.
+    const gridControlsRef = React.useRef<any>(null);
+    // True once the element has loaded and can be driven. The ref is for
+    // callbacks; the state re-runs the grid effects when it flips.
+    const gridReadyRef = React.useRef(false);
+    const [gridReady, setGridReady] = React.useState(false);
+    // The grid controls element, or null until it has loaded.
+    const gridVm = (): any => (gridReadyRef.current ? gridControlsRef.current : null);
 
     // Linear unit grid state
     const [gridSpacingMode, setGridSpacingMode] = React.useState<'pixels' | 'mapUnits'>('pixels');
@@ -241,8 +252,8 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
             };
             sketchVM.snappingOptions = options;
             (view as any).snappingOptions = options;
-            if (gridControlsRef.current?.viewModel) {
-                gridControlsRef.current.snappingOptions = options;
+            if (gridVm()) {
+                gridVm().snappingOptions = options;
             }
 
             const snapSources: any[] = [];
@@ -309,12 +320,12 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         const newState = !gridEnabled;
         setGridEnabled(newState);
 
-        // Directly sync the viewModel immediately to avoid stale state
-        if (gridControlsRef.current?.viewModel) {
+        // Directly sync the grid controls immediately to avoid stale state
+        if (gridVm()) {
             try {
-                gridControlsRef.current.viewModel.trySetDisplayEnabled(newState);
+                gridVm().trySetDisplayEnabled(newState);
                 if (!newState) {
-                    gridControlsRef.current.viewModel.snappingEnabled = false;
+                    gridVm().snappingEnabled = false;
                 }
             } catch (e) {
                 console.warn('Error syncing grid toggle:', e);
@@ -335,10 +346,10 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         try {
             setGridEnabled(false);
 
-            if (gridControlsRef.current?.viewModel) {
+            if (gridVm()) {
                 try {
-                    gridControlsRef.current.viewModel.trySetDisplayEnabled(false);
-                    gridControlsRef.current.viewModel.snappingEnabled = false;
+                    gridVm().trySetDisplayEnabled(false);
+                    gridVm().snappingEnabled = false;
                 } catch (e) {
                     console.warn('Error forcing grid off:', e);
                 }
@@ -369,7 +380,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
 
     // Grid Controls initialization and cleanup
     React.useEffect(() => {
-        // Initialize GridControls when we have a 2D MapView (grid only works in 2D)
+        // Initialize the grid controls when we have a 2D MapView (grid only works in 2D)
         if (props.jimuMapView?.view && !gridControlsRef.current) {
             try {
                 const view = props.jimuMapView.view;
@@ -379,57 +390,70 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                     return;
                 }
 
-                // Create GridControls instance - it manages the view's grid
-                const gridControls = new GridControls({
-                    view: view as any,
-                    theme: gridTheme,
-                    customColor: gridTheme === 'custom' ? gridColor : undefined,
-                    snappingOptions: props.sketchViewModel?.snappingOptions || (view as any).snappingOptions || undefined,
-                    visibleElements: {
-                        colorSelection: false,
-                        dynamicScaleToggle: false,
-                        gridEnabledToggle: false,
-                        numericInputs: false,
-                        gridSnapEnabledToggle: false,
-                        lineIntervalInput: false,
-                        outOfScaleWarning: false,
-                        placementButtons: false,
-                        rotateWithMapToggle: false
-                    }
-                });
+                // Create the grid controls element - it manages the view's grid.
+                // Properties are set before it is attached so it binds to this
+                // view instead of looking for a parent <arcgis-map>.
+                const gridControls: any = document.createElement('arcgis-grid-controls');
+                gridControls.view = view;
+                gridControls.theme = gridTheme;
+                // the component's customColor takes a Color, not a CSS color string
+                if (gridTheme === 'custom') gridControls.customColor = new Color(gridColor);
+                const initialSnapping = props.sketchViewModel?.snappingOptions || (view as any).snappingOptions;
+                if (initialSnapping) gridControls.snappingOptions = initialSnapping;
+                gridControls.hideColorSelection = true;
+                gridControls.hideDynamicScaleToggle = true;
+                gridControls.hideGridEnabledToggle = true;
+                gridControls.hideNumericInputs = true;
+                gridControls.hideGridSnapEnabledToggle = true;
+                gridControls.hideLineIntervalInput = true;
+                gridControls.hideOutOfScaleWarning = true;
+                gridControls.hidePlacementButtons = true;
+                gridControls.hideRotateWithMapToggle = true;
+                gridControls.style.display = 'none';
+                gridControls.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(gridControls);
 
                 // Store reference
                 gridControlsRef.current = gridControls;
 
-                // Initial grid state - enable if toggle is on
-                if (gridControls.viewModel && gridEnabled) {
-                    gridControls.viewModel.trySetDisplayEnabled(true);
-                    gridControls.viewModel.dynamicScaling = gridSpacingMode === 'mapUnits' ? false : gridDynamicScale;
-                    gridControls.viewModel.rotation = gridRotation;
-                    gridControls.viewModel.spacing = gridSpacing;
-                    gridControls.viewModel.snappingEnabled = gridSnapEnabled;
-                    gridControls.viewModel.majorLineInterval = gridMajorLineInterval;
-                    gridControls.viewModel.rotateWithMap = gridRotateWithMap;
-                }
+                // The grid can be driven once the component has loaded. Flipping
+                // gridReady re-runs the effects below, which push the current
+                // toggle and property values (the initial grid state).
+                const whenLoaded = async (): Promise<void> => {
+                    await customElements.whenDefined('arcgis-grid-controls');
+                    if (typeof gridControls.componentOnReady === 'function') await gridControls.componentOnReady();
+                };
+                whenLoaded().then(() => {
+                    if (gridControlsRef.current !== gridControls) return;
+                    gridReadyRef.current = true;
+                    setGridReady(true);
+                }, (error) => {
+                    console.error('Error initializing grid controls:', error);
+                });
 
             } catch (error) {
-                console.error('Error initializing GridControls:', error);
+                console.error('Error initializing grid controls:', error);
             }
         }
 
         // Cleanup on unmount
         return () => {
-            if (gridControlsRef.current) {
+            const gridControls = gridControlsRef.current;
+            if (gridControls) {
                 try {
                     // Disable grid before destroying
-                    if (gridControlsRef.current.viewModel) {
-                        gridControlsRef.current.viewModel.trySetDisplayEnabled(false);
+                    if (gridReadyRef.current) {
+                        gridControls.trySetDisplayEnabled(false);
                     }
-                    gridControlsRef.current.destroy();
+                    // destroy() returns a promise on the component
+                    Promise.resolve(gridControls.destroy && gridControls.destroy()).catch((): void => undefined);
+                    gridControls.remove();
                 } catch (error) {
-                    console.warn('Error destroying GridControls:', error);
+                    console.warn('Error destroying grid controls:', error);
                 }
                 gridControlsRef.current = null;
+                gridReadyRef.current = false;
+                setGridReady(false);
             }
         };
     }, [props.jimuMapView, props.sketchViewModel]);
@@ -439,24 +463,24 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
     // on every property tweak, which resets the grid and discards pending changes.
     React.useEffect(() => {
         if (isSyncingRef.current) return;
-        if (gridControlsRef.current?.viewModel) {
+        if (gridVm()) {
             try {
-                gridControlsRef.current.viewModel.trySetDisplayEnabled(gridEnabled);
+                gridVm().trySetDisplayEnabled(gridEnabled);
                 if (!gridEnabled) {
-                    gridControlsRef.current.viewModel.snappingEnabled = false;
+                    gridVm().snappingEnabled = false;
                 }
             } catch (error) {
                 console.warn('Error toggling grid display:', error);
             }
         }
-    }, [gridEnabled]);
+    }, [gridEnabled, gridReady]);
 
-    // Effect 2: Push property changes to the viewModel (only when grid is enabled).
+    // Effect 2: Push property changes to the grid controls (only when grid is enabled).
     // This runs independently of trySetDisplayEnabled so property writes aren't
     // clobbered by an enable/disable cycle.
     React.useEffect(() => {
         if (!gridEnabled || isSyncingRef.current) return;
-        const vm = gridControlsRef.current?.viewModel;
+        const vm = gridVm();
         if (!vm) return;
 
         try {
@@ -470,31 +494,31 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
             vm.snappingEnabled = gridSnapEnabled;
             vm.majorLineInterval = gridMajorLineInterval;
             vm.rotateWithMap = gridRotateWithMap;
-            gridControlsRef.current.theme = gridTheme;
+            vm.theme = gridTheme;
             if (gridTheme === 'custom') {
-                gridControlsRef.current.customColor = gridColor;
+                vm.customColor = new Color(gridColor);
             }
         } catch (error) {
             console.warn('Error updating grid properties:', error);
         }
     }, [gridEnabled, gridRotation, gridSpacing, gridDynamicScale, gridSnapEnabled,
-        gridMajorLineInterval, gridRotateWithMap, gridTheme, gridColor, gridSpacingMode, props.jimuMapView]);
+        gridMajorLineInterval, gridRotateWithMap, gridTheme, gridColor, gridSpacingMode, props.jimuMapView, gridReady]);
 
 
     // Synchronize grid snapping with SketchViewModel snapping options
     React.useEffect(() => {
-        if (gridControlsRef.current?.viewModel && props.sketchViewModel?.snappingOptions) {
+        if (gridVm() && props.sketchViewModel?.snappingOptions) {
             try {
-                gridControlsRef.current.snappingOptions = props.sketchViewModel.snappingOptions;
+                gridVm().snappingOptions = props.sketchViewModel.snappingOptions;
             } catch (error) {
                 console.warn('Error syncing grid snapping:', error);
             }
         }
-    }, [gridSnapEnabled, gridEnabled, props.sketchViewModel?.snappingOptions]);
+    }, [gridSnapEnabled, gridEnabled, props.sketchViewModel?.snappingOptions, gridReady]);
 
     // Grid placement: toggle interactive placement mode (place origin by clicking the map)
     React.useEffect(() => {
-        const vm = gridControlsRef.current?.viewModel;
+        const vm = gridVm();
         if (!vm || !gridEnabled) {
             if (gridPlacementActive) setGridPlacementActive(false);
             return;
@@ -503,15 +527,16 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         if (gridPlacementActive) {
             vm.interactivePlacementState = 'place';
 
-            // Watch for the viewModel to finish placement (returns to 'interactive' after user clicks)
-            const handle = vm.watch('interactivePlacementState', (state) => {
-                if (state === 'interactive') {
+            // Watch for placement to finish (returns to 'interactive' after user clicks)
+            const onPropertyChange = (evt: any) => {
+                if (evt?.detail?.name === 'interactivePlacementState' && vm.interactivePlacementState === 'interactive') {
                     setGridPlacementActive(false);
                 }
-            });
+            };
+            vm.addEventListener('arcgisPropertyChange', onPropertyChange);
 
             return () => {
-                handle?.remove();
+                vm.removeEventListener('arcgisPropertyChange', onPropertyChange);
                 if (vm.interactivePlacementState === 'place') {
                     vm.interactivePlacementState = 'interactive';
                 }
@@ -521,7 +546,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                 vm.interactivePlacementState = 'interactive';
             }
         }
-    }, [gridPlacementActive, gridEnabled]);
+    }, [gridPlacementActive, gridEnabled, gridReady]);
 
     // ========================================================================
     // LINEAR UNIT-BASED GRID SPACING
@@ -558,14 +583,14 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
 
         if (spacingValue <= 0) return;
 
-        const vm = gridControlsRef.current?.viewModel;
+        const vm = gridVm();
         if (!vm) return;
 
         vm.dynamicScaling = false;
         vm.spacing = spacingValue;
 
         setGridSpacing(spacingValue);
-    }, [gridSpacingMode, gridMapUnitValue, gridMapUnit, gridEnabled, convertToSpacingValue]);
+    }, [gridSpacingMode, gridMapUnitValue, gridMapUnit, gridEnabled, convertToSpacingValue, gridReady]);
 
     return (
         <div

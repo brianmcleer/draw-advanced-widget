@@ -2,6 +2,11 @@
 
 Newest first. Every release bumps `manifest.json` and `package.json` together.
 
+## 4.7.0 (2026-11-23)
+
+- Changed: the drawing grid (display, spacing, rotation, snapping, placement) is now driven through a hidden Maps SDK `arcgis-grid-controls` component instead of the `GridControls` widget class. Reason: Esri deprecated the widgets in the ArcGIS Maps SDK for JavaScript at version 5.0 and plans to remove them as early as Q1 2027, so anything built on them stops working on an Experience Builder release that ships without them. See [Deprecation: Widgets in ArcGIS Maps SDK for JavaScript](https://support.esri.com/en-us/knowledge-base/deprecation-widgets-in-arcgis-maps-sdk-for-javascript-000040437).
+- No change to the Snapping and Grid panel or its settings.
+
 ## 4.6.1 (2026-11-17)
 
 - Fix shapefile import when a ZIP holds more than one shapefile. Only the first `.prj` was stripped before parsing, so the other layers were reprojected to WGS84 by shpjs and then projected a second time, landing far from their real location. Every `.prj` is now stripped and matched to its own layer, and layers with different coordinate systems import separately.
