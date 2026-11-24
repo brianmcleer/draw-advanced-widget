@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock은 사고로 이동하거나 편집 한 도면을 유지합니다. 다시 변경할 수 있습니다.",
         helpOrganizeGroup: "그룹은 몇 가지 도면을 결합하여 함께 이동합니다.",
         helpOrganizeMerge: "Merge는 1개의 모양으로 overlapping 지역을 결합합니다.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "삭제는 한 도면을 제거합니다. Clear All removes every drawing, 그래서 확인하기 전에 프롬프트를 읽으십시오.",
         helpShareTitle: "그림과 받기",
         helpShareIntro: "내 그림 탭을 사용하여 {verbs} 파일로 그림.",

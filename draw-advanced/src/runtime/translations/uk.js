@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Замка зберігає креслення від переїзду або редагування від нещасного випадку. Розблокувати його знову.",
         helpOrganizeGroup: "Група приєднується до декількох креслень, щоб вони рухалися разом.",
         helpOrganizeMerge: "Мерж поєднує в собі перекриття ділянок в одну форму.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Видаліть один малюнок. Очистити всі видаліть кожен малюнок, щоб прочитати запит до підтвердження.",
         helpShareTitle: "Відправлення та отримання креслень",
         helpShareIntro: "Використовуйте вкладку My Drawings для {verbs} малюнки як файл.",

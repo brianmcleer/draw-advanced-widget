@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Kunci menjaga gambar agar tidak dipindahkan atau diedit secara tidak sengaja. Membuka kunci untuk mengubahnya lagi.",
         helpOrganizeGroup: "Kelompok bergabung beberapa gambar sehingga mereka bergerak bersama-sama.",
         helpOrganizeMerge: "Merge menggabungkan daerah tumpang tindih menjadi satu bentuk.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Hapus menghapus satu gambar. Hapus Semua menghapus setiap gambar, jadi baca prompt sebelum Anda mengkonfirmasi.",
         helpShareTitle: "Mengirim dan menerima gambar",
         helpShareIntro: "Gunakan tab Drawings saya ke {verbs} gambar sebagai file.",

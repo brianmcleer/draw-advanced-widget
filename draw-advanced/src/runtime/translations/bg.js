@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Ключалката предпазва от преместване или редактиране случайно. Отключи го отново.",
         helpOrganizeGroup: "Групата се присъединява към няколко рисунки, така че те се движат заедно.",
         helpOrganizeMerge: "Сливането съчетава припокриващи се области в една форма.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Изтриването премахва една рисунка. Изчистване на всички премахва всяка рисунка, така че прочетете набързо, преди да потвърдите.",
         helpShareTitle: "Изпращане и получаване на чертежи",
         helpShareIntro: "Използване на раздела \"Моите рисунки\" {verbs} чертежи като файл.",

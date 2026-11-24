@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Užrakinti neleidžia piešiniui judėti arba jį redaguoti netyčia. Atrakinti, kad vėl ją pakeistum.",
         helpOrganizeGroup: "Grupė prisijungia prie kelių piešinių, todėl jie juda kartu.",
         helpOrganizeMerge: "Sujungti sujungia persidengiančius plotus į vieną formą.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Pašalinti pašalina vieną piešinį. Išvalyti Visi pašalina kiekvieną piešinį, todėl skaityti prieš patvirtinant.",
         helpShareTitle: "Siunčiami ir priimami brėžiniai",
         helpShareIntro: "Naudoti Mano pieštukai skirtuką {verbs} brėžiniai kaip byla.",

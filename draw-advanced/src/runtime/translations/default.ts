@@ -594,7 +594,7 @@ export default {
     helpOrganizeLock: 'Lock keeps a drawing from being moved or edited by accident. Unlock to change it again.',
     helpOrganizeGroup: 'Group joins several drawings so they move together.',
     helpOrganizeMerge: 'Merge combines overlapping areas into one shape.',
-    helpOrganizeNearMe: 'Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.',
+    helpOrganizeNearMe: 'Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.',
     helpOrganizeClear: 'Delete removes one drawing. Clear All removes every drawing, so read the prompt before you confirm.',
     helpShareTitle: 'Sending and receiving drawings',
     helpShareIntro: 'Use the My Drawings tab to {verbs} drawings as a file.',

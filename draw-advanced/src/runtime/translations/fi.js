@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lukko estää piirroksen siirtämisen tai muokkaamisen vahingossa. Avaa uudelleen vaihtaaksesi sen.",
         helpOrganizeGroup: "Ryhmä liittyy useisiin piirustuksiin, joten ne liikkuvat yhdessä.",
         helpOrganizeMerge: "Yhdistää päällekkäiset alueet yhteen muotoon.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Poista yksi piirros. Tyhjennä Kaikki poistaa jokaisen piirroksen, joten lue kehote ennen vahvistusta.",
         helpShareTitle: "Piirustusten lähettäminen ja vastaanottaminen",
         helpShareIntro: "Käytä Omat piirustukset -välilehteä {verbs} piirustukset tiedostona.",

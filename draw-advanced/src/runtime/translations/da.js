@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Låsen holder en tegning fra at blive flyttet eller redigeret ved et uheld. Lås op for at ændre det igen.",
         helpOrganizeGroup: "Gruppe slutter sig til flere tegninger, så de bevæger sig sammen.",
         helpOrganizeMerge: "Sammenfletning kombinerer overlappende områder i én form.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Slet fjerner en tegning. Ryd alle fjerner hver tegning, så læs prompten før du bekræfter.",
         helpShareTitle: "Sender og modtager tegninger",
         helpShareIntro: "Brug fanebladet Mine træk til {verbs} tegninger som en fil.",

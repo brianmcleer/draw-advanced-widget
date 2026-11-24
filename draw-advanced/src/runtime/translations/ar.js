@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "(لوك) يحتفظ برسم من أن يتم نقله أو تحريره بالخطأ افتح الباب لتغييره مرة أخرى",
         helpOrganizeGroup: "ينضم الفريق إلى عدة رسومات ليتحركوا معاً",
         helpOrganizeMerge: "ويجمع الدمج بين المناطق المتداخلة في شكل واحد.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "يحذف رسم واحد. نظفوا كل شيء يزيل كل رسم لذا إقرأوا العجلة قبل أن تؤكدوا",
         helpShareTitle: "الرسومات المرسلة والمستقبلة",
         helpShareIntro: "إستعملْ حبوبَي إلى {verbs} رسومات كملف",

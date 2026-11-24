@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Blokada chroni przed przenoszeniem lub redagowaniem rysunku przez przypadek. Odblokuj, aby zmienić go ponownie.",
         helpOrganizeGroup: "Grupa dołącza do kilku rysunków, więc się razem przemieszczają.",
         helpOrganizeMerge: "Połączenie łączy pokrywające się obszary w jeden kształt.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Usuń usuwa jeden rysunek. Clear All usuwa każdy rysunek, więc przeczytaj polecenie przed potwierdzeniem.",
         helpShareTitle: "Wysyłanie i odbieranie rysunków",
         helpShareIntro: "Użyj zakładki Moje rysunki do {verbs} rysunki jako plik.",

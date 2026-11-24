@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Η κλειδαριά κρατά ένα σχέδιο από το να μετακινηθεί ή να επεξεργαστεί κατά λάθος. Ξεκλείδωσε να το αλλάξεις ξανά.",
         helpOrganizeGroup: "Η ομάδα ενώνει διάφορα σχέδια για να κινηθούν μαζί.",
         helpOrganizeMerge: "Συγχώνευση συνδυάζει αλληλοεπικαλυπτόμενες περιοχές σε ένα σχήμα.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Η διαγραφή αφαιρεί ένα σχέδιο. Καθαρισμός όλων αφαιρεί κάθε σχέδιο, έτσι διαβάστε την προτροπή πριν επιβεβαιώσετε.",
         helpShareTitle: "Αποστολή και λήψη σχεδίων",
         helpShareIntro: "Χρησιμοποιήστε την καρτέλα μου για να {verbs} σχέδια ως αρχείο.",

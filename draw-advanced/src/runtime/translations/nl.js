@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock voorkomt dat een tekening per ongeluk verplaatst of bewerkt wordt. Ontgrendelen om het opnieuw te veranderen.",
         helpOrganizeGroup: "De groep voegt zich bij verschillende tekeningen zodat ze samen bewegen.",
         helpOrganizeMerge: "Samenvoegen combineert overlappende gebieden in één vorm.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Verwijdert een tekening. Alles wissen verwijdert elke tekening, dus lees de prompt voordat u bevestigt.",
         helpShareTitle: "Verzenden en ontvangen van tekeningen",
         helpShareIntro: "Gebruik het tabblad Mijn tekeningen om {verbs} tekeningen als bestand.",

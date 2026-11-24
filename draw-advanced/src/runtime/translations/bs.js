@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Zaključaj tako da se crtež ne pomjeri ili ne uređuje slučajno. Otključaj da bi ga ponovo promijenio.",
         helpOrganizeGroup: "Grupa se pridružuje nekoliko crteža tako da se kreću zajedno.",
         helpOrganizeMerge: "Spajanje kombinira preklapajuća područja u jedan oblik.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Obriši uklanja jedan crtež. Očisti sve uklanja svaki crtež, pa pročitaj prompt prije nego potvrdiš.",
         helpShareTitle: "Slanje i primanje crteža",
         helpShareIntro: "Koristi karticu Mojih Crteža za {verbs} crteže kao datoteku.",

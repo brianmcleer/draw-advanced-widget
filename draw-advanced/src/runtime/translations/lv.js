@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Slēgt tur zīmējumu no pārvietošanas vai rediģēšanas nejauši. Atslēdziet to vēlreiz.",
         helpOrganizeGroup: "Grupa pievienojas vairākiem zīmējumiem, lai tie kustētos kopā.",
         helpOrganizeMerge: "Apvienot apvieno pārklājošos apgabalus vienā formā.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Dzēst noņem vienu zīmējumu. Notīrīt Visu Noņem katru Zīmējumu, Tāpēc izlasiet Uzvedumu, Pirms Jūs Apstipriniet.",
         helpShareTitle: "Rasējumu nosūtīšana un saņemšana",
         helpShareIntro: "Lietot manu zīmējumu cilni uz {verbs} rasējumi kā fails.",

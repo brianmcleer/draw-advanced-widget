@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock hoiab ära joonise juhusliku liigutamise või redigeerimise. Tee lahti, et seda uuesti muuta.",
         helpOrganizeGroup: "Rühm ühendab mitu joonistust, nii et nad liiguvad koos.",
         helpOrganizeMerge: "Ühendamine ühendab kattuvad alad üheks kujuks.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Kustuta eemaldab ühe joonise. Clear All eemaldab kõik joonised, nii et lugege enne kinnitamist.",
         helpShareTitle: "Jooniste saatmine ja vastuvõtmine",
         helpShareIntro: "Kaardi Minu joonised kasutamine {verbs} joonised failina.",

@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock, kaza tarafından taşındıktan veya düzenlenmekten bir çizim tutar. Tekrar değiştirmek için kilitlenme.",
         helpOrganizeGroup: "Grup birkaç çizime katılır, böylece birlikte hareket ederler.",
         helpOrganizeMerge: "Merge, alanları tek bir şekle birleştirir.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Delete bir çizim çıkarır. Clear All her çizimi kaldırır, bu yüzden onay vermeden önce hızlı okuyun.",
         helpShareTitle: "Göndermek ve çizimleri almak",
         helpShareIntro: "Çizimler sekmesini kullanmak için {verbs} Bir dosya olarak çizimler.",

@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Zámek brání tomu, aby byl obrázek náhodně přesunut nebo upraven. Odemknout, abych to znovu změnil.",
         helpOrganizeGroup: "Skupina se připojí k několika kresbám, takže se pohybují spolu.",
         helpOrganizeMerge: "Sloučení spojuje překrývající se oblasti do jednoho tvaru.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Smazat odstraní jeden obrázek. Vymazat všechny odstraní každý výkres, takže si přečtěte příkaz před potvrzením.",
         helpShareTitle: "Odesílání a přijímání výkresů",
         helpShareIntro: "Použít záložku Moje kresby {verbs} výkresy jako soubor.",

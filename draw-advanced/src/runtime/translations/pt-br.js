@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "A fechadura impede que um desenho seja movido ou editado por acidente. Desbloqueie para mudar de novo.",
         helpOrganizeGroup: "Grupo junta vários desenhos para que eles se movam juntos.",
         helpOrganizeMerge: "Mesclar combina áreas sobrepostas em uma só forma.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Deletar remove um desenho. Limpar tudo remove cada desenho, então leia o alerta antes de confirmar.",
         helpShareTitle: "Enviando e recebendo desenhos",
         helpShareIntro: "Use a guia Meus Desenhos para {verbs} desenhos como um arquivo.",

@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock verhindert, dass eine Zeichnung versehentlich bewegt oder bearbeitet wird. Freischalten, um es wieder zu ändern.",
         helpOrganizeGroup: "Gruppe verbindet mehrere Zeichnungen, so dass sie sich zusammen bewegen.",
         helpOrganizeMerge: "Merge kombiniert überlappende Bereiche in einer Form.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Löschen entfernt eine Zeichnung. Clear All entfernt jede Zeichnung, also lesen Sie die Eingabeaufforderung, bevor Sie bestätigen.",
         helpShareTitle: "Senden und Empfangen von Zeichnungen",
         helpShareIntro: "Verwenden Sie den Tab Meine Zeichnungen {verbs} Zeichnungen als Datei.",

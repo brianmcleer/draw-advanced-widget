@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "ロックは、事故によって移動または編集されるからデッサンを保ちます。 再び変更するロック解除。",
         helpOrganizeGroup: "グループが一緒に動くように、いくつかの図面に参加します。",
         helpOrganizeMerge: "マージは、重複領域を1つの形状に結合します。",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "削除は1つの図面を削除します。 全てをクリアすると、すべての図面が削除されますので、確認する前にプロンプトを読みます。",
         helpShareTitle: "図面の送信と受信",
         helpShareIntro: "私の図面タブを使用して、 {verbs} ファイルとして描画します。",

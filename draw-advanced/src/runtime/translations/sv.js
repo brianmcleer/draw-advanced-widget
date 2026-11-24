@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lås håller en ritning från att flyttas eller redigeras av en slump. Lås upp för att ändra det igen.",
         helpOrganizeGroup: "Gruppen går med i flera ritningar så att de rör sig tillsammans.",
         helpOrganizeMerge: "Merge kombinerar överlappande områden i en form.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Ta bort en ritning. Klar Alla tar bort varje ritning, så läs prompten innan du bekräftar.",
         helpShareTitle: "Skicka och ta emot ritningar",
         helpShareIntro: "Använd fliken Mina ritningar {verbs} ritningar som en fil.",

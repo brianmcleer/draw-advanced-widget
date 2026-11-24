@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock不讓畫被不小心移動或編輯 解鎖再換一次",
         helpOrganizeGroup: "群組加入數張畫,",
         helpOrganizeMerge: "合并將重叠區域合并成一個形狀 。",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "刪除一幅畫 。 清除所有的畫面, 在您確定前先讀下提示 。",
         helpShareTitle: "寄送和接收圖片",
         helpShareIntro: "使用我的繪圖分頁 {verbs} 畫作作為檔案",

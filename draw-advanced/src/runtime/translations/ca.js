@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Bloca manté un dibuix de ser mogut o editat per accident. Desbloqueja per tornar a canviar-la.",
         helpOrganizeGroup: "Agrupa uns quants dibuixos per moure's junts.",
         helpOrganizeMerge: "Fusiona les àrees sobreposades en una forma.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Elimina un dibuix. Neteja tots els dibuixos, així que llegeix l' indicatiu abans de confirmar-ho.",
         helpShareTitle: "Enviar i rebre dibuixos",
         helpShareIntro: "Usa la pestanya Els meus dibuixos a {verbs} Dibuixa com un fitxer.",

@@ -2,6 +2,11 @@
 
 Newest first. Every release bumps `manifest.json` and `package.json` together.
 
+## 4.8.1 (2026-11-24)
+
+- Near Me now follows edits. After a drawing is set as the Near Me location, moving or reshaping that drawing sends the new shape when the edit finishes, so the Near Me buffer and results update on their own. Before, the button had to be clicked again. Selecting a drawing without changing it does nothing.
+- Near Me follows the last drawing sent. Deleting that drawing leaves the Near Me location as it was.
+
 ## 4.8.0 (2026-11-24)
 
 - Added: **Set as Near Me location** on each drawing in My Drawings (the map pin button). Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Works with points, lines, polygons, rectangles and circles; text labels are skipped. The button only shows when the app has a Near Me widget.

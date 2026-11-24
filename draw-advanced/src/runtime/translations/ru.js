@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Замок удерживает рисунок от перемещения или редактирования случайно. Разблокируйте, чтобы изменить его снова.",
         helpOrganizeGroup: "Группа объединяет несколько рисунков, чтобы они двигались вместе.",
         helpOrganizeMerge: "Слияние объединяет перекрывающиеся области в одну форму.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Удаление удаляет один рисунок. Удалите все рисунки, поэтому прочитайте подсказку, прежде чем подтвердить.",
         helpShareTitle: "Отправка и получение чертежей",
         helpShareIntro: "Используйте вкладку Мои рисунки {verbs} Рисунки как файл.",

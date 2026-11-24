@@ -6198,66 +6198,111 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         return manager.createDataSource({ id, dataSourceJson });
     };
 
+    // The drawing Near Me is currently using as its location, so an edit to it can be passed along.
+    // geometryKey is the geometry as it was sent; it tells a real edit from a plain select and deselect.
+    private _nearMeSent: { uniqueId: string | null; graphic: any; geometryKey: string } | null = null;
+
+    private nearMeGeometryKey = (geometry: any): string => {
+        try { return JSON.stringify(geometry.toJSON()); } catch (_) { return ''; }
+    };
+
     /**
-     * Hands one drawing to the Near Me widget as its search location, through Near Me's own
+     * Hands one graphic to the Near Me widget as its search location, through Near Me's own
      * "Set location" data action. Going through the data action manager means the builder's data
      * action settings are respected and Near Me opens itself if it sits in a widget controller.
+     * Returns 'sent', or 'not-ready' when Near Me has no action that can take it. Throws on failure.
      */
+    private pushGraphicToNearMe = async (graphic: any, name: string): Promise<'sent' | 'not-ready'> => {
+        const widgetId = this.props.widgetId;
+
+        // A copy, so the record never touches the graphic that is drawn on the map
+        let geometry: any = graphic.geometry;
+        if (geometry.type === 'extent') {
+            geometry = Polygon.fromExtent(geometry);
+        } else if (typeof geometry.clone === 'function') {
+            geometry = geometry.clone();
+        }
+        const kind = geometry.type as 'point' | 'multipoint' | 'polyline' | 'polygon';
+
+        const dataSource = await this.getDrawingDataSource(kind);
+        if (!dataSource) throw new Error('No data source');
+
+        const feature = new Graphic({ geometry, attributes: { OBJECTID: 1, name } });
+        const record = dataSource.buildRecord(feature);
+        dataSource.setSourceRecords([record]);
+
+        const dataSets = [{ dataSource, records: [record], name, label: name, type: 'selected' }];
+        const level = (DataLevel && DataLevel.Records) || 'RECORDS';
+        const actionManager = DataActionManager.getInstance();
+        const nearMeIds = this.getNearMeWidgetIds();
+        const findActions = async (): Promise<any[]> => {
+            const supported = await actionManager.getSupportedActions(widgetId, dataSets, level);
+            return ((supported && supported.locate) || []).filter((a: any) => a && nearMeIds.indexOf(a.widgetId) >= 0);
+        };
+
+        let actions = await findActions();
+        if (actions.length === 0) {
+            // Near Me's action may not be registered yet if Near Me has never been loaded; register it and look again
+            const registered = actionManager.getActions() || [];
+            const missing = nearMeIds.filter(id => !registered.some((a: any) => a && a.widgetId === id));
+            if (missing.length > 0) {
+                const widgets = getAppStore().getState()?.appConfig?.widgets || {};
+                await Promise.all(missing.map(id => Promise.resolve(actionManager.registerWidgetActions(widgets[id])).catch((): any => null)));
+                actions = await findActions();
+            }
+        }
+        if (actions.length === 0) return 'not-ready';
+
+        await actionManager.executeDataAction(actions[0], dataSets, level, widgetId);
+        this._nearMeSent = {
+            uniqueId: graphic.attributes?.uniqueId || null,
+            graphic,
+            geometryKey: this.nearMeGeometryKey(graphic.geometry)
+        };
+        return 'sent';
+    };
+
+    /** The "Set as Near Me location" button on a drawing. */
     sendDrawingToNearMe = async (index: number, e: React.MouseEvent) => {
         e.stopPropagation();
         const graphic: any = this.state.drawings[index];
-        const widgetId = this.props.widgetId;
-        if (!widgetId || !this.canDrawingBeNearMeLocation(graphic)) return;
+        if (!this.props.widgetId || !this.canDrawingBeNearMeLocation(graphic)) return;
         const name: string = graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 });
 
         try {
-            // A copy, so the record never touches the graphic that is drawn on the map
-            let geometry: any = graphic.geometry;
-            if (geometry.type === 'extent') {
-                geometry = Polygon.fromExtent(geometry);
-            } else if (typeof geometry.clone === 'function') {
-                geometry = geometry.clone();
-            }
-            const kind = geometry.type as 'point' | 'multipoint' | 'polyline' | 'polygon';
-
-            const dataSource = await this.getDrawingDataSource(kind);
-            if (!dataSource) throw new Error('No data source');
-
-            const feature = new Graphic({ geometry, attributes: { OBJECTID: 1, name } });
-            const record = dataSource.buildRecord(feature);
-            dataSource.setSourceRecords([record]);
-
-            const dataSets = [{ dataSource, records: [record], name, label: name, type: 'selected' }];
-            const level = (DataLevel && DataLevel.Records) || 'RECORDS';
-            const actionManager = DataActionManager.getInstance();
-            const nearMeIds = this.getNearMeWidgetIds();
-            const findActions = async (): Promise<any[]> => {
-                const supported = await actionManager.getSupportedActions(widgetId, dataSets, level);
-                return ((supported && supported.locate) || []).filter((a: any) => a && nearMeIds.indexOf(a.widgetId) >= 0);
-            };
-
-            let actions = await findActions();
-            if (actions.length === 0) {
-                // Near Me's action may not be registered yet if Near Me has never been loaded; register it and look again
-                const registered = actionManager.getActions() || [];
-                const missing = nearMeIds.filter(id => !registered.some((a: any) => a && a.widgetId === id));
-                if (missing.length > 0) {
-                    const widgets = getAppStore().getState()?.appConfig?.widgets || {};
-                    await Promise.all(missing.map(id => Promise.resolve(actionManager.registerWidgetActions(widgets[id])).catch((): any => null)));
-                    actions = await findActions();
-                }
-            }
-
-            if (actions.length === 0) {
+            const result = await this.pushGraphicToNearMe(graphic, name);
+            if (result === 'not-ready') {
                 this.showLocalAlert(this.nls('drawingsNearMeNotReady'), 'info');
                 return;
             }
-
-            await actionManager.executeDataAction(actions[0], dataSets, level, widgetId);
             this.showLocalAlert(this.nls('drawingsNearMeSent', { name }), 'success');
         } catch (error) {
             console.error('Error sending drawing to Near Me:', error);
             this.showLocalAlert(this.nls('drawingsNearMeFailed'), 'error');
+        }
+    };
+
+    /**
+     * Called when an edit on the map finishes. If one of the edited graphics is the drawing Near Me
+     * is using and its shape really changed, send the new shape so Near Me's buffer and results
+     * follow the edit. Quiet on purpose: Near Me redrawing is the feedback.
+     */
+    private refreshNearMeLocationAfterEdit = async (graphics: any[]) => {
+        const sent = this._nearMeSent;
+        if (!sent || !this.canSendToNearMe()) return;
+        const graphic = (graphics || []).find((g: any) =>
+            g === sent.graphic || (!!sent.uniqueId && g?.attributes?.uniqueId === sent.uniqueId));
+        if (!graphic || !this.canDrawingBeNearMeLocation(graphic)) return;
+        if (this.nearMeGeometryKey(graphic.geometry) === sent.geometryKey) return;
+
+        try {
+            const index = this.state.drawings.findIndex((d: any) =>
+                d === graphic || (!!sent.uniqueId && d?.attributes?.uniqueId === sent.uniqueId));
+            const name: string = graphic.attributes?.name || this.nls('drawingIndex', { index: (index >= 0 ? index : 0) + 1 });
+            const result = await this.pushGraphicToNearMe(graphic, name);
+            if (result === 'not-ready') this._nearMeSent = null; // Near Me can no longer take it; stop following
+        } catch (error) {
+            console.warn('Could not update the Near Me location after an edit:', error);
         }
     };
 
@@ -7548,6 +7593,16 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                 } catch (error) {
                     console.warn('MyDrawingsPanel update listener error:', error);
                 }
+            }));
+        }
+
+        // Near Me: when an edit to the drawing Near Me is using finishes, pass the new shape along.
+        // Its own listener so it works the same with the internal and the shared SketchViewModel.
+        if (this.sketchViewModel) {
+            this._svmListenerHandles.push(this.sketchViewModel.on("update", (event) => {
+                if (event.state !== "complete" || !this._nearMeSent || !event.graphics?.length) return;
+                const edited = [...event.graphics];
+                setTimeout(() => { this.refreshNearMeLocationAfterEdit(edited); }, 250);
             }));
         }
 

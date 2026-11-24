@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Khóa giữ một bức tranh không được di chuyển hoặc biên tập ngẫu nhiên. Mở khóa để thay đổi một lần nữa.",
         helpOrganizeGroup: "Các nhóm tham gia vào nhiều bức vẽ nên họ di chuyển cùng nhau.",
         helpOrganizeMerge: "Kết hợp các khu vực chồng chéo thành một hình dạng.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Xóa một bức vẽ. Dọn sạch mọi bức vẽ, hãy đọc dấu nhắc trước khi xác nhận.",
         helpShareTitle: "Gửi và nhận hình vẽ",
         helpShareIntro: "Dùng thẻ vẽ của tôi {verbs} Vẽ như một tập tin.",

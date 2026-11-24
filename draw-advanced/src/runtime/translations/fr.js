@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Verrouillage empêche un dessin d'être déplacé ou modifié par accident. Débloquez pour le changer à nouveau.",
         helpOrganizeGroup: "Le groupe se joint à plusieurs dessins pour se déplacer ensemble.",
         helpOrganizeMerge: "Fusionne les zones de chevauchement en une seule forme.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Supprimer supprime un dessin. Effacer tout supprime chaque dessin, alors lisez l'invite avant de confirmer.",
         helpShareTitle: "Envoi et réception des dessins",
         helpShareIntro: "Utilisez l'onglet Mes dessins pour {verbs} dessins comme un dossier.",

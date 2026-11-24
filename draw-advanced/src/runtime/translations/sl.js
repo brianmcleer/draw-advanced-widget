@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Ključavnica preprečuje, da bi se risba premaknila ali uredila po nesreči. Odkleni ga, da ga spet spremeniš.",
         helpOrganizeGroup: "Skupina se pridruži več risb, tako da se gibljejo skupaj.",
         helpOrganizeMerge: "Združitev združuje prekrivajoča se območja v eno obliko.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Zbriši odstrani eno risbo. Počisti Vse odstrani vsako risbo, tako da preberite poziv, preden potrdite.",
         helpShareTitle: "Risbe pošiljanja in prejemanja",
         helpShareIntro: "Uporabite zavihek Moje risbe {verbs} risbe kot datoteka.",

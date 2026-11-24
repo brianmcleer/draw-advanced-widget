@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "ล็อคเก็บภาพจากการย้ายหรือแก้ไขโดยอุบัติเหตุ ปลดล็อคเพื่อเปลี่ยนมันอีกครั้ง",
         helpOrganizeGroup: "กลุ่มรวมภาพไว้หลายภาพเพื่อให้มันรวมกัน",
         helpOrganizeMerge: "รวมพื้นที่ทับซ้อนกันเป็นหนึ่งรูปร่าง",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "ลบรูปภาพออกหนึ่งภาพ ล้างทั้งหมดเอาภาพวาดทุกดังนั้นอ่าน แจ้งเตือนก่อนที่คุณจะยืนยัน",
         helpShareTitle: "กําลังส่งและรับภาพวาด",
         helpShareIntro: "ใช้แท็บวาดภาพของฉันไปยัง {verbs} ภาพเขียนเป็นไฟล์",

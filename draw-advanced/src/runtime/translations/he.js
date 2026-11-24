@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "לוקה שומר ציור מלהיות מועבר או נערך על ידי תאונה. אל תשכחו לשנות אותו שוב.",
         helpOrganizeGroup: "הקבוצה מצטרפת לציורים רבים כדי לעבור יחד.",
         helpOrganizeMerge: "Merge משלב אזורים חופפים לצורה אחת.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "למחוק ציור אחד. יש להסיר את כל הציור, אז לקרוא את המהירות לפני שאתה מאשר.",
         helpShareTitle: "לשלוח ולקבל ציורים",
         helpShareIntro: "השתמש בכרטיסיה הציורים שלי {verbs} צייר כקובץ.",

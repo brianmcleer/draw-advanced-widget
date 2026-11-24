@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock păstrează un desen de la a fi mutat sau editat accidental. Deblochează-l din nou.",
         helpOrganizeGroup: "Grupul uneşte câteva desene, aşa că se mişcă împreună.",
         helpOrganizeMerge: "Combină zonele suprapuse într-o singură formă.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Şterge un desen. Clar Toate elimină fiecare desen, astfel încât să citiți prompt înainte de a confirma.",
         helpShareTitle: "Trimiterea și primirea de desene",
         helpShareIntro: "Utilizați fila de desene pentru a {verbs} desene ca un fișier.",

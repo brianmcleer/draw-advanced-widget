@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "A zár megakadályozza, hogy a rajzot véletlenül elmozdítsák vagy megszerkesztsék. Nyisd ki újra.",
         helpOrganizeGroup: "A csoport több rajzhoz csatlakozik, így együtt mozognak.",
         helpOrganizeMerge: "Egyesülés egyesíti az átfedő területeket egy formába.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "A törlés eltávolít egy rajzot. Minden rajzot eltávolít, szóval olvassa el az utasítást, mielőtt megerősítené.",
         helpShareTitle: "Rajzok küldése és fogadása",
         helpShareIntro: "Használja a My Drawings fülét {verbs} rajzok fájlként.",

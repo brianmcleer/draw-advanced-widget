@@ -598,7 +598,7 @@ System.register([], function (e) {
         helpOrganizeLock: "Lock mantiene un dibujo de ser movido o editado por accidente. Desbloqueo para cambiarlo de nuevo.",
         helpOrganizeGroup: "Grupo se une a varios dibujos para que se muevan juntos.",
         helpOrganizeMerge: "Combina áreas superpuestas en una forma.",
-        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Text labels cannot be used.",
+        helpOrganizeNearMe: "Set as Near Me location (the map pin button): Near Me buffers and searches around that drawing, the same as a feature picked from a popup. If you move or reshape the drawing afterward, Near Me updates when you finish the edit. Text labels cannot be used.",
         helpOrganizeClear: "Eliminar elimina un dibujo. Borrar Todo elimina cada dibujo, así que lea el aviso antes de confirmar.",
         helpShareTitle: "Envío y recepción de dibujos",
         helpShareIntro: "Use la pestaña de Mis dibujos para {verbs} dibujos como un archivo.",
