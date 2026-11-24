@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Umožní uživatelům kopírovat stávající výkres.",
         settingZoomToDrawing: "Přiblížit k výkresu",
         settingShowAControlThatZoomsThe: "Ukázat ovládání, které zoomuje mapu v rozsahu kreslení.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Vlastnosti zobrazení výkresu",
         settingShowThePerDrawingPropertiesDetails: "Zobrazit per- drawing vlastnosti / detail panel.",
         settingSortAndFilterControls: "Seřídit a filtr řízení",

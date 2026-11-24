@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Permite utilizatorilor să reproducă un desen existent.",
         settingZoomToDrawing: "Zoom to drawing",
         settingShowAControlThatZoomsThe: "Arată un control care măreşte harta într-o măsură de desen.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Vizualizați proprietățile desenului",
         settingShowThePerDrawingPropertiesDetails: "Afișează panoul de proprietăți / detalii per-drawing.",
         settingSortAndFilterControls: "Comenzi de sortare și filtrare",

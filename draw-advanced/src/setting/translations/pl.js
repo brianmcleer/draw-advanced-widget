@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Umożliwić użytkownikom powielenie istniejącego rysunku.",
         settingZoomToDrawing: "Powiększ do rysunku",
         settingShowAControlThatZoomsThe: "Pokaż kontrolę, która przybliża mapę w zakresie rysunku.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Zobacz właściwości rysowania",
         settingShowThePerDrawingPropertiesDetails: "Pokaż panel właściwości / szczegółów rysowania.",
         settingSortAndFilterControls: "Sterowanie sortem i filtrem",

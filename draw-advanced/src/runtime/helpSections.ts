@@ -23,6 +23,7 @@ export interface HelpFeatures {
   merge: boolean
   duplicate: boolean
   zoomTo: boolean
+  nearMe: boolean
 }
 
 type T = (id: string, values?: Record<string, any>) => string
@@ -37,6 +38,7 @@ export function buildHelpSections (t: T, f: HelpFeatures): HelpSection[] {
     t('helpActionRename'),
     ...(f.zoomTo ? [t('helpActionZoom')] : []),
     ...(f.duplicate ? [t('helpActionDuplicate')] : []),
+    ...(f.nearMe ? [t('helpActionNearMe')] : []),
     t('helpActionDelete')
   ])
 
@@ -90,6 +92,7 @@ export function buildHelpSections (t: T, f: HelpFeatures): HelpSection[] {
             ...when(f.lock, 'helpOrganizeLock'),
             ...when(f.group, 'helpOrganizeGroup'),
             ...when(f.merge, 'helpOrganizeMerge'),
+            ...when(f.nearMe, 'helpOrganizeNearMe'),
             t('helpOrganizeClear')
           ]
         }]
@@ -115,6 +118,7 @@ export function buildHelpSections (t: T, f: HelpFeatures): HelpSection[] {
         ...when(f.measurements, 'helpTroubleNoLabels'),
         t('helpTroubleGone'),
         ...when(f.snapping, 'helpTroubleSnap'),
+        ...when(f.nearMe, 'helpTroubleNearMe'),
         t('helpTroubleContact')
       ]
     },

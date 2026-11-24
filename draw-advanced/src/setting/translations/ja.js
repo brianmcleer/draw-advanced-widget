@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "ユーザーは既存の図面を複製することができます。",
         settingZoomToDrawing: "描画するズーム",
         settingShowAControlThatZoomsThe: "地図を描画範囲にズームするコントロールを表示します。",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "図面プロパティを表示",
         settingShowThePerDrawingPropertiesDetails: "描画プロパティ/詳細パネルを表示します。",
         settingSortAndFilterControls: "ソートとフィルタ制御",

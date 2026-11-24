@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Dozvoli korisnicima da dupliraju postojeći crtež.",
         settingZoomToDrawing: "Zumiraj na crtanje",
         settingShowAControlThatZoomsThe: "Pokažite kontrolu koja uvećava mapu u meri izvlačenja.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Osobine crtanja",
         settingShowThePerDrawingPropertiesDetails: "Prikaži osobine po crtanju/detalje panela.",
         settingSortAndFilterControls: "Sortiraj i filtriraj kontrole",

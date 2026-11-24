@@ -77,6 +77,7 @@ The GitHub repo carries `src/exb-editor-shims.d.ts` and `src/declarations.d.ts`.
 - **Organization:** individual and bulk selection, manual and attribute-based sorting, name filtering, collapse/expand, zoom-all and zoom-to, and move up/down to control draw order.
 - **Editing:** inline rename, symbol and text styling, copy/duplicate, lock to prevent edits, notes and labeling, and per-drawing visibility and measurement toggles.
 - **Operations:** undo/redo, bulk delete with confirmation, Delete All, and copy/paste of features from map layers.
+- **Near Me location:** use any drawing as the location for Esri's Near Me widget. Pick "Set as Near Me location" on the drawing and Near Me buffers and searches around it.
 
 ### Integration
 - Send a drawn geometry to the Mailing Labels widget as a selection.
@@ -134,6 +135,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ---
 
 ## Changelog
+
+- 2026-11-24 v4.8.0: Use a drawing as the Near Me location. Each drawing in My Drawings has a "Set as Near Me location" button when the app has a Near Me widget; Near Me buffers and searches around the drawing, the same as a feature picked from a popup. A new setting under My Drawings turns it off.
 
 - 2026-10-08 v4.6.0: Localization. The widget and its settings panel follow the app language in all 39 Experience Builder locales, including the out-of-the-box Language Switcher and the `?locale=` URL parameter. About 640 hardcoded English strings (dialogs, buttons, tooltips, screen-reader labels, status announcements, the unit editor in settings) moved into the translation files; locale files are generated with exb-i18n-kit from the translations Esri ships plus Unicode CLDR unit names, and untranslated strings fall back to English. Fix bug where messages with values (counts, names) showed raw `{placeholders}` when the panel ran without the host widget's translator.
 

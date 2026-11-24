@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Leisti naudotojams dubliuoti esamą piešinį.",
         settingZoomToDrawing: "Padidinti iki piešimo",
         settingShowAControlThatZoomsThe: "Rodyti valdiklį, kuriuo žvaigždėlapis priardomas prie piešimo apimties.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Rodyti piešimo savybes",
         settingShowThePerDrawingPropertiesDetails: "Rodyti perpiešimo savybes / detalių skydelį.",
         settingSortAndFilterControls: "Rikiuoti ir filtruoti valdiklius",

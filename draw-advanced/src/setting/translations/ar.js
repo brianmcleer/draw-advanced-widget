@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "السماح للمستعملين بتكرار الرسم الحالي.",
         settingZoomToDrawing: "زوم للرسم",
         settingShowAControlThatZoomsThe: "أظهري السيطرة على الخريطة إلى حد كبير",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "خصائص السحب",
         settingShowThePerDrawingPropertiesDetails: "اعرضي الخواص/التفاصيل",
         settingSortAndFilterControls: "مراقبة الرش والرش",

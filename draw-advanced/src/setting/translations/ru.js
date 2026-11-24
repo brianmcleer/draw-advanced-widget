@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Позволяет пользователям дублировать существующий рисунок.",
         settingZoomToDrawing: "Зум для рисования",
         settingShowAControlThatZoomsThe: "Покажите контроль, который масштабирует карту в степени рисунка.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Посмотреть свойства рисунка",
         settingShowThePerDrawingPropertiesDetails: "Показать свойства / детали панели.",
         settingSortAndFilterControls: "Сортировка и фильтры управления",

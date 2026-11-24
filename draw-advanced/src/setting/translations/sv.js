@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Låt användare duplicera en befintlig ritning.",
         settingZoomToDrawing: "Zoom att rita",
         settingShowAControlThatZoomsThe: "Visa en kontroll som zoomar kartan till en ritningsgrad.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Visa ritningsegenskaper",
         settingShowThePerDrawingPropertiesDetails: "Visa per ritning egenskaper / detaljer panel.",
         settingSortAndFilterControls: "Sort och filterkontroller",

@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "לאפשר למשתמשים לשכפל ציור קיים.",
         settingZoomToDrawing: "זום לציור",
         settingShowAControlThatZoomsThe: "הצג שליטה כי זוממים את המפה במידה מסוימת.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "הצגת תכונות",
         settingShowThePerDrawingPropertiesDetails: "הצג את התכונות / לוח הפרטים.",
         settingSortAndFilterControls: "בקרה ופילטר",

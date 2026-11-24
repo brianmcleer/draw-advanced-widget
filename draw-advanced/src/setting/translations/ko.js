@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "사용자가 기존 도면을 복제 할 수 있습니다.",
         settingZoomToDrawing: "그림에 Zoom",
         settingShowAControlThatZoomsThe: "지도를 도면으로 확대하는 컨트롤을 표시합니다.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "그림 속성",
         settingShowThePerDrawingPropertiesDetails: "per-drawing 속성 / 세부 패널을 표시합니다.",
         settingSortAndFilterControls: "분류 및 필터 컨트롤",

@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Benutzern erlauben, eine vorhandene Zeichnung zu duplizieren.",
         settingZoomToDrawing: "Zoom zur Zeichnung",
         settingShowAControlThatZoomsThe: "Zeigen Sie ein Steuerelement an, das die Karte in einem Zeichnungsmaß vergrößert.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Zeichnungseigenschaften",
         settingShowThePerDrawingPropertiesDetails: "Zeigen Sie die Per-Zeichnung Eigenschaften / Details Panel.",
         settingSortAndFilterControls: "Sortier- und Filterkontrollen",

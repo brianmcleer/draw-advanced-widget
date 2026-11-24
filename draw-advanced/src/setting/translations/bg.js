@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Позволете на потребителите да дублират съществуваща рисунка.",
         settingZoomToDrawing: "Увеличаване на чертежа",
         settingShowAControlThatZoomsThe: "Покажете контрол, който увеличава картата до степен на чертеж.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Преглед на свойствата на рисуването",
         settingShowThePerDrawingPropertiesDetails: "Показване на свойствата за изтегляне / детайли панел.",
         settingSortAndFilterControls: "Сортиране и управление на филтрите",

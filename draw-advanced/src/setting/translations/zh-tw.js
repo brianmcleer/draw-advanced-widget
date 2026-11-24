@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "允許使用者复制已存在的繪圖 。",
         settingZoomToDrawing: "縮放到繪圖",
         settingShowAControlThatZoomsThe: "顯示可以放大地圖的控件 。",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "檢視繪圖屬性",
         settingShowThePerDrawingPropertiesDetails: "顯示每張畫面的屬性 / 詳細面板 。",
         settingSortAndFilterControls: "排序與滤波控制",

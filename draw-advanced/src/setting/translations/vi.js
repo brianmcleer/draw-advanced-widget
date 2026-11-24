@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Cho phép người dùng sao chép một bản vẽ đã có.",
         settingZoomToDrawing: "Phóng to thu nhỏ",
         settingShowAControlThatZoomsThe: "Hiển thị một điều khiển phóng to bản đồ đến mức độ vẽ.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Xem thuộc tính vẽ",
         settingShowThePerDrawingPropertiesDetails: "Hiện bảng điều khiển vẽ/ chi tiết",
         settingSortAndFilterControls: "Sắp xếp và lọc điều khiển",

@@ -1,4 +1,4 @@
-import { React } from 'jimu-core';
+import { React, DataSourceManager, DataActionManager, DataLevel, DataSourceTypes, Immutable, getAppStore } from 'jimu-core';
 import defaultMessages from '../translations/default';
 const { useState, useEffect, useRef } = React as any;
 import { Button, TextInput, NumericInput, Switch, Slider, Label, AdvancedButtonGroup, Select, Option, Popper } from 'jimu-ui';
@@ -511,6 +511,7 @@ interface MyDrawingsPanelProps {
     onClearSelectionOverlays?: () => void;
     measureRef?: React.RefObject<any>; // Reference to measurement component from parent
     sketchViewModel?: SketchViewModel; // CRITICAL: Use parent's SketchViewModel so measure.tsx can listen to it
+    widgetId?: string; // Host widget id, used to send a drawing to the Near Me widget
     featureFlags?: {
         enableImport?: boolean;
         enableExport?: boolean;
@@ -519,6 +520,7 @@ interface MyDrawingsPanelProps {
         enableMerge?: boolean;
         enableDuplicate?: boolean;
         enableZoomTo?: boolean;
+        enableNearMeLocation?: boolean;
         enableProperties?: boolean;
         enableSort?: boolean;
         maxDrawings?: number;
@@ -6123,6 +6125,139 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
         // Only clear if we're leaving the entire item
         if (e.currentTarget === e.target) {
             this.setState({ dragOverIndex: null });
+        }
+    };
+
+    // ========================================================================
+    // Near Me: use a drawing as the search location
+    // ========================================================================
+
+    // Cache of Near Me widget ids, keyed on the app config's widgets object (changes only when the app config does)
+    private _nearMeIdsFor: any = null;
+    private _nearMeIds: string[] = [];
+
+    /** Ids of the Near Me widgets in this app. Empty when the app has none. */
+    getNearMeWidgetIds = (): string[] => {
+        try {
+            const widgets = getAppStore().getState()?.appConfig?.widgets || {};
+            if (widgets === this._nearMeIdsFor) return this._nearMeIds;
+            this._nearMeIdsFor = widgets;
+            this._nearMeIds = Object.keys(widgets).filter((id) => {
+                const w = widgets[id];
+                return !!w && (w.manifest?.name === 'near-me' || String(w.uri || '').indexOf('/near-me/') >= 0);
+            });
+            return this._nearMeIds;
+        } catch (_) {
+            return [];
+        }
+    };
+
+    /** True when the "Set as Near Me location" button should be offered at all. */
+    canSendToNearMe = (): boolean => {
+        if (!this.ff('enableNearMeLocation')) return false;
+        if (!this.props.widgetId) return false;
+        return this.getNearMeWidgetIds().length > 0;
+    };
+
+    /** True when this drawing can be a location: it has a geometry and is not a text label. */
+    canDrawingBeNearMeLocation = (graphic: any): boolean => {
+        if (!graphic?.geometry) return false;
+        if ((graphic.symbol as any)?.type === 'text') return false;
+        const type = graphic.geometry.type;
+        return type === 'point' || type === 'multipoint' || type === 'polyline' || type === 'polygon' || type === 'extent';
+    };
+
+    /**
+     * Near Me's "Set location" data action only takes records that belong to a feature layer data
+     * source with a geometry type (it looks the data source up by id to read that type). Drawings
+     * have no data source, so this creates one small in-memory data source per geometry type, the
+     * first time it is needed. They are not saved in the app config.
+     */
+    private getDrawingDataSource = async (kind: 'point' | 'multipoint' | 'polyline' | 'polygon'): Promise<any> => {
+        const id = `${this.props.widgetId}-drawing-${kind}`;
+        const manager = DataSourceManager.getInstance();
+        const existing = manager.getDataSource(id);
+        if (existing) return existing;
+        const geometryType = kind === 'point' ? 'esriGeometryPoint'
+            : kind === 'multipoint' ? 'esriGeometryMultipoint'
+                : kind === 'polyline' ? 'esriGeometryPolyline' : 'esriGeometryPolygon';
+        const dataSourceJson = Immutable({
+            id,
+            type: (DataSourceTypes && DataSourceTypes.FeatureLayer) || 'FEATURE_LAYER',
+            label: this.nls('drawingsNearMeDataSource'),
+            geometryType,
+            isDataInDataSourceInstance: true,
+            schema: {
+                idField: 'OBJECTID',
+                fields: {
+                    OBJECTID: { jimuName: 'OBJECTID', name: 'OBJECTID', alias: 'OBJECTID', type: 'NUMBER', esriType: 'esriFieldTypeOID' },
+                    name: { jimuName: 'name', name: 'name', alias: 'Name', type: 'STRING', esriType: 'esriFieldTypeString' }
+                }
+            }
+        });
+        return manager.createDataSource({ id, dataSourceJson });
+    };
+
+    /**
+     * Hands one drawing to the Near Me widget as its search location, through Near Me's own
+     * "Set location" data action. Going through the data action manager means the builder's data
+     * action settings are respected and Near Me opens itself if it sits in a widget controller.
+     */
+    sendDrawingToNearMe = async (index: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const graphic: any = this.state.drawings[index];
+        const widgetId = this.props.widgetId;
+        if (!widgetId || !this.canDrawingBeNearMeLocation(graphic)) return;
+        const name: string = graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 });
+
+        try {
+            // A copy, so the record never touches the graphic that is drawn on the map
+            let geometry: any = graphic.geometry;
+            if (geometry.type === 'extent') {
+                geometry = Polygon.fromExtent(geometry);
+            } else if (typeof geometry.clone === 'function') {
+                geometry = geometry.clone();
+            }
+            const kind = geometry.type as 'point' | 'multipoint' | 'polyline' | 'polygon';
+
+            const dataSource = await this.getDrawingDataSource(kind);
+            if (!dataSource) throw new Error('No data source');
+
+            const feature = new Graphic({ geometry, attributes: { OBJECTID: 1, name } });
+            const record = dataSource.buildRecord(feature);
+            dataSource.setSourceRecords([record]);
+
+            const dataSets = [{ dataSource, records: [record], name, label: name, type: 'selected' }];
+            const level = (DataLevel && DataLevel.Records) || 'RECORDS';
+            const actionManager = DataActionManager.getInstance();
+            const nearMeIds = this.getNearMeWidgetIds();
+            const findActions = async (): Promise<any[]> => {
+                const supported = await actionManager.getSupportedActions(widgetId, dataSets, level);
+                return ((supported && supported.locate) || []).filter((a: any) => a && nearMeIds.indexOf(a.widgetId) >= 0);
+            };
+
+            let actions = await findActions();
+            if (actions.length === 0) {
+                // Near Me's action may not be registered yet if Near Me has never been loaded; register it and look again
+                const registered = actionManager.getActions() || [];
+                const missing = nearMeIds.filter(id => !registered.some((a: any) => a && a.widgetId === id));
+                if (missing.length > 0) {
+                    const widgets = getAppStore().getState()?.appConfig?.widgets || {};
+                    await Promise.all(missing.map(id => Promise.resolve(actionManager.registerWidgetActions(widgets[id])).catch((): any => null)));
+                    actions = await findActions();
+                }
+            }
+
+            if (actions.length === 0) {
+                this.showLocalAlert(this.nls('drawingsNearMeNotReady'), 'info');
+                return;
+            }
+
+            await actionManager.executeDataAction(actions[0], dataSets, level, widgetId);
+            this.showLocalAlert(this.nls('drawingsNearMeSent', { name }), 'success');
+        } catch (error) {
+            console.error('Error sending drawing to Near Me:', error);
+            this.showLocalAlert(this.nls('drawingsNearMeFailed'), 'error');
         }
     };
 
@@ -19571,6 +19706,42 @@ export class MyDrawingsPanel extends React.PureComponent<MyDrawingsPanelProps, M
                                                                         <line x1="8" y1="11" x2="14" y2="11"></line>
                                                                     </svg>
                                                                 </button>
+                                                                {/* Set as Near Me location */}
+                                                                {this.canSendToNearMe() && this.canDrawingBeNearMeLocation(graphic) && (
+                                                                    <button
+                                                                        className="near-me-btn"
+                                                                        onClick={(e) => this.sendDrawingToNearMe(index, e)}
+                                                                        aria-label={this.nls('setNameAsNearMeLocation', { name: graphic.attributes?.name || this.nls('drawingIndex', { index: index + 1 }) })}
+                                                                        title={this.nls('drawingsSetAsNearMeLocation')}
+                                                                        style={{
+                                                                            background: 'transparent',
+                                                                            border: '1px solid transparent',
+                                                                            cursor: 'pointer',
+                                                                            padding: '3px',
+                                                                            opacity: 0.6,
+                                                                            transition: 'opacity 0.2s',
+                                                                            width: '24px',
+                                                                            height: '24px',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            color: 'var(--calcite-color-text-2, #6c757d)'
+                                                                        }}
+                                                                        onMouseEnter={(e) => {
+                                                                            e.currentTarget.style.opacity = '1';
+                                                                            e.currentTarget.style.borderColor = 'var(--calcite-color-border-3, #ddd)';
+                                                                        }}
+                                                                        onMouseLeave={(e) => {
+                                                                            e.currentTarget.style.opacity = '0.6';
+                                                                            e.currentTarget.style.borderColor = 'transparent';
+                                                                        }}
+                                                                    >
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ pointerEvents: 'none' }}>
+                                                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                                            <circle cx="12" cy="10" r="3"></circle>
+                                                                        </svg>
+                                                                    </button>
+                                                                )}
                                                                 {/* Move Up */}
                                                                 <button
                                                                     className="move-up-btn"

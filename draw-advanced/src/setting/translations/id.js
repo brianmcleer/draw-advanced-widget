@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Memungkinkan pengguna menduplikasi gambar yang telah ada.",
         settingZoomToDrawing: "Perbesar ke gambar",
         settingShowAControlThatZoomsThe: "Tampilkan kontrol yang memperbesar peta sampai batas gambar.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Tilik properti gambar",
         settingShowThePerDrawingPropertiesDetails: "Tampilkan panel properti / rincian gambar.",
         settingSortAndFilterControls: "Urutkan dan kontrol filter",

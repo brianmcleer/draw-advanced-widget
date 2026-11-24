@@ -2006,8 +2006,22 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 			group: on('enableMyDrawings') && on('enableMyDrawingsGroup'),
 			merge: on('enableMyDrawings') && on('enableMyDrawingsMerge'),
 			duplicate: on('enableMyDrawings') && on('enableMyDrawingsDuplicate'),
-			zoomTo: on('enableMyDrawings') && on('enableMyDrawingsZoomTo')
+			zoomTo: on('enableMyDrawings') && on('enableMyDrawingsZoomTo'),
+			nearMe: on('enableMyDrawings') && on('enableMyDrawingsNearMe') && this.appHasNearMeWidget()
 		};
+	};
+
+	// True when the app has a Near Me widget. Same test My Drawings uses to show its Near Me button.
+	private appHasNearMeWidget = (): boolean => {
+		try {
+			const widgets = getAppStore().getState()?.appConfig?.widgets || {};
+			return Object.keys(widgets).some((id) => {
+				const w = widgets[id];
+				return !!w && (w.manifest?.name === 'near-me' || String(w.uri || '').indexOf('/near-me/') >= 0);
+			});
+		} catch (_) {
+			return false;
+		}
 	};
 
 	nls = (id: string, values?: Record<string, any>) => {
@@ -8504,6 +8518,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						measureRef={this.measureRef}
 						onMeasurementSystemControl={this.onMeasurementSystemControl}
 						sketchViewModel={this.sketchViewModel}
+						widgetId={this.props.id}
 						featureFlags={{
 							enableImport: this.props.config.enableMyDrawingsImport !== false,
 							enableExport: this.props.config.enableMyDrawingsExport !== false,
@@ -8512,6 +8527,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 							enableMerge: this.props.config.enableMyDrawingsMerge !== false,
 							enableDuplicate: this.props.config.enableMyDrawingsDuplicate !== false,
 							enableZoomTo: this.props.config.enableMyDrawingsZoomTo !== false,
+							enableNearMeLocation: this.props.config.enableMyDrawingsNearMe !== false,
 							enableProperties: this.props.config.enableMyDrawingsProperties !== false,
 							enableSort: this.props.config.enableMyDrawingsSort !== false,
 							maxDrawings: this.props.config.maxDrawings ?? 0,

@@ -2,6 +2,14 @@
 
 Newest first. Every release bumps `manifest.json` and `package.json` together.
 
+## 4.8.0 (2026-11-24)
+
+- Added: **Set as Near Me location** on each drawing in My Drawings (the map pin button). Near Me buffers and searches around that drawing, the same as a feature picked from a popup. Works with points, lines, polygons, rectangles and circles; text labels are skipped. The button only shows when the app has a Near Me widget.
+- Near Me has to be on the same page as this widget, have at least one layer to analyze, and search by location (not by the current map area). If it cannot take the drawing, the widget says so. Near Me's own settings still decide the buffer distance and layers.
+- Settings: a **Use a drawing as the Near Me location** option under My Drawings. Undefined means on, so existing apps get the button without being reconfigured.
+- Help guide: a line on the new button and a troubleshooting line, both shown only when the button is.
+- New strings are English only until the next exb-i18n-kit sync.
+
 ## 4.7.0 (2026-11-23)
 
 - Changed: the drawing grid (display, spacing, rotation, snapping, placement) is now driven through a hidden Maps SDK `arcgis-grid-controls` component instead of the `GridControls` widget class. Reason: Esri deprecated the widgets in the ArcGIS Maps SDK for JavaScript at version 5.0 and plans to remove them as early as Q1 2027, so anything built on them stops working on an Experience Builder release that ships without them. See [Deprecation: Widgets in ArcGIS Maps SDK for JavaScript](https://support.esri.com/en-us/knowledge-base/deprecation-widgets-in-arcgis-maps-sdk-for-javascript-000040437).

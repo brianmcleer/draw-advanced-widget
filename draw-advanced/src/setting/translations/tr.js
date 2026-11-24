@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Kullanıcıların mevcut bir çizimi tekrar etmelerine izin verin.",
         settingZoomToDrawing: "Zoom çizim yapmak için",
         settingShowAControlThatZoomsThe: "Haritayı bir çizim boyutuna yaklaştıran bir kontrol gösterin.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "View çizim özellikleri",
         settingShowThePerDrawingPropertiesDetails: "per-drawing özelliklerini / ayrıntıları paneli gösterin.",
         settingSortAndFilterControls: "Sort ve filtre kontrolleri",

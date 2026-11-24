@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Võimaldab kasutajatel kopeerida olemasolevat joonist.",
         settingZoomToDrawing: "Suurenda joonistust",
         settingShowAControlThatZoomsThe: "Näitab juhtseadist, mis suurendab kaarti joonistuses.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Joonistamise omaduste vaatamine",
         settingShowThePerDrawingPropertiesDetails: "Joonise omaduste / detailide paneeli näitamine.",
         settingSortAndFilterControls: "Sorteerimine ja filtri juhtimine",

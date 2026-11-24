@@ -182,6 +182,9 @@ declare module 'jimu-core' {
   export const getAppStore: () => any;
   export const MutableStoreManager: any;
   export const DataSourceManager: any;
+  export const DataActionManager: any;
+  export const DataLevel: any;
+  export const DataSourceTypes: any;
   export const SessionManager: any;
   export const portalUrlUtils: any;
   export const urlUtils: any;

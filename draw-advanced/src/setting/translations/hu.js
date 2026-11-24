@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Lehetővé teszi a felhasználók számára, hogy megkettőzzenek egy meglévő rajzot.",
         settingZoomToDrawing: "Nagyítás rajzhoz",
         settingShowAControlThatZoomsThe: "Mutasson egy vezérlőt, ami a térképet rajzolja le.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Rajztulajdonságok megtekintése",
         settingShowThePerDrawingPropertiesDetails: "A per- draw tulajdonságok / részletek panel megjelenítése.",
         settingSortAndFilterControls: "Szűrőkezelők",

@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Permet als usuaris duplicar un dibuix existent.",
         settingZoomToDrawing: "Zoom per dibuixar",
         settingShowAControlThatZoomsThe: "Mostra un control que amplia el mapa fins a un punt de dibuix.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Visualitza les propietats de dibuix",
         settingShowThePerDrawingPropertiesDetails: "Mostra el plafó de propietats per programari / detalls.",
         settingSortAndFilterControls: "Ordena i controla el filtre",

@@ -156,6 +156,7 @@ const KNOWN_CONFIG_KEYS: string[] = [
     'enableMyDrawingsMerge',
     'enableMyDrawingsDuplicate',
     'enableMyDrawingsZoomTo',
+    'enableMyDrawingsNearMe',
     'enableMyDrawingsProperties',
     'enableMyDrawingsSort',
     'maxDrawings',
@@ -201,6 +202,7 @@ const DEFAULT_ON_BOOLEAN_KEYS: string[] = [
     'enableMyDrawingsMerge',
     'enableMyDrawingsDuplicate',
     'enableMyDrawingsZoomTo',
+    'enableMyDrawingsNearMe',
     'enableMyDrawingsProperties',
     'enableMyDrawingsSort',
     'enablePointTool',
@@ -929,6 +931,7 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                     {this.renderCheck('enableMyDrawingsMerge', this.nls('settingMergeSelectedDrawings'), true, this.nls('settingAllowUsersToMergeSelectedGeometries'))}
                                     {this.renderCheck('enableMyDrawingsDuplicate', this.nls('settingDuplicateDrawings'), true, this.nls('settingAllowUsersToDuplicateAnExisting'))}
                                     {this.renderCheck('enableMyDrawingsZoomTo', this.nls('settingZoomToDrawing'), true, this.nls('settingShowAControlThatZoomsThe'))}
+                                    {this.renderCheck('enableMyDrawingsNearMe', this.nls('settingUseDrawingAsNearMeLocation'), true, this.nls('settingShowAButtonThatSendsADrawingToNearMe'))}
                                     {this.renderCheck('enableMyDrawingsProperties', this.nls('settingViewDrawingProperties'), true, this.nls('settingShowThePerDrawingPropertiesDetails'))}
                                     {this.renderCheck('enableMyDrawingsSort', this.nls('settingSortAndFilterControls'), true, this.nls('settingShowSortingAndFilteringControlsAt'))}
                                 </div>
@@ -939,7 +942,8 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                             enableMyDrawingsImport: true, enableMyDrawingsExport: true,
                                             enableMyDrawingsLock: true, enableMyDrawingsGroup: true,
                                             enableMyDrawingsMerge: true, enableMyDrawingsDuplicate: true,
-                                            enableMyDrawingsZoomTo: true, enableMyDrawingsProperties: true,
+                                            enableMyDrawingsZoomTo: true, enableMyDrawingsNearMe: true,
+                                            enableMyDrawingsProperties: true,
                                             enableMyDrawingsSort: true
                                         });
                                     }}>{this.nls('settingEnableAll')}</Button>
@@ -948,7 +952,8 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
                                             enableMyDrawingsImport: false, enableMyDrawingsExport: false,
                                             enableMyDrawingsLock: false, enableMyDrawingsGroup: false,
                                             enableMyDrawingsMerge: false, enableMyDrawingsDuplicate: false,
-                                            enableMyDrawingsZoomTo: false, enableMyDrawingsProperties: false,
+                                            enableMyDrawingsZoomTo: false, enableMyDrawingsNearMe: false,
+                                            enableMyDrawingsProperties: false,
                                             enableMyDrawingsSort: false
                                         });
                                     }}>{this.nls('settingDisableAll')}</Button>

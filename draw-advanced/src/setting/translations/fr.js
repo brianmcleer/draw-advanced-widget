@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Permettre aux utilisateurs de reproduire un dessin existant.",
         settingZoomToDrawing: "Zoom sur le dessin",
         settingShowAControlThatZoomsThe: "Afficher un contrôle qui zoome la carte dans une mesure de dessin.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Propriétés du dessin de vue",
         settingShowThePerDrawingPropertiesDetails: "Afficher le panneau propriétés / détails.",
         settingSortAndFilterControls: "Tri et contrôle des filtres",

@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "อนุญาตให้ผู้ใช้ทําการคัดลอกรูปภาพที่มีอยู่",
         settingZoomToDrawing: "ดูย่อ/ ดูภาพ",
         settingShowAControlThatZoomsThe: "แสดงการควบคุมที่ย่อขยายแผนที่เป็นขอบเขตการวาด",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "แสดงคุณสมบัติการวาด",
         settingShowThePerDrawingPropertiesDetails: "แสดงแถบแสดงคุณสมบัติ / รายละเอียดในการวาดต่อ ๆ ไป",
         settingSortAndFilterControls: "เรียงลําดับและควบคุมตัวกรอง",

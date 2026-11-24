@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Tillad brugere at kopiere en eksisterende tegning.",
         settingZoomToDrawing: "Zoom til tegning",
         settingShowAControlThatZoomsThe: "Vis en kontrol der zoomer kortet til en vis grad.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Vis tegningsegenskaber",
         settingShowThePerDrawingPropertiesDetails: "Vis per- tegning egenskaber / detaljer panel.",
         settingSortAndFilterControls: "Sorterings- og filterstyring",

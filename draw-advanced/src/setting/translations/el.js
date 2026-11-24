@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Επίτρεψε στους χρήστες να αναπαράγουν ένα υπάρχον σχέδιο.",
         settingZoomToDrawing: "Εστίαση στη σχεδίαση",
         settingShowAControlThatZoomsThe: "Εμφάνιση ενός ελέγχου που μεγεθύνει το χάρτη σε μια έκταση σχεδίασης.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Προβολή ιδιοτήτων σχεδίασης",
         settingShowThePerDrawingPropertiesDetails: "Εμφάνιση των ιδιοτήτων / λεπτομερειών ανάσυρσης.",
         settingSortAndFilterControls: "Ταξινόμηση και έλεγχος φίλτρου",

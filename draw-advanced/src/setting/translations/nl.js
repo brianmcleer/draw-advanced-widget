@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Laat gebruikers een bestaande tekening dupliceren.",
         settingZoomToDrawing: "Naar tekening zoomen",
         settingShowAControlThatZoomsThe: "Toon een sturing die de kaart zoomt tot een tekening.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Tekeneigenschappen weergeven",
         settingShowThePerDrawingPropertiesDetails: "Toon de per-tekening eigenschappen / details paneel.",
         settingSortAndFilterControls: "Sorteren en filteren",

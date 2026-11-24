@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Atļaut lietotājiem dublēt esošo zīmējumu.",
         settingZoomToDrawing: "Palielināt uz zīmējumu",
         settingShowAControlThatZoomsThe: "Rādīt kontroli, kas palielina kartes zīmējuma apjomu.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Rādīt zīmēšanas īpašības",
         settingShowThePerDrawingPropertiesDetails: "Rādīt uzzīmēšanas īpašības / detaļas paneli.",
         settingSortAndFilterControls: "Kārtošanas un filtra vadības ierīces",

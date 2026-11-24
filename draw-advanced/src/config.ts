@@ -58,6 +58,7 @@ export interface Config {
     enableMyDrawingsMerge?: boolean
     enableMyDrawingsDuplicate?: boolean
     enableMyDrawingsZoomTo?: boolean
+    enableMyDrawingsNearMe?: boolean
     enableMyDrawingsProperties?: boolean
     enableMyDrawingsSort?: boolean
     maxDrawings?: number

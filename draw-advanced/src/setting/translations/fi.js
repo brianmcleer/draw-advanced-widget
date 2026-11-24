@@ -183,6 +183,8 @@ System.register([], function (e) {
         settingAllowUsersToDuplicateAnExisting: "Salli käyttäjien kopioida olemassa oleva piirustus.",
         settingZoomToDrawing: "Suurenna piirrokseen",
         settingShowAControlThatZoomsThe: "Näytä ohjaus, joka zoomaa karttaa piirtävässä määrin.",
+        settingUseDrawingAsNearMeLocation: "Use a drawing as the Near Me location",
+        settingShowAButtonThatSendsADrawingToNearMe: "Show a button that sets a drawing as the location for the Near Me widget. Shown only when the app has a Near Me widget.",
         settingViewDrawingProperties: "Näytä piirustusominaisuudet",
         settingShowThePerDrawingPropertiesDetails: "Näytä piirroksen ominaisuudet / yksityiskohdat paneeli.",
         settingSortAndFilterControls: "Järjestä ja suodata ohjaimet",
