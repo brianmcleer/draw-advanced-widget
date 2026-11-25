@@ -80,7 +80,7 @@ export function buildHelpSections (t: T, f: HelpFeatures): HelpSection[] {
     ...(f.snapping || f.buffer
       ? [{
           key: 'precision', icon: 'compass', title: t('helpPrecisionTitle'),
-          body: [...when(f.snapping, 'helpSnapping'), ...when(f.buffer, 'helpBuffer', 'helpBufferUnits')]
+          body: [...when(f.snapping, 'helpSnapping', 'helpSnappingTolerance'), ...when(f.buffer, 'helpBuffer', 'helpBufferUnits')]
         }]
       : []),
     ...(f.myDrawings

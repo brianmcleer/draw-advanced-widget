@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "واسمحوا للمستعملين أن يُظهروا قياسات في وحدات إضافية إلى جانب الوحدة الأولية، على سبيل المثال فدان ذي قدم مربع.",
         settingSnapping: "الانطباق",
         settingSnapDrawingVerticesToFeaturesIn: "ترسم الشواذ إلى ملامح في طبقات الخرائط الأخرى",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "نطاق",
         settingCreateBufferZonesAroundDrawnFeatures: "إنشاء مناطق عازلة حول الملامح المتميزة.",
         settingDefaultOpacity: "معدل الوفيات (نسبة مئوية)",

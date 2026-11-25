@@ -15,6 +15,8 @@ import { __t } from '../i18n-t'
 interface SnappingControlsProps {
     jimuMapView: JimuMapView;
     sketchViewModel: any;
+    // Starting snapping tolerance in screen pixels, from the widget settings. Undefined means 15.
+    defaultTolerance?: number;
 }
 
 // Screen reader only styles for visually hidden but accessible text
@@ -33,7 +35,7 @@ const srOnlyStyles: React.CSSProperties = {
 // Remembered snapping/grid checkbox state (per browser, per app path), same tier as the
 // measurement preferences. Read once at mount so the panels render open when they were on.
 const SNAP_PREFS_KEY = `draw-advanced:snap-prefs:v1:${typeof window !== 'undefined' ? window.location.pathname : 'default'}`;
-interface SnapPrefs { enabled?: boolean; gridEnabled?: boolean; gridDynamicScale?: boolean; gridSnapEnabled?: boolean; gridRotateWithMap?: boolean }
+interface SnapPrefs { enabled?: boolean; gridEnabled?: boolean; gridDynamicScale?: boolean; gridSnapEnabled?: boolean; gridRotateWithMap?: boolean; tolerance?: number }
 const loadSnapPrefs = (): SnapPrefs | null => {
     try {
         const raw = window.localStorage?.getItem(SNAP_PREFS_KEY);
@@ -43,10 +45,23 @@ const loadSnapPrefs = (): SnapPrefs | null => {
 };
 const boolOr = (v: any, fallback: boolean): boolean => (typeof v === 'boolean' ? v : fallback);
 
+// Snapping tolerance: how many screen pixels away the pointer can be and still snap.
+const SNAP_TOLERANCE_MIN = 1;
+const SNAP_TOLERANCE_MAX = 50;
+const SNAP_TOLERANCE_DEFAULT = 15;
+const clampTolerance = (v: any, fallback: number): number => {
+    const n = Number(v);
+    if (v === null || v === undefined || v === '' || !isFinite(n)) return fallback;
+    return Math.min(SNAP_TOLERANCE_MAX, Math.max(SNAP_TOLERANCE_MIN, Math.round(n)));
+};
+
 export const SnappingControls = (props: SnappingControlsProps): React.ReactElement => {
     const t = hooks.useTranslation(defaultMessages);
     const [savedSnap] = React.useState<SnapPrefs | null>(loadSnapPrefs);
     const [enabled, setEnabled] = React.useState(boolOr(savedSnap?.enabled, false));
+    // A value the user picked earlier wins; otherwise the default from the widget settings.
+    const [snapTolerance, setSnapTolerance] = React.useState<number>(() =>
+        clampTolerance(savedSnap?.tolerance, clampTolerance(props.defaultTolerance, SNAP_TOLERANCE_DEFAULT)));
     const [snapSourcesCount, setSnapSourcesCount] = React.useState(0);
     const [error, setError] = React.useState<string | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -55,7 +70,8 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
     // Grid Controls state
     // Grid can only be on while snapping is on
     const [gridEnabled, setGridEnabled] = React.useState(boolOr(savedSnap?.enabled, false) && boolOr(savedSnap?.gridEnabled, false));
-    const [gridColor, setGridColor] = React.useState('rgba(0,0,0,1)');
+    // Starts on a color, not black: the hue slider in the color picker cannot move black, white or gray.
+    const [gridColor, setGridColor] = React.useState('#007ac2');
     const [gridTheme, setGridTheme] = React.useState<'light' | 'dark' | 'custom'>('light');
     const [gridRotation, setGridRotation] = React.useState(0);
     const [gridSpacing, setGridSpacing] = React.useState(50);
@@ -67,9 +83,9 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
     // Save the checkbox state whenever it changes
     React.useEffect(() => {
         try {
-            window.localStorage?.setItem(SNAP_PREFS_KEY, JSON.stringify({ enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap }));
+            window.localStorage?.setItem(SNAP_PREFS_KEY, JSON.stringify({ enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap, tolerance: snapTolerance }));
         } catch { /* quota or privacy mode: settings simply don't persist */ }
-    }, [enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap]);
+    }, [enabled, gridEnabled, gridDynamicScale, gridSnapEnabled, gridRotateWithMap, snapTolerance]);
     const [gridPlacementActive, setGridPlacementActive] = React.useState(false);
     // The view's grid is driven through a hidden <arcgis-grid-controls> element.
     // It replaces the GridControls widget class, which Esri deprecated in SDK 5.0.
@@ -99,6 +115,10 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
         snappingStatus: `${baseId}-snapping-status`,
         snappingInstructions: `${baseId}-snapping-instructions`,
         snappingError: `${baseId}-snapping-error`,
+        snapToleranceLabel: `${baseId}-snap-tolerance-label`,
+        snapToleranceSlider: `${baseId}-snap-tolerance-slider`,
+        snapToleranceInput: `${baseId}-snap-tolerance-input`,
+        snapToleranceDesc: `${baseId}-snap-tolerance-desc`,
         gridPanel: `${baseId}-grid-panel`,
         gridStatus: `${baseId}-grid-status`,
         gridThemeLabel: `${baseId}-grid-theme-label`,
@@ -247,7 +267,7 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                 enabled: true,
                 featureEnabled: true,
                 selfEnabled: true,
-                distance: 15,
+                distance: snapTolerance,
                 featureSources: new Collection()
             };
             sketchVM.snappingOptions = options;
@@ -377,6 +397,20 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
             forceGridOff();
         }
     }, [enabled, props.jimuMapView, props.sketchViewModel]);
+
+    // Apply a tolerance change to the live snapping options without rescanning the layers.
+    // The custom tools (triangle, curve) read the same distance value.
+    React.useEffect(() => {
+        if (!enabled) return;
+        try {
+            const vmOptions: any = props.sketchViewModel?.snappingOptions;
+            if (vmOptions) vmOptions.distance = snapTolerance;
+            const viewOptions: any = (props.jimuMapView?.view as any)?.snappingOptions;
+            if (viewOptions) viewOptions.distance = snapTolerance;
+        } catch (e) {
+            console.warn('Error applying snapping tolerance:', e);
+        }
+    }, [snapTolerance, enabled, props.jimuMapView, props.sketchViewModel]);
 
     // Grid Controls initialization and cleanup
     React.useEffect(() => {
@@ -646,6 +680,70 @@ export const SnappingControls = (props: SnappingControlsProps): React.ReactEleme
                                 {t('snapToFeatureVerticesEdgesAnd')}
                             </li>
                         </ul>
+
+                        {/* Snapping tolerance */}
+                        <div className='mt-2 mb-2'>
+                            <label
+                                id={ids.snapToleranceLabel}
+                                className='d-flex flex-column'
+                            >
+                                <span
+                                    className='mb-1'
+                                    style={{ fontSize: '12px' }}
+                                >
+                                    {t('snapTolerance')}
+                                </span>
+                                <div
+                                    className='d-flex align-items-center'
+                                    role="group"
+                                    aria-labelledby={ids.snapToleranceLabel}
+                                >
+                                    <div
+                                        className='flex-grow-1 mr-2'
+                                        title={t('snapToleranceDesc')}
+                                    >
+                                        <Slider
+                                            id={ids.snapToleranceSlider}
+                                            value={snapTolerance}
+                                            onChange={(e) => {
+                                                const value = clampTolerance(e.target.value, snapTolerance);
+                                                setSnapTolerance(value);
+                                                announce(t('snapToleranceSetTo', { value }), 'polite');
+                                            }}
+                                            min={SNAP_TOLERANCE_MIN}
+                                            max={SNAP_TOLERANCE_MAX}
+                                            step={1}
+                                            aria-label={t('snapToleranceValue', { value: snapTolerance })}
+                                            aria-valuemin={SNAP_TOLERANCE_MIN}
+                                            aria-valuemax={SNAP_TOLERANCE_MAX}
+                                            aria-valuenow={snapTolerance}
+                                            aria-valuetext={t('snapTolerancePixels', { value: snapTolerance })}
+                                            aria-describedby={ids.snapToleranceDesc}
+                                        />
+                                    </div>
+                                    <NumericInput
+                                        id={ids.snapToleranceInput}
+                                        size='sm'
+                                        value={snapTolerance}
+                                        onChange={(v) => {
+                                            const value = clampTolerance(v, snapTolerance);
+                                            setSnapTolerance(value);
+                                            announce(t('snapToleranceSetTo', { value }), 'polite');
+                                        }}
+                                        min={SNAP_TOLERANCE_MIN}
+                                        max={SNAP_TOLERANCE_MAX}
+                                        step={1}
+                                        style={{ width: '70px' }}
+                                        aria-label={t('snapTolerance')}
+                                        aria-describedby={ids.snapToleranceDesc}
+                                        title={t('snapToleranceDesc')}
+                                    />
+                                </div>
+                            </label>
+                            <span id={ids.snapToleranceDesc} style={srOnlyStyles}>
+                                {t('snapToleranceDesc')}
+                            </span>
+                        </div>
 
                         {/* Loading state with accessibility */}
                         {isLoading && (

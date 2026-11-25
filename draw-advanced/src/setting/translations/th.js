@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "ให้ผู้ใช้แสดงการวัดในหน่วยเพิ่มเติม ข้างๆ หน่วยหลักเช่น เอเคอร์ที่มีตารางฟุต",
         settingSnapping: "ประชิด",
         settingSnapDrawingVerticesToFeaturesIn: "การ จับ ปลา",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "บัฟเฟอร์",
         settingCreateBufferZonesAroundDrawnFeatures: "สร้างพื้นที่บัฟเฟอร์รอบคุณสมบัติที่วาด",
         settingDefaultOpacity: "ระดับความโปร่งแสงปริยาย (%)",

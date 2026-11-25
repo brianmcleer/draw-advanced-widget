@@ -80,6 +80,7 @@ export interface Config {
     rememberMeasurementPreferences?: boolean   // persist each user's units/display toggles in their browser
     allowMultipleUnits?: boolean               // let users show additional units alongside the primary unit
     enableSnapping?: boolean
+    snappingTolerance?: number                 // starting snap distance in screen pixels (undefined means 15)
     enableBuffer?: boolean
     // Developer-configurable buffer defaults (initial values; users can still change at runtime)
     defaultBufferDistance?: number

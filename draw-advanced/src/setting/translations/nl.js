@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Laat gebruikers metingen tonen in extra eenheden naast de primaire eenheid, bijvoorbeeld acres met vierkante voet.",
         settingSnapping: "Vastzetten",
         settingSnapDrawingVerticesToFeaturesIn: "Tekenpunten knippen naar functies in andere kaartlagen.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Buffer",
         settingCreateBufferZonesAroundDrawnFeatures: "Bufferzones aanmaken rond getekende functies.",
         settingDefaultOpacity: "Standaard dekking (%)",

@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Deje que los usuarios muestren mediciones en unidades adicionales junto a la unidad primaria, por ejemplo acres con pies cuadrados.",
         settingSnapping: "Alineación",
         settingSnapDrawingVerticesToFeaturesIn: "Ajustar los vértices de dibujo a las características en otras capas de mapa.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Zona de influencia",
         settingCreateBufferZonesAroundDrawnFeatures: "Cree zonas de amortiguación alrededor de las características dibujadas.",
         settingDefaultOpacity: "Opacity por defecto (%)",

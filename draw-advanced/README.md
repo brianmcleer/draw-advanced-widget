@@ -65,7 +65,7 @@ The GitHub repo carries `src/exb-editor-shims.d.ts` and `src/declarations.d.ts`.
 - **Drawing tools:** point, line, freehand line, text, rectangle, polygon, freehand polygon, circle, and an optional triangle tool, in a two-row layout with clear Drawing Mode, Edit Mode, and No Drawings indicators. Optional curve drawing tools can be enabled in the widget settings.
 - **Measurement system:** real-time area, perimeter, length, radius, and coordinate calculations; geodetic or planar based on spatial reference; distance and area units including user-defined custom units; per-segment line measurements; configurable decimal precision and per-metric toggles.
 - **Tooltips:** live length, area, perimeter, radius, and coordinate readouts while drawing, with smart placement and styling.
-- **Snapping:** detects all visible snappable layers (feature, graphics, CSV, GeoJSON, WFS, sublayers) with a 15 pixel tolerance, self-snapping, and temporary disable via Ctrl/Cmd. Optional alignment grid.
+- **Snapping:** detects all visible snappable layers (feature, graphics, CSV, GeoJSON, WFS, sublayers) with an adjustable pixel tolerance (15 by default), self-snapping, and temporary disable via Ctrl/Cmd. Optional alignment grid.
 - **Buffers:** add buffers to points, lines, polygons, and circles with configurable distance, unit, and opacity; an outline-only option (transparent fill, solid stroke) and optional custom buffer colors, with independent fill and outline colors, that override the color inherited from the source drawing. Buffers update when the parent is reshaped and are included in import and export.
 - **Line arrows:** add direction arrowheads to straight and freehand lines.
 - **Text tool:** expanded font library, real-time preview, rotation, multi-line support, and outline/halo controls.
@@ -109,7 +109,6 @@ The widget speaks the app's language. Experience Builder picks the language from
 - **Circles are 60-sided polygons.** Any polygon with exactly 60 sides is treated as a circle and given a radius, so a hand-drawn 60-sided polygon or a distorted circle will be measured as a circle.
 - **Freehand line segments** generate too many segment labels to be useful; avoid segment labels on freehand lines.
 - **Custom units in the Builder** clear the selected default unit on save. Pick a temporary unit, save, then switch back and save again.
-- **Background color picker** needs a Standard Color chosen first before the other color options behave.
 - **Curve segment toolbar** (Bezier and arc) is not available. That floating editor is owned by the ArcGIS Sketch widget's internal lifecycle and cannot be triggered from external create calls; it will return if Esri exposes a public plugin API.
 
 ---
@@ -135,6 +134,8 @@ Please report bugs, ideas, and questions on the [Esri Community blog post](https
 ---
 
 ## Changelog
+
+- 2026-11-25 v4.9.0: Snapping tolerance. A slider under Enable Snapping sets how many pixels away the pointer can be and still snap, and a new setting sets the default. Requested by Jeffrey Thompson.
 
 - 2026-11-24 v4.8.0: Use a drawing as the Near Me location. Each drawing in My Drawings has a "Set as Near Me location" button when the app has a Near Me widget; Near Me buffers and searches around the drawing, the same as a feature picked from a popup. A new setting under My Drawings turns it off.
 

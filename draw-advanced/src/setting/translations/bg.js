@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Нека потребителите покажат измервания в допълнителни единици заедно с основната единица, например акра с квадратни фута.",
         settingSnapping: "Прилепване",
         settingSnapDrawingVerticesToFeaturesIn: "Щракване рисуване върховете на функции в други слоеве карта.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Буфер",
         settingCreateBufferZonesAroundDrawnFeatures: "Създаване на буферни зони около изтеглени функции.",
         settingDefaultOpacity: "Непрозрачност по подразбиране (%)",

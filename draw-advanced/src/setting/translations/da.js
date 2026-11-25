@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Lad brugerne vise målinger i ekstra enheder ved siden af den primære enhed, f.eks. acres med kvadratfod.",
         settingSnapping: "Snapping",
         settingSnapDrawingVerticesToFeaturesIn: "Snap tegning knudepunkter til funktioner i andre kortlag.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Buffer Formand",
         settingCreateBufferZonesAroundDrawnFeatures: "Opret bufferzoner omkring træk.",
         settingDefaultOpacity: "Standard Opacity (%)",

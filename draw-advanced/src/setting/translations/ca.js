@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Deixeu que els usuaris mostren mesures en unitats addicionals junt a la unitat primària, per exemple acres amb peus quadrats.",
         settingSnapping: "Ajust",
         settingSnapDrawingVerticesToFeaturesIn: "Enganxa els vèrtexs de dibuix a característiques en altres capes del mapa.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Àrea d'influència",
         settingCreateBufferZonesAroundDrawnFeatures: "Crea zones de memòria intermèdia al voltant de les característiques dibuixades.",
         settingDefaultOpacity: "Opacitat per omissió (%)",

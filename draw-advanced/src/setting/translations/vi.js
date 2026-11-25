@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Cho phép người dùng hiển thị đo lường trong đơn vị thêm vào bên cạnh đơn vị chính, ví dụ mẫu đất với bàn chân vuông.",
         settingSnapping: "Tính năng Bắt điểm",
         settingSnapDrawingVerticesToFeaturesIn: "Đắp các đỉnh của các lớp bản đồ khác.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Vùng đệm",
         settingCreateBufferZonesAroundDrawnFeatures: "Tạo vùng đệm xung quanh các tính năng được vẽ.",
         settingDefaultOpacity: "Độ mờ mặc định (%)",

@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Kullanıcıların birincil ünitenin yanı sıra ölçümlerini gösterelim, örneğin kare ayaklarla dönüm.",
         settingSnapping: "Yakalama",
         settingSnapDrawingVerticesToFeaturesIn: "Diğer harita katmanlarında özellikler için Snap çizimler.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Tampon",
         settingCreateBufferZonesAroundDrawnFeatures: "Çizim özellikleri etrafında tampon bölgeleri oluşturun.",
         settingDefaultOpacity: "Varsayılan Opakity (%)",

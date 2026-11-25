@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Laissez les utilisateurs montrer des mesures en unités supplémentaires à côté de l'unité primaire, par exemple acres avec pieds carrés.",
         settingSnapping: "Capture",
         settingSnapDrawingVerticesToFeaturesIn: "Snap dessin des sommets aux caractéristiques d'autres couches de carte.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Zone tampon",
         settingCreateBufferZonesAroundDrawnFeatures: "Créer des zones tampons autour des fonctionnalités dessinées.",
         settingDefaultOpacity: "Opacité par défaut (%)",

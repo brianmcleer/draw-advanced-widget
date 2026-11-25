@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "사용자가 1 차 단위와 함께 측정을 표시하자, 예를 들어 평방 피트와 에이커.",
         settingSnapping: "스내핑",
         settingSnapDrawingVerticesToFeaturesIn: "다른 맵 레이어의 기능에 스냅 드로잉 vertices.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "버퍼",
         settingCreateBufferZonesAroundDrawnFeatures: "그려진 특징의 주위에 완충기 지역을 창조하십시오.",
         settingDefaultOpacity: "과태 불투명 (%)",

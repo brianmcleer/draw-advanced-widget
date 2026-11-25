@@ -3,8 +3,8 @@
   "generator": "exb-i18n-kit",
   "parts": {
     "runtime": {
-      "en": "9e9e71e76a64",
-      "keys": 1205,
+      "en": "7a9a87535974",
+      "keys": 1211,
       "hashes": {
         "_widgetLabel": "bfa50c7a3838",
         "drawPoint": "2ebb2e049c19",
@@ -108,6 +108,11 @@
         "snapSnappingKeyboardShortcutsAndInstructions": "aae124901395",
         "snapCtrl": "dd6a02a553da",
         "snapCmd": "36a5cc40f84a",
+        "snapTolerance": "7cf6b7baf4d6",
+        "snapToleranceValue": "64db1c1076ba",
+        "snapTolerancePixels": "e23ceac57c6f",
+        "snapToleranceSetTo": "3e293fb00b2f",
+        "snapToleranceDesc": "b3a9df4b8886",
         "snapLoading": "a60c6223f2a9",
         "snapGridControlsAvailabilityNotice": "021103efb7f4",
         "snapGridOverlayControls": "f53a97f01b04",
@@ -586,6 +591,7 @@
         "helpMeasureRemembered": "df39e70918db",
         "helpPrecisionTitle": "fd0b7d8b06f8",
         "helpSnapping": "e801c4a0e17c",
+        "helpSnappingTolerance": "ca20a73a7f76",
         "helpBuffer": "ac9464789b45",
         "helpBufferUnits": "4f7ed3e47a47",
         "helpOrganizeTitle": "401da93bd760",
@@ -1214,16 +1220,16 @@
       },
       "locales": {
         "ar": {
-          "file": "c44654a34628",
+          "file": "e4dfefb9a2a1",
           "counts": {
             "esri": 149,
             "esri-check": 13,
             "community": 0,
             "manual": 10,
             "existing": 0,
-            "machine": 1020,
+            "machine": 1021,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -1545,6 +1551,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snapping tolerance (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "نظام مراقبة المقاييس",
@@ -6379,16 +6390,16 @@
           }
         },
         "bg": {
-          "file": "7a5ddec75382",
+          "file": "01ac5a58102c",
           "counts": {
             "esri": 149,
             "esri-check": 15,
             "community": 0,
             "manual": 11,
             "existing": 0,
-            "machine": 1017,
+            "machine": 1018,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -6710,6 +6721,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Допуск за откъсване (пиксели)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Известие за контрол на мрежата",
@@ -11534,16 +11550,16 @@
           }
         },
         "bs": {
-          "file": "9cd718385c7e",
+          "file": "f208a06fe939",
           "counts": {
             "esri": 155,
             "esri-check": 7,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 986,
+            "machine": 987,
             "stale": 0,
-            "missing": 57
+            "missing": 62
           },
           "entries": {
             "drawFreeLine": {
@@ -11860,6 +11876,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerancija snappinga (piksela)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Mreža kontrolira obavijest o dostupnosti",
@@ -16479,16 +16500,16 @@
           }
         },
         "ca": {
-          "file": "43c86206b320",
+          "file": "600668be690d",
           "counts": {
             "esri": 147,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1035,
+            "machine": 1036,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -16815,6 +16836,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Arrossegant tolerància (píxels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "La graella controla la disponibilitat",
@@ -21669,16 +21695,16 @@
           }
         },
         "cs": {
-          "file": "178566bb73a3",
+          "file": "9a3b8cb7a34b",
           "counts": {
             "esri": 151,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -22000,6 +22026,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerance házení (pixely)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Informace o dostupnosti sítě",
@@ -26834,16 +26865,16 @@
           }
         },
         "da": {
-          "file": "5e41c1df713c",
+          "file": "66ff33b8fdbb",
           "counts": {
             "esri": 145,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1038,
+            "machine": 1039,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -27170,6 +27201,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snappetolerance (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grid kontrol tilgængelighed meddelelse",
@@ -32039,16 +32075,16 @@
           }
         },
         "de": {
-          "file": "860c87e7b4b8",
+          "file": "068f9d96e48f",
           "counts": {
             "esri": 149,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1035,
+            "machine": 1036,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -32375,6 +32411,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Rasttoleranz (Pixel)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Verfügbarkeitsmeldung für Netzsteuerungen",
@@ -37229,16 +37270,16 @@
           }
         },
         "el": {
-          "file": "52535f226700",
+          "file": "02aa5f422db2",
           "counts": {
             "esri": 150,
             "esri-check": 12,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -37560,6 +37601,11 @@
               "t": "ΚΜΔ",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Ανοχή ολίσθησης (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Ανακοίνωση διαθεσιμότητας ελέγχου καννάβου",
@@ -42394,16 +42440,16 @@
           }
         },
         "es": {
-          "file": "36b88c70b85c",
+          "file": "f5ecec9cee98",
           "counts": {
             "esri": 149,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1034,
+            "machine": 1035,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -42730,6 +42776,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerancia en espiral (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Aviso de disponibilidad de controles de presión",
@@ -47579,16 +47630,16 @@
           }
         },
         "et": {
-          "file": "b39d6fb75925",
+          "file": "3ff21a7780aa",
           "counts": {
             "esri": 144,
             "esri-check": 18,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -47910,6 +47961,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Haardumishälve (pikslid)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Võrgukontrolli kättesaadavuse teatis",
@@ -52744,16 +52800,16 @@
           }
         },
         "fi": {
-          "file": "e8f210b290b8",
+          "file": "1fa11476ae0e",
           "counts": {
             "esri": 156,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1028,
+            "machine": 1029,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -53075,6 +53131,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Pikselien sietokyky",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Ruudukko valvoo saatavuutta koskeva ilmoitus",
@@ -57899,16 +57960,16 @@
           }
         },
         "fr": {
-          "file": "aa24155b4b65",
+          "file": "01b62e643c04",
           "counts": {
             "esri": 147,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1036,
+            "machine": 1037,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -58245,6 +58306,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolérance au prélèvement (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Avis de disponibilité du contrôle du réseau",
@@ -63094,16 +63160,16 @@
           }
         },
         "he": {
-          "file": "1c5094b1beff",
+          "file": "36af662e819d",
           "counts": {
             "esri": 145,
             "esri-check": 17,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -63425,6 +63491,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snappingסובלנות (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "הודעה על זמינות",
@@ -68259,16 +68330,16 @@
           }
         },
         "hr": {
-          "file": "9ec497793144",
+          "file": "a2454bd33641",
           "counts": {
             "esri": 155,
             "esri-check": 7,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1021,
+            "machine": 1022,
             "stale": 0,
-            "missing": 22
+            "missing": 27
           },
           "entries": {
             "drawFreeLine": {
@@ -68590,6 +68661,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerancija snappinga (piksela)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Mreža kontrolira obavijest o dostupnosti",
@@ -73379,16 +73455,16 @@
           }
         },
         "hu": {
-          "file": "6dccac16f580",
+          "file": "50d8c3ca2dd6",
           "counts": {
             "esri": 153,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -73710,6 +73786,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Töréstűrés (pixel)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "A rácsvezérlők elérhetőségi értesítése",
@@ -78544,16 +78625,16 @@
           }
         },
         "id": {
-          "file": "98dfa4e89e34",
+          "file": "6201f39c2d57",
           "counts": {
             "esri": 141,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1041,
+            "machine": 1042,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -78875,6 +78956,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Toleransi penangkapan (piksel)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Pemberitahuan pengontrol kisi ketersediaan",
@@ -83764,16 +83850,16 @@
           }
         },
         "it": {
-          "file": "f7cbbd78d3d7",
+          "file": "5ff19a463ebe",
           "counts": {
             "esri": 149,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1033,
+            "machine": 1034,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -84100,6 +84186,11 @@
               "t": "Cm.",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolleranza di scatto (pixel)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Griglia controlli avviso di disponibilità",
@@ -88944,16 +89035,16 @@
           }
         },
         "ja": {
-          "file": "1007b1617b5e",
+          "file": "2a64c476a9b4",
           "counts": {
             "esri": 153,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -89275,6 +89366,11 @@
               "t": "ログイン",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "スナップ許容(ピクセル)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "グリッド制御可用性通知",
@@ -94104,16 +94200,16 @@
           }
         },
         "ko": {
-          "file": "0a2ac7bb7734",
+          "file": "4f54e7cc71e6",
           "counts": {
             "esri": 153,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -94435,6 +94531,11 @@
               "t": "사이트맵",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "황급한 포용력 (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grid Controls 가용성 공지",
@@ -99264,16 +99365,16 @@
           }
         },
         "lt": {
-          "file": "57d013d81286",
+          "file": "4c939c8ccce7",
           "counts": {
             "esri": 152,
             "esri-check": 12,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1028,
+            "machine": 1029,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -99595,6 +99696,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Leistini nuokrypiai (pikseliai)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Pranešimas apie tinklo valdymą",
@@ -104419,16 +104525,16 @@
           }
         },
         "lv": {
-          "file": "63909ad5da51",
+          "file": "9a2da43d79d8",
           "counts": {
             "esri": 150,
             "esri-check": 14,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1028,
+            "machine": 1029,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -104750,6 +104856,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Pielipšanas pielaide (pikseļi)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Paziņojums par tīkla kontroles pieejamību",
@@ -109574,16 +109685,16 @@
           }
         },
         "no": {
-          "file": "838bd3fb9b14",
+          "file": "5bb06c9a96dc",
           "counts": {
             "esri": 146,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1036,
+            "machine": 1037,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -109910,6 +110021,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snapping toleranse (piksler)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Nettverk kontroller tilgjengelighetsvarsel",
@@ -114769,16 +114885,16 @@
           }
         },
         "nl": {
-          "file": "9af6af73917c",
+          "file": "9da659555ce0",
           "counts": {
             "esri": 146,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1038,
+            "machine": 1039,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -115100,6 +115216,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snaptolerantie (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Raster controleert beschikbaarheidsbericht",
@@ -119974,16 +120095,16 @@
           }
         },
         "pl": {
-          "file": "d3b7b57ac85a",
+          "file": "b5d9f3648127",
           "counts": {
             "esri": 149,
             "esri-check": 14,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -120305,6 +120426,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerancja przebijania (piksele)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Zawiadomienie o dostępności siatki",
@@ -125134,16 +125260,16 @@
           }
         },
         "pt-br": {
-          "file": "14522928629e",
+          "file": "ffd77be6b441",
           "counts": {
             "esri": 148,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1033,
+            "machine": 1034,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -125475,6 +125601,11 @@
               "t": "Comandante.",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerância de quebra (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "A grade controla o aviso de disponibilidade.",
@@ -130314,16 +130445,16 @@
           }
         },
         "pt-pt": {
-          "file": "b34d2ccec7fb",
+          "file": "d27e23ae4fa8",
           "counts": {
             "esri": 152,
             "esri-check": 7,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1033,
+            "machine": 1034,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -130655,6 +130786,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerância ao arranque (pixels)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grade controla aviso de disponibilidade",
@@ -135494,16 +135630,16 @@
           }
         },
         "ro": {
-          "file": "ab78bf6938f4",
+          "file": "66f5b87c0e23",
           "counts": {
             "esri": 148,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1035,
+            "machine": 1036,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -135825,6 +135961,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Toleranță la frecare (pixeli)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grila controlează disponibilitatea anunțului",
@@ -140684,16 +140825,16 @@
           }
         },
         "ru": {
-          "file": "5f4cbc76be07",
+          "file": "1f1233743f61",
           "counts": {
             "esri": 154,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1028,
+            "machine": 1029,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -141015,6 +141156,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Поглощающая толерантность (пиксели)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grid контролирует доступность уведомления",
@@ -145839,16 +145985,16 @@
           }
         },
         "sk": {
-          "file": "59c04b66603d",
+          "file": "a0cc4d64232a",
           "counts": {
             "esri": 150,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 14
+            "missing": 19
           },
           "entries": {
             "drawFreeLine": {
@@ -146170,6 +146316,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerancia pri ukladaní (pixely)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Oznámenie o dostupnosti siete",
@@ -151004,16 +151155,16 @@
           }
         },
         "sl": {
-          "file": "8722a9f24f27",
+          "file": "0d71a88bbab6",
           "counts": {
             "esri": 156,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1027,
+            "machine": 1028,
             "stale": 0,
-            "missing": 14
+            "missing": 19
           },
           "entries": {
             "drawFreeLine": {
@@ -151335,6 +151486,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Toleranca pripenjanja (pikslov)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Obvestilo o razpoložljivosti omrežja",
@@ -156154,16 +156310,16 @@
           }
         },
         "sr": {
-          "file": "937a476dca54",
+          "file": "25d25414fdc8",
           "counts": {
             "esri": 151,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1020,
+            "machine": 1021,
             "stale": 0,
-            "missing": 24
+            "missing": 29
           },
           "entries": {
             "drawFreeLine": {
@@ -156485,6 +156641,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Tolerancija snappinga (piksela)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Mreža kontroliše obaveštenje o dostupnosti",
@@ -161269,16 +161430,16 @@
           }
         },
         "sv": {
-          "file": "eaf104dc45c5",
+          "file": "7dc60e26123d",
           "counts": {
             "esri": 149,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1035,
+            "machine": 1036,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -161600,6 +161761,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snapping tolerans (pixlar)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grid kontrollerar tillgänglighetsmeddelande",
@@ -166459,16 +166625,16 @@
           }
         },
         "th": {
-          "file": "0dbbc9238f10",
+          "file": "9fa8c131e10c",
           "counts": {
             "esri": 152,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -166790,6 +166956,11 @@
               "t": "หมายเลข Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "การจับยึด (พิกเซล)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "การแจ้งให้ทราบจากกล้อง",
@@ -171619,16 +171790,16 @@
           }
         },
         "tr": {
-          "file": "35f2d9e28b29",
+          "file": "a4ec90d8d448",
           "counts": {
             "esri": 151,
             "esri-check": 13,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1028,
+            "machine": 1029,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -171950,6 +172121,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snapping toleransı (crypts)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Grid kontrolleri kullanılabilirlik bildirimi",
@@ -176774,16 +176950,16 @@
           }
         },
         "zh-cn": {
-          "file": "e46d2f27d242",
+          "file": "f6870107d30a",
           "counts": {
             "esri": 151,
             "esri-check": 11,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1030,
+            "machine": 1031,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -177105,6 +177281,11 @@
               "t": "数字",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "抓取容忍度( 像素)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "网格控制可用性通知",
@@ -181939,16 +182120,16 @@
           }
         },
         "uk": {
-          "file": "f4868c205637",
+          "file": "f405af05826d",
           "counts": {
             "esri": 156,
             "esri-check": 8,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1028,
+            "machine": 1029,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -182270,6 +182451,11 @@
               "t": "КМД",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Snapping толерантність (пікселі)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Повідомлення про наявність електромереж",
@@ -187094,16 +187280,16 @@
           }
         },
         "vi": {
-          "file": "887671d45b91",
+          "file": "7598c300a49f",
           "counts": {
             "esri": 153,
             "esri-check": 10,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -187425,6 +187611,11 @@
               "t": "Cmd",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "Độ chịu đựng nhấp nháy (Gấp cao)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "Name",
@@ -192254,16 +192445,16 @@
           }
         },
         "zh-hk": {
-          "file": "916cb6c38819",
+          "file": "3ba7f38b857d",
           "counts": {
             "esri": 154,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -192585,6 +192776,11 @@
               "t": "磁碟",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "抓取容限( 像素)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "网格控制可用性通知",
@@ -197414,16 +197610,16 @@
           }
         },
         "zh-tw": {
-          "file": "916cb6c38819",
+          "file": "3ba7f38b857d",
           "counts": {
             "esri": 154,
             "esri-check": 9,
             "community": 0,
             "manual": 0,
             "existing": 0,
-            "machine": 1029,
+            "machine": 1030,
             "stale": 0,
-            "missing": 13
+            "missing": 18
           },
           "entries": {
             "drawFreeLine": {
@@ -197745,6 +197941,11 @@
               "t": "磁碟",
               "src": "machine",
               "h": "36a5cc40f84a"
+            },
+            "snapTolerance": {
+              "t": "抓取容限( 像素)",
+              "src": "machine",
+              "h": "7cf6b7baf4d6"
             },
             "snapGridControlsAvailabilityNotice": {
               "t": "网格控制可用性通知",
@@ -202576,8 +202777,8 @@
       }
     },
     "setting": {
-      "en": "786d15605257",
-      "keys": 250,
+      "en": "5801c1de9ff2",
+      "keys": 252,
       "hashes": {
         "selectMapWidget": "d61fd2f33878",
         "sourceLabel": "2f00ee7af867",
@@ -202735,6 +202936,8 @@
         "settingLetUsersShowMeasurementsInAdditional": "a6f4d7ae50ba",
         "settingSnapping": "702fce783f86",
         "settingSnapDrawingVerticesToFeaturesIn": "234554c39ff4",
+        "settingDefaultSnappingTolerance": "25c8e5ab8b4c",
+        "settingHowCloseThePointerHasToBe": "21d0042b3ab2",
         "settingBuffer": "2be5f64b3623",
         "settingCreateBufferZonesAroundDrawnFeatures": "f07e622143a8",
         "settingDefaultOpacity": "1715847247df",
@@ -202832,7 +203035,7 @@
       },
       "locales": {
         "ar": {
-          "file": "9443c63bf955",
+          "file": "25dd0ca15d6e",
           "counts": {
             "esri": 37,
             "esri-check": 4,
@@ -202841,7 +203044,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -203882,7 +204085,7 @@
           }
         },
         "bg": {
-          "file": "0722c4570ee8",
+          "file": "eea1b1aa145f",
           "counts": {
             "esri": 39,
             "esri-check": 2,
@@ -203891,7 +204094,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -204932,7 +205135,7 @@
           }
         },
         "bs": {
-          "file": "bbcb61d5085e",
+          "file": "b72cd836934c",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -204941,7 +205144,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -205982,7 +206185,7 @@
           }
         },
         "ca": {
-          "file": "6b9938dca573",
+          "file": "8be0ddcb5ca3",
           "counts": {
             "esri": 37,
             "esri-check": 0,
@@ -205991,7 +206194,7 @@
             "existing": 0,
             "machine": 211,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -207052,7 +207255,7 @@
           }
         },
         "cs": {
-          "file": "cab914632ddd",
+          "file": "16d081e8d5c1",
           "counts": {
             "esri": 39,
             "esri-check": 0,
@@ -207061,7 +207264,7 @@
             "existing": 0,
             "machine": 209,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -208112,7 +208315,7 @@
           }
         },
         "da": {
-          "file": "1966294d3cc2",
+          "file": "3d4f9c20adbc",
           "counts": {
             "esri": 37,
             "esri-check": 0,
@@ -208121,7 +208324,7 @@
             "existing": 0,
             "machine": 211,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -209182,7 +209385,7 @@
           }
         },
         "de": {
-          "file": "380eba23222b",
+          "file": "54fe6102269b",
           "counts": {
             "esri": 37,
             "esri-check": 0,
@@ -209191,7 +209394,7 @@
             "existing": 0,
             "machine": 211,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -210252,7 +210455,7 @@
           }
         },
         "el": {
-          "file": "c3500ed66bc4",
+          "file": "a3a3cc40e907",
           "counts": {
             "esri": 39,
             "esri-check": 2,
@@ -210261,7 +210464,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -211302,7 +211505,7 @@
           }
         },
         "es": {
-          "file": "393a68969671",
+          "file": "bb11621e1cb2",
           "counts": {
             "esri": 40,
             "esri-check": 0,
@@ -211311,7 +211514,7 @@
             "existing": 0,
             "machine": 208,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -212357,7 +212560,7 @@
           }
         },
         "et": {
-          "file": "5509a8b42ebe",
+          "file": "0166ea0029f8",
           "counts": {
             "esri": 34,
             "esri-check": 7,
@@ -212366,7 +212569,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -213407,7 +213610,7 @@
           }
         },
         "fi": {
-          "file": "5539d6fb9a24",
+          "file": "b43990010379",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -213416,7 +213619,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -214457,7 +214660,7 @@
           }
         },
         "fr": {
-          "file": "7fb8dd62327e",
+          "file": "7073290b6888",
           "counts": {
             "esri": 35,
             "esri-check": 0,
@@ -214466,7 +214669,7 @@
             "existing": 0,
             "machine": 213,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -215537,7 +215740,7 @@
           }
         },
         "he": {
-          "file": "28f238c8c486",
+          "file": "dd2bd27c033a",
           "counts": {
             "esri": 37,
             "esri-check": 4,
@@ -215546,7 +215749,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -216587,7 +216790,7 @@
           }
         },
         "hr": {
-          "file": "ed1e2c4063fd",
+          "file": "83d5d98b0a5e",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -216596,7 +216799,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -217637,7 +217840,7 @@
           }
         },
         "hu": {
-          "file": "5c9ab51ec943",
+          "file": "79eb42ddc955",
           "counts": {
             "esri": 39,
             "esri-check": 1,
@@ -217646,7 +217849,7 @@
             "existing": 0,
             "machine": 208,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -218692,7 +218895,7 @@
           }
         },
         "id": {
-          "file": "64ce8fb163ba",
+          "file": "2a0090907afa",
           "counts": {
             "esri": 38,
             "esri-check": 0,
@@ -218701,7 +218904,7 @@
             "existing": 0,
             "machine": 210,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -219757,7 +219960,7 @@
           }
         },
         "it": {
-          "file": "5947b717922b",
+          "file": "2f43bc4e4b97",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -219766,7 +219969,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -220807,7 +221010,7 @@
           }
         },
         "ja": {
-          "file": "5488834c60a0",
+          "file": "48f7b293c6da",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -220816,7 +221019,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -221857,7 +222060,7 @@
           }
         },
         "ko": {
-          "file": "4c5eb0c94148",
+          "file": "8058ec0315c4",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -221866,7 +222069,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -222907,7 +223110,7 @@
           }
         },
         "lt": {
-          "file": "946ba6fbe921",
+          "file": "88a62e4bee4f",
           "counts": {
             "esri": 40,
             "esri-check": 1,
@@ -222916,7 +223119,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -223957,7 +224160,7 @@
           }
         },
         "lv": {
-          "file": "b89d7c02e8e8",
+          "file": "419127a06bc8",
           "counts": {
             "esri": 39,
             "esri-check": 2,
@@ -223966,7 +224169,7 @@
             "existing": 0,
             "machine": 206,
             "stale": 0,
-            "missing": 3
+            "missing": 5
           },
           "entries": {
             "sourceLabel": {
@@ -225002,7 +225205,7 @@
           }
         },
         "no": {
-          "file": "86fa81b8265f",
+          "file": "ca63a60e2906",
           "counts": {
             "esri": 38,
             "esri-check": 0,
@@ -225011,7 +225214,7 @@
             "existing": 0,
             "machine": 210,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -226067,7 +226270,7 @@
           }
         },
         "nl": {
-          "file": "032c0544ced2",
+          "file": "8d51259c163d",
           "counts": {
             "esri": 38,
             "esri-check": 2,
@@ -226076,7 +226279,7 @@
             "existing": 0,
             "machine": 208,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -227122,7 +227325,7 @@
           }
         },
         "pl": {
-          "file": "bf5c06440658",
+          "file": "8a176d2bab28",
           "counts": {
             "esri": 40,
             "esri-check": 1,
@@ -227131,7 +227334,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -228172,7 +228375,7 @@
           }
         },
         "pt-br": {
-          "file": "8a8938fdc488",
+          "file": "e9bf645344af",
           "counts": {
             "esri": 38,
             "esri-check": 0,
@@ -228181,7 +228384,7 @@
             "existing": 0,
             "machine": 210,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -229237,7 +229440,7 @@
           }
         },
         "pt-pt": {
-          "file": "2e9f2a9e9c6a",
+          "file": "7c97180d3d12",
           "counts": {
             "esri": 38,
             "esri-check": 0,
@@ -229246,7 +229449,7 @@
             "existing": 0,
             "machine": 210,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -230302,7 +230505,7 @@
           }
         },
         "ro": {
-          "file": "529528533fea",
+          "file": "804713e49745",
           "counts": {
             "esri": 36,
             "esri-check": 1,
@@ -230311,7 +230514,7 @@
             "existing": 0,
             "machine": 211,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -231372,7 +231575,7 @@
           }
         },
         "ru": {
-          "file": "3c7f21f9153d",
+          "file": "ce3b2adabd05",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -231381,7 +231584,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -232422,7 +232625,7 @@
           }
         },
         "sk": {
-          "file": "b6392b6e2a30",
+          "file": "ede6448747af",
           "counts": {
             "esri": 37,
             "esri-check": 1,
@@ -232431,7 +232634,7 @@
             "existing": 0,
             "machine": 208,
             "stale": 0,
-            "missing": 4
+            "missing": 6
           },
           "entries": {
             "sourceLabel": {
@@ -233477,7 +233680,7 @@
           }
         },
         "sl": {
-          "file": "2948ecea7537",
+          "file": "54adda6bb85b",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -233486,7 +233689,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -234527,7 +234730,7 @@
           }
         },
         "sr": {
-          "file": "9c6fdd28251c",
+          "file": "59d26e5ff1a1",
           "counts": {
             "esri": 40,
             "esri-check": 1,
@@ -234536,7 +234739,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -235577,7 +235780,7 @@
           }
         },
         "sv": {
-          "file": "a45f86a54849",
+          "file": "2d80cc3e108c",
           "counts": {
             "esri": 38,
             "esri-check": 0,
@@ -235586,7 +235789,7 @@
             "existing": 0,
             "machine": 210,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -236642,7 +236845,7 @@
           }
         },
         "th": {
-          "file": "cd115a6e7978",
+          "file": "a003c9475242",
           "counts": {
             "esri": 40,
             "esri-check": 1,
@@ -236651,7 +236854,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -237692,7 +237895,7 @@
           }
         },
         "tr": {
-          "file": "a280e1e2a3c9",
+          "file": "6438c0946e6c",
           "counts": {
             "esri": 40,
             "esri-check": 0,
@@ -237701,7 +237904,7 @@
             "existing": 0,
             "machine": 208,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -238747,7 +238950,7 @@
           }
         },
         "zh-cn": {
-          "file": "b623a959831f",
+          "file": "15240d25acd2",
           "counts": {
             "esri": 40,
             "esri-check": 1,
@@ -238756,7 +238959,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -239797,7 +240000,7 @@
           }
         },
         "uk": {
-          "file": "0f20c85b7a14",
+          "file": "1dd613a17ff3",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -239806,7 +240009,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -240847,7 +241050,7 @@
           }
         },
         "vi": {
-          "file": "5b0493a8a455",
+          "file": "cc153038e150",
           "counts": {
             "esri": 39,
             "esri-check": 2,
@@ -240856,7 +241059,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -241897,7 +242100,7 @@
           }
         },
         "zh-hk": {
-          "file": "b9e340175f12",
+          "file": "a955a53a3cb1",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -241906,7 +242109,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {
@@ -242947,7 +243150,7 @@
           }
         },
         "zh-tw": {
-          "file": "b9e340175f12",
+          "file": "a955a53a3cb1",
           "counts": {
             "esri": 41,
             "esri-check": 0,
@@ -242956,7 +243159,7 @@
             "existing": 0,
             "machine": 207,
             "stale": 0,
-            "missing": 2
+            "missing": 4
           },
           "entries": {
             "sourceLabel": {

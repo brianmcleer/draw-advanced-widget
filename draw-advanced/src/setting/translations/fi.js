@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Antaa käyttäjien näyttää mittauksia lisäyksiköissä rinnalla ensisijainen yksikkö, esimerkiksi eekkeriä neliöjalkaa.",
         settingSnapping: "Tartunta",
         settingSnapDrawingVerticesToFeaturesIn: "Snap piirustus vertices ominaisuuksia muissa kartta kerrokset.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Puskuri",
         settingCreateBufferZonesAroundDrawnFeatures: "Luo puskurivyöhykkeitä piirrettyjen ominaisuuksien ympärille.",
         settingDefaultOpacity: "Oletus Opacity (%)",

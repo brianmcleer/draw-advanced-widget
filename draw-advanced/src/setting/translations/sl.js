@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Naj uporabniki pokažejo meritve v dodatnih enotah poleg primarne enote, na primer akrov s kvadratnimi nogami.",
         settingSnapping: "Privlačnost",
         settingSnapDrawingVerticesToFeaturesIn: "Snap risanje vertices značilnosti v drugih slojih zemljevida.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Obris",
         settingCreateBufferZonesAroundDrawnFeatures: "Ustvarite varovalne pasove okoli potegnjenih funkcij.",
         settingDefaultOpacity: "Privzeta motnost (%)",

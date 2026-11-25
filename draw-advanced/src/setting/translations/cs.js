@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Umožněte uživatelům zobrazit měření v dalších jednotkách vedle primární jednotky, například akry se čtvercovými nohami.",
         settingSnapping: "Přichytávání",
         settingSnapDrawingVerticesToFeaturesIn: "Snap kreslení vrcholů k funkcím v jiných map vrstvách.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Obalová zóna",
         settingCreateBufferZonesAroundDrawnFeatures: "Vytvořit nárazníkové zóny kolem nakreslených funkcí.",
         settingDefaultOpacity: "Výchozí neprůhlednost (%)",

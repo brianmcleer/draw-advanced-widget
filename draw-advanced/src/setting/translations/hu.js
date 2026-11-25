@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "A felhasználók a méréseket az elsődleges egység mellett további egységekben mutassák, például négyzetméterben.",
         settingSnapping: "Hozzáillesztés",
         settingSnapDrawingVerticesToFeaturesIn: "Snap rajz vertikák funkciók más térkép rétegek.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "PufferName",
         settingCreateBufferZonesAroundDrawnFeatures: "Pufferzónák létrehozása rajzolt funkciók körül.",
         settingDefaultOpacity: "Alapértelmezett opacitás (%)",

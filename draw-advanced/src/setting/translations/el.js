@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Ας δείχνουν οι χρήστες μετρήσεις σε πρόσθετες μονάδες παράλληλα με την κύρια μονάδα, για παράδειγμα στρέμματα με τετραγωνικά πόδια.",
         settingSnapping: "Αγκίστρωση",
         settingSnapDrawingVerticesToFeaturesIn: "Snap σχεδίαση κορυφές σε χαρακτηριστικά σε άλλα στρώματα χάρτη.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Ζώνη",
         settingCreateBufferZonesAroundDrawnFeatures: "Δημιουργήστε ζώνες προστασίας γύρω από σχεδιασμένα χαρακτηριστικά.",
         settingDefaultOpacity: "Προκαθορισμένη Αδιαφάνεια (%)",

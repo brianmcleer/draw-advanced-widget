@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Lassen Sie die Benutzer Messungen in zusätzlichen Einheiten neben der Primäreinheit anzeigen, z. B. Hektar mit Quadratfuß.",
         settingSnapping: "Fangen",
         settingSnapDrawingVerticesToFeaturesIn: "Snap Zeichnen Eckpunkte zu Features in anderen Kartenebenen.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Puffer",
         settingCreateBufferZonesAroundDrawnFeatures: "Erstellen Sie Pufferzonen um gezeichnete Features herum.",
         settingDefaultOpacity: "Default Opacity (%)",

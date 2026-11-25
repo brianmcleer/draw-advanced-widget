@@ -160,6 +160,7 @@ const KNOWN_CONFIG_KEYS: string[] = [
     'enableMyDrawingsProperties',
     'enableMyDrawingsSort',
     'maxDrawings',
+    'snappingTolerance',
     'defaultTab',
     'enablePointTool',
     'enablePolylineTool',
@@ -837,6 +838,23 @@ export default class Setting extends React.PureComponent<SettingProps, SettingSt
 
                         {this.renderToggle('enableSnapping', this.nls('settingSnapping'),
                             this.nls('settingSnapDrawingVerticesToFeaturesIn'))}
+                        {config.enableSnapping !== false && (
+                            <div style={s.indent}>
+                                <div style={s.fieldRow}>
+                                    <Label style={s.fieldLabel} title={this.nls('settingHowCloseThePointerHasToBe')}>{this.nls('settingDefaultSnappingTolerance')}</Label>
+                                    <NumericInput
+                                        value={config.snappingTolerance ?? 15}
+                                        min={1}
+                                        max={50}
+                                        step={1}
+                                        onChange={(v) => this.setConfig('snappingTolerance', v)}
+                                        style={{ width: '100px' }}
+                                        aria-label={this.nls('settingDefaultSnappingTolerance')}
+                                        title={this.nls('settingHowCloseThePointerHasToBe')}
+                                    />
+                                </div>
+                            </div>
+                        )}
 
                         {this.renderToggle('enableBuffer', this.nls('settingBuffer'),
                             this.nls('settingCreateBufferZonesAroundDrawnFeatures'))}

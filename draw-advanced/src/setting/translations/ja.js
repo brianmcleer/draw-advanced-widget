@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "ユーザーは、正方形の足で例えば、プライマリユニットと一緒に追加のユニットで測定を表示してみましょう。",
         settingSnapping: "スナップ",
         settingSnapDrawingVerticesToFeaturesIn: "他のマップレイヤーの機能をスナップドローイング頂点.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "バッファー",
         settingCreateBufferZonesAroundDrawnFeatures: "描画機能の周りのバッファゾーンを作成します。",
         settingDefaultOpacity: "デフォルトの不透明度(%)",

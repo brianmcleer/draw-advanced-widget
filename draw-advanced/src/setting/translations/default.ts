@@ -174,6 +174,8 @@ export default {
   settingLetUsersShowMeasurementsInAdditional: 'Let users show measurements in additional units alongside the primary unit, for example acres with square feet.',
   settingSnapping: 'Snapping',
   settingSnapDrawingVerticesToFeaturesIn: 'Snap drawing vertices to features in other map layers.',
+  settingDefaultSnappingTolerance: 'Default snapping tolerance (pixels)',
+  settingHowCloseThePointerHasToBe: 'How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.',
   settingBuffer: 'Buffer',
   settingCreateBufferZonesAroundDrawnFeatures: 'Create buffer zones around drawn features.',
   settingDefaultOpacity: 'Default Opacity (%)',

@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Niech użytkownicy pokazują pomiary w dodatkowych jednostkach obok jednostki podstawowej, na przykład akrów z kwadratowymi stopami.",
         settingSnapping: "Dociąganie",
         settingSnapDrawingVerticesToFeaturesIn: "Snap rysunek wierzchołki do funkcji w innych warstwach mapy.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Bufor",
         settingCreateBufferZonesAroundDrawnFeatures: "Tworzenie stref buforowych wokół rysowanych funkcji.",
         settingDefaultOpacity: "Domyślna nieprzezroczystość (%)",

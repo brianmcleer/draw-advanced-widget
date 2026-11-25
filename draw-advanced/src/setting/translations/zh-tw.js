@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "讓使用者在主單位旁顯示其他單位的測量, 例如平方英尺的英畝 。",
         settingSnapping: "正在貼齊",
         settingSnapDrawingVerticesToFeaturesIn: "將畫面的頂點對准其他地圖層的特性 。",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "緩衝區",
         settingCreateBufferZonesAroundDrawnFeatures: "依據圖示建立缓冲区 。",
         settingDefaultOpacity: "默认不透明度(%)",

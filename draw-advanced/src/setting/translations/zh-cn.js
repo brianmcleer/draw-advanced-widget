@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "让用户在主单位旁边显示额外单位的测量结果,例如有平方英尺的亩地.",
         settingSnapping: "捕捉",
         settingSnapDrawingVerticesToFeaturesIn: "将绘图顶点对准其他地图层的特征。",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "缓冲区",
         settingCreateBufferZonesAroundDrawnFeatures: "在绘图的特性周围创建缓冲区。",
         settingDefaultOpacity: "默认不透明度(%)",

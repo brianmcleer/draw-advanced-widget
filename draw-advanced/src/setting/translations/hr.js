@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Neka korisnici pokazuju mjerenja u dodatnim jedinicama uz primarnu jedinicu, na primjer hektara s kvadratnim stopama.",
         settingSnapping: "Priljepljivanje",
         settingSnapDrawingVerticesToFeaturesIn: "Snap crtanje vertices na značajke u drugim slojevima karte.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Pojas",
         settingCreateBufferZonesAroundDrawnFeatures: "Stvorite tampon zone oko nacrtanih značajki.",
         settingDefaultOpacity: "Uobičajena neprozirnost (%)",

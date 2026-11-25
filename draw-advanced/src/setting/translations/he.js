@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "תן למשתמשים להראות מדידות ביחידות נוספות לצד היחידה הראשית, למשל אקרים עם מטרים רבועים.",
         settingSnapping: "הצמדה",
         settingSnapDrawingVerticesToFeaturesIn: "Snap Drawing vertices לתכונות בשכבות מפה אחרות.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "חיץ",
         settingCreateBufferZonesAroundDrawnFeatures: "ליצור אזורי buffer סביב תכונות נמשכות.",
         settingDefaultOpacity: "Default Opacity (%)",

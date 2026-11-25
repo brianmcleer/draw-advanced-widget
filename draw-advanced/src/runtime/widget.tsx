@@ -9740,6 +9740,7 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 						<SnappingControls
 							jimuMapView={this.state.currentJimuMapView}
 							sketchViewModel={this.sketchViewModel}
+							defaultTolerance={config.snappingTolerance}
 						/>
 					)}
 
@@ -9929,6 +9930,16 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 				? this.state.fontBackgroundColor
 				: `rgba(${this.state.fontBackgroundColor.r}, ${this.state.fontBackgroundColor.g}, ${this.state.fontBackgroundColor.b}, ${this.state.fontBackgroundColor.a})`)
 			: 'transparent';
+
+		// True when the text has no background (fully see-through), whether the state holds a string or a Color.
+		const fontBg: any = this.state.fontBackgroundColor;
+		const backgroundIsClear = !fontBg || (typeof fontBg === 'string'
+			? (fontBg === 'transparent' || /^rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*0(\.0+)?\s*\)$/.test(fontBg))
+			: fontBg.a === 0);
+		// The color picker keeps the opacity of the color it opens with. Opened on a see-through
+		// color, every pick from the color square stayed see-through, so nothing seemed to happen
+		// until a standard color (always solid) was picked. Open it on a solid color instead.
+		const backgroundPickerColor = backgroundIsClear ? 'rgba(255,255,0,1)' : backgroundColorString;
 
 		return (
 			<Popper
@@ -10297,15 +10308,15 @@ export default class Widget extends React.PureComponent<WidgetProps, States> {
 								width={26}
 								height={26}
 								type='icon-only'
-								icon={this.state.fontBackgroundColor === 'rgba(0,0,0,0)' ?
+								icon={backgroundIsClear ?
 									<CloseOutlined title={this.nls('widgetNoBackgroundColor')} aria-hidden="true" /> :
 									<div title={this.nls('widgetBackgroundColor')} style={{ backgroundColor: backgroundColorString, height: '100%', width: '100%' }} aria-hidden="true" />
 								}
-								color={this.state.fontBackgroundColor ? backgroundColorString : "#000000"}
+								color={backgroundPickerColor}
 								onClick={e => { this.onColorPickerToggle(e) }}
 								onChange={this.updateBackgroundColor}
 								aria-labelledby="background-color-label"
-								aria-label={(this.state.fontBackgroundColor === 'rgba(0,0,0,0)' ? this.nls('textBackgroundColorPickerCurrentlyNo') : this.nls('textBackgroundColorPicker'))}
+								aria-label={(backgroundIsClear ? this.nls('textBackgroundColorPickerCurrentlyNo') : this.nls('textBackgroundColorPicker'))}
 								title={this.nls('widgetSelectABackgroundColorFor')}
 							/>
 						</Label>

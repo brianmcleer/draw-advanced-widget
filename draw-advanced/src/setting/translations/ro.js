@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Permite utilizatorilor să arate măsurători în unități suplimentare alături de unitatea primară, de exemplu acri cu picioare pătrate.",
         settingSnapping: "Fixare",
         settingSnapDrawingVerticesToFeaturesIn: "Snap de desen Vertices la caracteristici în alte straturi de hartă.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Buffer",
         settingCreateBufferZonesAroundDrawnFeatures: "Creați zone tampon în jurul caracteristicilor trase.",
         settingDefaultOpacity: "Opacitate implicită (%)",

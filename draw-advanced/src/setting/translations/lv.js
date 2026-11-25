@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Ļaujiet lietotājiem parādīt mērījumus papildu vienībās līdzās primārajai vienībai, piemēram, ar kvadrātpēdām.",
         settingSnapping: "Pielipināšana",
         settingSnapDrawingVerticesToFeaturesIn: "Snap zīmēšanas vertices funkcijas citos kartes slāņos.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Buferzona",
         settingCreateBufferZonesAroundDrawnFeatures: "Izveidot buferjoslas ap zīmētām funkcijām.",
         settingDefaultOpacity: "Noklusētais necaurspīdīgums (%)",

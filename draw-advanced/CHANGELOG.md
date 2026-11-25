@@ -2,6 +2,14 @@
 
 Newest first. Every release bumps `manifest.json` and `package.json` together.
 
+## 4.9.0 (2026-11-25)
+
+- Added: **Snapping tolerance**. A slider under Enable Snapping sets how close the pointer has to be, in screen pixels, before it snaps (1 to 50). It applies right away, to feature snapping and to the triangle and curve tools, and is remembered in the browser with the other snapping choices.
+- Settings: a **Default snapping tolerance (pixels)** box under Snapping sets the starting value. Undefined means 15, the fixed value used before, so existing apps behave the same.
+- Fixed: the text background color picker did nothing until a Standard Color was picked. The picker keeps the opacity of the color it opens with, and "no background" is fully see-through, so every pick from the color square stayed invisible. It now opens on a solid color. The "no background" X icon also comes back when the opacity is set to 0.
+- Custom grid color now starts on blue instead of black, so the hue slider works right away. The hue slider cannot move black, white or gray in any color picker; use the color square for those.
+- Help guide: a line on the new slider. New strings are English only until the next exb-i18n-kit sync.
+
 ## 4.8.1 (2026-11-24)
 
 - Near Me now follows edits. After a drawing is set as the Near Me location, moving or reshaping that drawing sends the new shape when the edit finishes, so the Near Me buffer and results update on their own. Before, the button had to be clicked again. Selecting a drawing without changing it does nothing.

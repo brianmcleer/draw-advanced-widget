@@ -159,6 +159,8 @@ System.register([], function (e) {
         settingLetUsersShowMeasurementsInAdditional: "Biarkan pengguna menunjukkan pengukuran di unit tambahan bersama unit utama, misalnya hektar dengan kaki persegi.",
         settingSnapping: "Snapping",
         settingSnapDrawingVerticesToFeaturesIn: "Menggambar gambar garis-garis ke fitur dalam lapisan peta lainnya.",
+        settingDefaultSnappingTolerance: "Default snapping tolerance (pixels)",
+        settingHowCloseThePointerHasToBe: "How close the pointer has to be, in screen pixels, before it snaps. Users can change it while drawing. 15 is the default.",
         settingBuffer: "Penyangga",
         settingCreateBufferZonesAroundDrawnFeatures: "Membuat zona penyangga di sekitar fitur yang digambar.",
         settingDefaultOpacity: "Opasitas Baku (%)",
